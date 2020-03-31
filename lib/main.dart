@@ -25,3 +25,18 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// For vertical and horizontally centered Scaffolds, use:
+// </> https://stackoverflow.com/questions/52991376/flutter-how-to-center-widget-inside-list-view
+// Scaffold(
+//   appBar: new AppBar(),
+//   body: Center(
+//     child: new ListView(
+//       shrinkWrap: true,
+//         padding: const EdgeInsets.all(20.0),
+//         children: [
+//           Center(child: new Text('ABC'))
+//         ]
+//     ),
+//   ),
+// );
