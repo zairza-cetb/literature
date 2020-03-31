@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:literature/screens/creategame.dart';
 
 class LiteratureHomePage extends StatefulWidget {
   LiteratureHomePage({Key key, this.title}) : super(key: key);
@@ -19,14 +20,6 @@ class LiteratureHomePage extends StatefulWidget {
 }
 
 class _LiteratureHomePage extends State<LiteratureHomePage> {
-  void _createRoom() {
-    print('Creating a Room');
-  }
-
-  void _joinRoom() {
-    print('Joining a room. Room ID required');
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -44,7 +37,10 @@ class _LiteratureHomePage extends State<LiteratureHomePage> {
       body: GestureDetector(
         onTap: () {
           // Move to next screen
-          print("Tapped!");
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreateGame()),
+          );
         },
         child: Center(
           // Center is a layout widget. It takes a single child and positions it
