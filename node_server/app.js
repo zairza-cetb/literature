@@ -1,13 +1,13 @@
 // Port
-const port=8080;
+const port = 34263;
 
 // Global imports
-var websocketServer = require('websocket');
+var websocketServer = require('websocket').server;
 var http = require('http');
 
 // Create an HTTP server that would implement
 // websockets after a handshake with the client
-var server = http.createServer(function(req, res) {
+var server = http.createServer(function() {
   // TODO
 });
 server.listen(port, function() {
@@ -16,10 +16,10 @@ server.listen(port, function() {
 
 // Websocket server
 // @override HTTP server
-var wss = new websocketServer({
+var wsServer = new websocketServer({
   httpServer: server
 });
-wss.on('request', function(request) {
+wsServer.on('request', function(request) {
   var connection = request.accept(null, request.origin);
   // Record the socket of a new player
   var player = new Player(request.key, connection);
@@ -43,6 +43,10 @@ wss.on('request', function(request) {
       case 'join':
         player.name = message.data;
         BroadcastPlayersList();
+        // player.name = message.data;
+        // player
+        //   .connection
+        //   .sendUTF(JSON.stringify({'action':'join_server', 'name': player.name, 'role': null}));
         break;
       //
       // When a player resigns, we need to break the relationship
@@ -50,7 +54,6 @@ wss.on('request', function(request) {
       // that the first one resigned
       //
       case 'resign':
-        console.log('Resigning...');
         // TODO: Implement this for all players
         Players[player.opponentIndex]
           .connection
@@ -62,15 +65,36 @@ wss.on('request', function(request) {
         }, 0);
         break;
       /**
+       * A player creates a new game
+       */
+      case 'create_game':
+        // Set the person who created the game,
+        // Update opponent when a move is made
+        // by a player.
+        player.name = message.data;
+        player.setCreator(player.name);
+        BroadcastPlayersList();
+        // A person creates a new game
+        // TODO: Send the player as per a room
+        player
+          .connection
+          .sendUTF(JSON.stringify({'action':'create_game', 'name': player.name }));
+        break;
+      
+
+      /**
        *  A player initiates a new game. We need to 
        *  notify all players that a new game has started.
        */ 
       case 'new_game':
-        Players.setOpponent(message.data);
+        // Set the person who created the game,
+        // Update opponent when a move is made
+        // by a player.
+        player.setOpponent(message.data);
         // TODO: Send to all players.
         Players[player.opponentIndex]
               .connection
-              .sendUTF(JSON.stringify({'action':'new_game', 'data': player.name}));
+              .sendUTF(JSON.stringify({'action':'new_game', 'data': player.name, 'role': player.gameCreator}));
         break;
 
       /**
@@ -100,11 +124,12 @@ function Player(id, connection) {
   this.name = "";
   this.opponentIndex = null;
   this.index = Players.length;
+  this.gameCreator = null;
 }
 
 Player.prototype = {
   getId: function() {
-    return { name: this.name, id: this.id };
+    return { name: this.name, id: this.id, gameCreator: this.gameCreator };
   },
   setOpponent: function(id) {
     var self = this;
@@ -112,6 +137,15 @@ Player.prototype = {
       if (player.id === id) {
         self.opponentIndex = index;
         Players[index].opponentIndex = self.index;
+        return false;
+      }
+    });
+  },
+  setCreator: function(id) {
+    var self = this;
+    Players.forEach(function(player,  index) {
+      if (player.name === id) {
+        self.gameCreator = index;
         return false;
       }
     });
@@ -133,10 +167,9 @@ function BroadcastPlayersList(){
       'action': 'players_list',
       'data': playersList
   });
+  console.log(playersList);
 
   Players.forEach(function(player){
       player.connection.sendUTF(message);
   });
 };
-
-module.exports = app;
