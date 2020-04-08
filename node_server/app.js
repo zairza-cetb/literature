@@ -167,7 +167,6 @@ function BroadcastPlayersList(){
       'action': 'players_list',
       'data': playersList
   });
-  console.log(playersList);
 
   Players.forEach(function(player){
       player.connection.sendUTF(message);
