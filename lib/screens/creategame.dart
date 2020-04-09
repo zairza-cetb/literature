@@ -104,7 +104,7 @@ class CreateGame extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CreateRoom()),
+                        MaterialPageRoute(builder: (context) => JoinRoom()),
                       );
                     },
                     child: Container(
