@@ -31,11 +31,14 @@ enum CardColor {
 class PlayingCard {
   CardSuit cardSuit;
   CardType cardType;
+  String name;
   bool opened;
+
 
   PlayingCard({
     @required this.cardSuit,
     @required this.cardType,
+    @required this.name,
     this.opened = false,
   });
 
