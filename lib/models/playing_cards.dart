@@ -14,7 +14,6 @@ enum CardType {
   four,
   five,
   six,
-  seven,
   eight,
   nine,
   ten,
@@ -32,13 +31,11 @@ enum CardColor {
 class PlayingCard {
   CardSuit cardSuit;
   CardType cardType;
-  bool faceUp;
   bool opened;
 
   PlayingCard({
     @required this.cardSuit,
     @required this.cardType,
-    this.faceUp = false,
     this.opened = false,
   });
 
