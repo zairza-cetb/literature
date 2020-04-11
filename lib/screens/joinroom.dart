@@ -46,7 +46,6 @@ class _JoinRoomState extends State<JoinRoom> {
       ///
       case "players_list":
         playersList = message["data"];
-        print(playersList);
         
         // force rebuild
         setState(() {});

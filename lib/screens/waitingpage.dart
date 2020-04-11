@@ -96,6 +96,18 @@ class _WaitingPageState extends State<WaitingPage> {
     ));
   }
 
+  _getPlayButton(_numberOfPlayers, playerInfo) {
+    if (_numberOfPlayers > 6) {
+      return new RaisedButton(
+        onPressed: (){
+          _onPlayGame(playerInfo["name"], playerInfo["id"], context);
+        },
+        child: new Text('Play'),
+      );
+    } else {
+      return new Text("....");
+    }
+  }
 
   // ------------------------------------------------------
   /// Builds the list of players
@@ -115,21 +127,26 @@ class _WaitingPageState extends State<WaitingPage> {
     /// to launch a new game, if it is an admin then only set
     /// play option.
     ///
+    var _numberOfPlayers = widget.playersList.length;
     List<Widget> children = widget.playersList.map((playerInfo) {
-        print(playerInfo);
+      if (playerInfo["gameCreator"] != null) {
+        // print(playerInfo);
+        return new ListTile(
+          title: new Text(playerInfo["name"] + " [Lobby leader]"),
+          trailing: _getPlayButton(_numberOfPlayers, playerInfo),
+        );
+      } else {
+        // print(playerInfo);
         return new ListTile(
           title: new Text(playerInfo["name"]),
-          trailing: new RaisedButton(
-            onPressed: (){
-              _onPlayGame(playerInfo["name"], playerInfo["id"], context);
-            },
-            child: new Text('Play'),
-          ),
         );
+      }
       }).toList();
+
+      print(children.runtimeType);
       
     return new Column(
-      children: children,
+      children: children
     );
   }
 
