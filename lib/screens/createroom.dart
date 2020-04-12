@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:literature/components/appbar.dart';
 import 'package:literature/screens/waitingpage.dart';
+import 'package:literature/utils/audio.dart';
 
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
@@ -7,6 +9,11 @@ import 'package:literature/utils/game_communication.dart';
 import 'package:literature/screens/startgame.dart';
 
 class CreateRoom extends StatefulWidget {
+  // Initialise AudioPlayer instance
+  final AudioController audioController;
+  // Passed -> "creategame.dart"
+  CreateRoom(this.audioController);
+  
   @override
   _CreateRoomState createState() => _CreateRoomState();
 }
@@ -126,13 +133,12 @@ class _CreateRoomState extends State<CreateRoom> {
 
   @override
   Widget build(BuildContext context) {
+    var appBar = GlobalAppBar(audioController);
     return new SafeArea(
       bottom: false,
       top: false,
       child: Scaffold(
-        appBar: new AppBar(
-          title: new Text('Literature'),
-        ),
+        appBar: appBar,
         body: SingleChildScrollView(
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.start,

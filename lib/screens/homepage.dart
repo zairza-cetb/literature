@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:literature/screens/creategame.dart';
+import 'package:literature/utils/audio.dart';
 
 
 class LiteratureHomePage extends StatefulWidget {
   LiteratureHomePage({Key key, this.title}) : super(key: key);
 
+  // Title of the application
   final String title;
 
   @override
@@ -15,6 +17,13 @@ class _LiteratureHomePage extends State<LiteratureHomePage> {
   bool _visible = true;
 
   @override
+  void initState() {
+    super.initState();
+    // Music should start here
+    audioController = new AudioController();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -23,7 +32,7 @@ class _LiteratureHomePage extends State<LiteratureHomePage> {
           setState(() {});
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CreateGame()),
+            MaterialPageRoute(builder: (context) => CreateGame(audioController)),
           );
         },
 
