@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:literature/screens/creategame.dart';
 
+
 class LiteratureHomePage extends StatefulWidget {
   LiteratureHomePage({Key key, this.title}) : super(key: key);
 
@@ -12,13 +13,14 @@ class LiteratureHomePage extends StatefulWidget {
 
 class _LiteratureHomePage extends State<LiteratureHomePage> {
   bool _visible = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFb3e5fc),
+      backgroundColor: Colors.white,
       body: GestureDetector(
         onTap: () {
-          // Move to next screen
+          setState(() {});
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => CreateGame()),
@@ -26,34 +28,35 @@ class _LiteratureHomePage extends State<LiteratureHomePage> {
         },
 
         child: Center(
-          child: AnimatedOpacity(
-            opacity: _visible ? 1.0 : 0.0,
-            duration: Duration(seconds: 2),
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                color: Color(0xFFe1f5fe),
-                shape: BoxShape.circle,
-              ),
-              child: Column(
+            child: AnimatedOpacity(
+              opacity: _visible ? 1.0 : 0.0,
+              duration: Duration(seconds: 2),
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Color(0xFFe1f5fe),
+                  shape: BoxShape.circle,
+                ),
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Image(image: AssetImage('assets/logo.png'),
-                    ),
-                    Text('Literature',
-                      style: TextStyle(fontFamily:'Monteserrat',
-                          fontWeight: FontWeight.bold,color:
-                          Color(0xFF37474f),fontSize: 20.0),
-                    ),
-                    Text('Tap to Go!',style: TextStyle(color:
+                  Image(image: AssetImage('assets/logo.png'),
+                  ),
+                  Text('Literature',
+                  style: TextStyle(fontFamily:'Monteserrat',
+                    fontWeight: FontWeight.bold,color:
+                    Color(0xFF37474f),fontSize: 20.0),
+                  ),
+                  Text('Tap to Go!',style: TextStyle(color:
                     Color(0xFF37474f))
-                    ),
-                  ]
+                  ),
+                ]
+              ),
             ),
           ),
         ),
       )
-    ));
+    );
   }
 }
