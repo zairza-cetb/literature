@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:literature/components/appbar.dart';
 import 'package:literature/screens/joinroom.dart';
 import 'package:literature/screens/createroom.dart';
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:literature/utils/audio.dart';
 
 
 class CreateGame extends StatefulWidget {
-  // Initialise players
-  static AudioCache cachePlayer = AudioCache(fixedPlayer: audioPlayer);
-  static AudioPlayer audioPlayer = AudioPlayer();
+  // Initialise AudioPlayer instance
+  final AudioController audioController;
+  // Passed from "homepage.dart"
+  CreateGame(this.audioController);
 
   _CreateGame createState() => _CreateGame();
 }
@@ -22,36 +23,10 @@ class _CreateGame extends State<CreateGame> {
 
   @override
   Widget build(BuildContext context) {
-
+    var appBar = GlobalAppBar(audioController);
     return Scaffold(
       backgroundColor: Color(0xFFb3e5fc),
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Icon(Icons.arrow_back_ios),
-          color: Color(0xFF303f9f),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        title: Text('Literature',
-          style: TextStyle(
-            fontFamily: 'Montserrat',
-            fontSize: 25.0,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF303f9f))
-        ),
-        centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.more_horiz),
-            onPressed: () {},
-            color: Color(0xFF303f9f),
-          ),
-        ],
-      ),
-
+      appBar: appBar,
       body: Center(
         child: new ListView(children: <Widget>[
             Stack(children: <Widget>[
@@ -75,7 +50,6 @@ class _CreateGame extends State<CreateGame> {
                     width: MediaQuery.of(context).size.width
                   )
                 ),
-
 
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -102,7 +76,7 @@ class _CreateGame extends State<CreateGame> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => CreateRoom()),
+                                MaterialPageRoute(builder: (context) => CreateRoom(audioController)),
                               );
                             },
                             child: Container(
@@ -130,7 +104,7 @@ class _CreateGame extends State<CreateGame> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => JoinRoom()),
+                                MaterialPageRoute(builder: (context) => JoinRoom(audioController)),
                               );
                             },
                             child: Container(
@@ -158,7 +132,7 @@ class _CreateGame extends State<CreateGame> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => JoinRoom()),
+                                MaterialPageRoute(builder: (context) => JoinRoom(audioController)),
                               );
                             },
                             child:Container(
@@ -192,62 +166,6 @@ class _CreateGame extends State<CreateGame> {
                                 ),
                               ),
                             )
-                          ),
-
-                          SizedBox(height: 30.0),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                CreateGame.cachePlayer.play('theme_song.mp3');                              });
-                            },
-                            child:Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.black,
-                                  style: BorderStyle.solid,
-                                  width: 1.0
-                                ),
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(20.0)
-                              ),
-                              height: 50.0,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Center(
-                                    child:ImageIcon(AssetImage('assets/speaker_icon.png')),
-                                  ),
-                                ]
-                              ),
-                            ),
-                          ),
-
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                CreateGame.audioPlayer?.stop();
-                              });
-                            },
-                            child:Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.black,
-                                  style: BorderStyle.solid,
-                                  width: 1.0
-                                ),
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(20.0)
-                              ),
-                              height: 50.0,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Center(
-                                    child:ImageIcon(AssetImage('assets/mute_icon.png')),
-                                  ),
-                                ]
-                              ),
-                            ),
                           ),
                         ],
                       ),

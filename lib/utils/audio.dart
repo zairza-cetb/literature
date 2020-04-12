@@ -5,6 +5,7 @@ AudioController audioController = new AudioController();
 
 class AudioController {
   // Initialise players
+  static bool musicPlaying;
   static AudioCache cachePlayer = AudioCache(fixedPlayer: audioPlayer);
   static AudioPlayer audioPlayer = AudioPlayer();
 
@@ -13,12 +14,17 @@ class AudioController {
     playMusic();
   }
 
+  getMusicPlaying() {
+    return musicPlaying;
+  }
+
   stopMusic() {
-    print("Stopping");
+    musicPlaying = false;
     audioPlayer?.stop();
   }
 
   playMusic() {
+    musicPlaying = true;
     cachePlayer.loop('theme_song.mp3');
   }
 }

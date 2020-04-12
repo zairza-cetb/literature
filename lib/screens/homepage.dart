@@ -6,6 +6,7 @@ import 'package:literature/utils/audio.dart';
 class LiteratureHomePage extends StatefulWidget {
   LiteratureHomePage({Key key, this.title}) : super(key: key);
 
+  // Title of the application
   final String title;
 
   @override
@@ -31,7 +32,7 @@ class _LiteratureHomePage extends State<LiteratureHomePage> {
           setState(() {});
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CreateGame()),
+            MaterialPageRoute(builder: (context) => CreateGame(audioController)),
           );
         },
 
