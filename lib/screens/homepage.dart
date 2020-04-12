@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:literature/screens/creategame.dart';
+import 'package:literature/utils/audio.dart';
 
 
 class LiteratureHomePage extends StatefulWidget {
@@ -13,6 +14,13 @@ class LiteratureHomePage extends StatefulWidget {
 
 class _LiteratureHomePage extends State<LiteratureHomePage> {
   bool _visible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Music should start here
+    audioController = new AudioController();
+  }
 
   @override
   Widget build(BuildContext context) {
