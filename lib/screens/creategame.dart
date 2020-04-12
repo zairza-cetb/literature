@@ -6,16 +6,18 @@ import 'package:audioplayers/audioplayers.dart';
 
 
 class CreateGame extends StatefulWidget {
-
+  // Initialise players
+  static AudioCache cachePlayer = AudioCache(fixedPlayer: audioPlayer);
+  static AudioPlayer audioPlayer = AudioPlayer();
 
   _CreateGame createState() => _CreateGame();
 }
 
 class _CreateGame extends State<CreateGame> {
-
-  static AudioCache player = AudioCache();
-
-  AudioPlayer players; // create this
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +186,7 @@ class _CreateGame extends State<CreateGame> {
                             GestureDetector(
                               onTap: () {
                               setState(() {
-                                player.play('theme_song.mp3');
+                                CreateGame.cachePlayer.play('theme_song.mp3');
                               });
                               },
                               child:Container(
@@ -210,7 +212,7 @@ class _CreateGame extends State<CreateGame> {
                             GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  players?.stop();
+                                  CreateGame.audioPlayer?.stop();
                                 });
                               },
                               child:Container(
