@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'websocket.dart';
+import 'package:literature/utils/websocket.dart';
 
 ///
-/// Again, application-level global variable
+/// Global variable, the whole class is 
+/// accessible through this variable.
 ///
 GameCommunication game = new GameCommunication();
 
@@ -21,25 +22,24 @@ class GameCommunication {
   ///
   String _playerID = "";
 
-  //
-  // The game should have a Room ID
-  //
-  String _roomID = "";
-
+  /// Reuse the same instance of 
+  /// the class using "factory" identifier.
   factory GameCommunication(){
     return _game;
   }
 
+  // Private Constructor for the class.
   GameCommunication._internal(){
+    print("Game communication constructor");
     ///
     /// Let's initialize the WebSockets communication
     ///
-    sockets.initCommunication();
+    socket.initCommunication();
 
     ///
     /// and ask to be notified as soon as a message comes in
     /// 
-    sockets.addListener(_onMessageReceived);
+    socket.addListener(_onMessageReceived);
   }
 
   ///
@@ -57,6 +57,7 @@ class GameCommunication {
     /// JSON object
     ///
     Map message = json.decode(serverMessage);
+    print(message);
 
     switch(message["action"]){
       ///
@@ -96,10 +97,7 @@ class GameCommunication {
     /// Send the action to the server
     /// To send the message, we need to serialize the JSON 
     ///
-    sockets.send(json.encode({
-      "action": action,
-      "data": data
-    }));
+    socket.send(action, data);
   }
 
   /// ==========================================================
