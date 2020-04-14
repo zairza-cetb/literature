@@ -5,6 +5,8 @@ import socketio from "socket.io";
 import { Room, GameStatus } from "./models/Room";
 import mongoose from "mongoose";
 import { MONGODB_URI, PORT } from "./util/secrets";
+import { divideAndShuffleCards } from "./util/helper";
+import { Move } from "./types";
 
 const app = express();
 app.use(cors());
@@ -31,7 +33,7 @@ io.on("connection", (socket) => {
    * send the numerical roomId back in callback 
    * which will be used to join the game
    */
-  socket.on("create_game", async function(name, id, callback) {
+  socket.on("create_game", async function(name: string, id: string, callback) {
     const newRoom = new Room({
       status: GameStatus.CREATED,
       players: [{id, name}]
@@ -47,7 +49,7 @@ io.on("connection", (socket) => {
    * Broadcast to other players about the player joined
    * Send other players details to the player
    */
-  socket.on("join_game", async function(roomId, name, id) {
+  socket.on("join_game", async function(roomId: number, name: string, id: string) {
     const room = await Room.findOne({roomId});
     if(room.status === GameStatus.CREATED) {
       await Room.update(
@@ -64,6 +66,30 @@ io.on("connection", (socket) => {
       socket.emit("invalid room");
     }
   });
+
+  /**
+   * Update game status to be IN_PROGRESS(so that room cannot be joined)
+   * Make a deck of shuffled cards and return it to everyone in the room
+   */
+  socket.on("start_game", async function(roomId: number) {
+    await Room.findOneAndUpdate(
+      {roomId},
+      {status: GameStatus.IN_PROGRESS}
+    );
+    const cards = divideAndShuffleCards();
+    socket.to(roomId.toString()).emit("get_cards", cards);
+  });
+
+  /**
+   * On making a card request send the request details
+   * to all the players to check whether the request is
+   * valid or not
+   */
+  socket.on("request_card", async function(roomId: number, move: Move ) {
+    socket.to(roomId.toString()).emit("check_card", move);
+  });
 });
+
+
 
 export default http;
