@@ -14,7 +14,6 @@ class LiteratureHomePage extends StatefulWidget {
 }
 
 class _LiteratureHomePage extends State<LiteratureHomePage> {
-  bool _visible = true;
 
   @override
   void initState() {
@@ -37,10 +36,10 @@ class _LiteratureHomePage extends State<LiteratureHomePage> {
         },
 
         child: Center(
-            child: AnimatedOpacity(
-              opacity: _visible ? 1.0 : 0.0,
-              duration: Duration(seconds: 2),
-              child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
                 width: 200,
                 height: 200,
                 decoration: BoxDecoration(
@@ -50,22 +49,89 @@ class _LiteratureHomePage extends State<LiteratureHomePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                  Image(image: AssetImage('assets/logo.png'),
-                  ),
-                  Text('Literature',
-                  style: TextStyle(fontFamily:'Monteserrat',
-                    fontWeight: FontWeight.bold,color:
-                    Color(0xFF37474f),fontSize: 20.0),
-                  ),
-                  Text('Tap to Go!',style: TextStyle(color:
-                    Color(0xFF37474f))
-                  ),
-                ]
+                    Image(image: AssetImage('assets/logo.png'),
+                    ),
+                    Text('Literature',
+                    style: TextStyle(fontFamily:'Monteserrat',
+                      fontWeight: FontWeight.bold,color:
+                      Color(0xFF37474f),fontSize: 20.0),
+                    ),
+                    Text('Tap to Go!',style: TextStyle(color:
+                      Color(0xFF37474f))
+                    ),
+                  ]
+                ),
               ),
-            ),
+              SizedBox(
+                height: 100.0,
+                width: 100.0,
+              ),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            offset: const Offset(3.0, 3.0),
+                            blurRadius: 5.0,
+                            spreadRadius: 2.0,
+                          )
+                        ],
+                        border: Border.all(
+                          color: Colors.black,
+                          style: BorderStyle.solid,
+                          width: 1.0,
+                        ),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(40.0)
+                      ),
+                      child: Center(
+                        child:
+                        ImageIcon(AssetImage('assets/facebook.png')
+                        )
+                      )
+                    ),
+                    SizedBox(
+                      width: 30.0,
+                    ),
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            offset: const Offset(3.0, 3.0),
+                            blurRadius: 5.0,
+                            spreadRadius: 2.0,
+                          )
+                        ],
+                        border: Border.all(
+                          color: Colors.black,
+                          style: BorderStyle.solid,
+                          width: 1.0,
+                        ),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(40.0),
+                      ),
+                      child: Center(
+                          child:
+                          ImageIcon(AssetImage('assets/google.png')
+                          )
+                      )
+                    ),
+                  ],
+                ),
+              ),
+            ]
           ),
         ),
-      )
+      ),
     );
   }
 }

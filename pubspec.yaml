@@ -26,6 +26,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   socket_io_client: ^0.9.9
+  flutter_spinkit: ^4.1.2
 
 dev_dependencies:
   flutter_test:
@@ -51,6 +52,7 @@ flutter:
     - assets/theme_song.mp3
     - assets/mute_icon.png
     - assets/speaker_icon.png
+    - assets/google.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
