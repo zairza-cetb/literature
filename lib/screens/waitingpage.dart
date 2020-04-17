@@ -7,30 +7,25 @@ import 'package:literature/screens/startgame.dart';
 class WaitingPage extends StatefulWidget {
   WaitingPage({
     Key key,
-    this.opponentName,
+    this.playerName,
     this.playersList,
-    this.character,
-    this.role,
+    this.roomId,
   }): super(key: key);
 
   ///
   /// Name of the opponent
   ///
-  final String opponentName;
+  final String playerName;
 
   ///
   ///
   ///
   List<dynamic> playersList;
-  ///
-  /// Character to be used by the player for his/her moves ("X" or "O")
-  ///
-  final String character;
 
   ///
-  /// Role of a person
+  /// RoomId
   ///
-  final String role;
+  final String roomId;
 
   _WaitingPageState createState() => _WaitingPageState();
 }
@@ -45,7 +40,7 @@ class _WaitingPageState extends State<WaitingPage> {
     /// Ask to be notified when messages related to the game
     /// are sent by the server
     ///
-    game.addListener(_onGameDataReceived);
+    // game.addListener(_onGameDataReceived);
   }
 
   @override
@@ -67,8 +62,8 @@ class _WaitingPageState extends State<WaitingPage> {
       ///   * record the new list of players
       ///   * rebuild the list of all the players
       ///
-      case "players_list":
-        widget.playersList = message["data"];
+      case "joined":
+        widget.playersList = (message["data"])["players"];
         
         // force rebuild
         setState(() {});
@@ -150,6 +145,17 @@ class _WaitingPageState extends State<WaitingPage> {
     );
   }
 
+  Widget roomInformation() {
+    return Container(
+      alignment: Alignment.center,
+      child: Center(
+        child: (
+          new Text("ROOM ID: " + widget.roomId, style: new TextStyle(fontSize: 30.0),)
+        )
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Roles: player.name or null
@@ -165,6 +171,7 @@ class _WaitingPageState extends State<WaitingPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               // _buildJoin(),
+              roomInformation(),
               _playersList(context),
             ],
           ),

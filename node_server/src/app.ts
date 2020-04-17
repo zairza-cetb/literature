@@ -33,15 +33,24 @@ io.on("connection", (socket) => {
    * send the numerical roomId back in callback 
    * which will be used to join the game
    */
-  socket.on("create_game", async function(name: string, id: string, callback) {
+  socket.on("create_game", async function(name: string, id: string) {
     const newRoom = new Room({
       status: GameStatus.CREATED,
+      // TODO: Id is always null
       players: [{id, name}]
     });
     await newRoom.save();
     // Create and join the socket room
     socket.join(newRoom.roomId.toString());
-    callback(newRoom.roomId);
+    const players = newRoom.players;
+    io.to(newRoom.roomId.toString())
+      .emit(
+        "created", 
+        JSON.stringify({ 
+          data: {roomId: newRoom.roomId, players: players, name: name}, 
+          action: 'creates_game' 
+        })
+      );
   });
 
   /**
@@ -49,19 +58,21 @@ io.on("connection", (socket) => {
    * Broadcast to other players about the player joined
    * Send other players details to the player
    */
-  socket.on("join_game", async function(roomId: number, name: string, id: string) {
+  socket.on("join_game", async function(data) {
+    let parsedData = JSON.parse(data);
+    const roomId = parseInt(parsedData.roomId);
+    const name = parsedData.name;
     const room = await Room.findOne({roomId});
     if(room.status === GameStatus.CREATED) {
       await Room.update(
         { roomId },
-        { $push: { players: { name, id }}}
+        { $push: { players: { name }}}
       );
-      // Send new player details to every other player in the room
-      socket.to(room.roomId.toString()).emit("new player", name);
-      // Send other player details to the player
-      socket.emit("joined", room.players);
       //Join the room
       socket.join(room.roomId.toString());
+      // Send data to the room after it has joined.
+      io.to(room.roomId.toString())
+        .emit("joined", JSON.stringify({ data: { players: room.players, roomId: room.roomId }, action: "joined" }));
     } else {
       socket.emit("invalid room");
     }

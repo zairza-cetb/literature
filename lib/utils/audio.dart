@@ -11,7 +11,7 @@ class AudioController {
 
   AudioController() {
     // constructor
-    playMusic();
+    // playMusic();
   }
 
   getMusicPlaying() {
