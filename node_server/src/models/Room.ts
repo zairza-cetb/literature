@@ -23,10 +23,7 @@ export type RoomDocument = mongoose.Document & {
 }
 
 const roomSchema = new mongoose.Schema({
-  players: {
-    name: String,
-    id: String
-  },
+  players: { type: Array},
   status: String
 })
 

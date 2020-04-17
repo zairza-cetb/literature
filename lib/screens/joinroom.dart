@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:literature/components/appbar.dart';
 import 'package:literature/screens/waitingpage.dart';
@@ -18,7 +20,7 @@ class JoinRoom extends StatefulWidget {
 
 class _JoinRoomState extends State<JoinRoom> {
   static final TextEditingController _name = new TextEditingController();
-  static final TextEditingController _roomID = new TextEditingController();
+  static final TextEditingController _roomId = new TextEditingController();
   String playerName;
   List<dynamic> playersList = <dynamic>[];
 
@@ -44,19 +46,26 @@ class _JoinRoomState extends State<JoinRoom> {
   ///  - players_list
   ///  - new_game
   /// -------------------------------------------------------------------
-  _onGameDataReceived(message) {
+  _onGameDataReceived(Map message) {
+    playersList = (message["data"])["players"];
+    playerName = _name.text;
+
     switch (message["action"]) {
       ///
       /// Each time a new player joins, we need to
       ///   * record the new list of players
       ///   * rebuild the list of all the players
       ///
-      case "players_list":
-        playersList = message["data"];
-        
+      case "joined":
         // force rebuild
-        setState(() {});
-        break;
+        Navigator.push(context, new MaterialPageRoute(
+          builder: (BuildContext context) 
+                      => new WaitingPage(
+                          playersList: playersList,
+                          playerName: playerName,
+                          roomId: message["data"]["roomId"].toString(),
+                        ),
+        ));
     }
   }
 
@@ -78,7 +87,7 @@ class _JoinRoomState extends State<JoinRoom> {
             ),
           ),
           new TextField(
-            controller: _roomID,
+            controller: _roomId,
             keyboardType: TextInputType.text,
             decoration: new InputDecoration(
               hintText: 'Enter Room ID...',
@@ -105,17 +114,8 @@ class _JoinRoomState extends State<JoinRoom> {
   /// Sends a message to server on room join request
   ///
   _onJoinGame() {
-    game.send('join', _name.text);
-
-    Navigator.push(context, new MaterialPageRoute(
-      builder: (BuildContext context) 
-                  => new WaitingPage(
-                      playersList: playersList,
-                      opponentName: _name.text, 
-                      character: 'X',
-                      role: 'X',
-                    ),
-    ));
+    Map joinDetails = { "roomId": _roomId.text, "name": _name.text };
+    game.send("join_game", json.encode(joinDetails));
   }
 
   @override

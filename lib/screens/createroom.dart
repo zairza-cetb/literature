@@ -22,6 +22,8 @@ class _CreateRoomState extends State<CreateRoom> {
   static final TextEditingController _name = new TextEditingController();
   String playerName;
   List<dynamic> playersList = <dynamic>[];
+  // TODO: Room ID should be a hashed value
+  int roomId;
 
   @override
   void initState() {
@@ -45,43 +47,23 @@ class _CreateRoomState extends State<CreateRoom> {
   ///  - players_list
   ///  - new_game
   /// -------------------------------------------------------------------
-  _onGameDataReceived(message) {
+  _onGameDataReceived(Map message) {
+    playersList = (message["data"])["players"];
+    roomId = (message["data"])["roomId"];
+    playerName = (message["data"]["name"]);
     switch (message["action"]) {
       ///
-      /// Each time a new player joins, we need to
-      ///   * record the new list of players
-      ///   * rebuild the list of all the players
+      /// Creates a new game with a Room ID, Redirect to
+      /// waiting page and wait for other players in 
+      /// the lobby.
       ///
-      case "players_list":
-        playersList = message["data"];
-        
-        // force rebuild
-        setState(() {});
-        break;
-
-      ///
-      /// When a game is launched by another player,
-      /// we accept the new game and automatically redirect
-      /// to the game board.
-      /// As we are not the new game initiator, we will be
-      /// using the "O"
-      ///
-      case 'new_game':
-        Navigator.push(context, new MaterialPageRoute(
-          builder: (BuildContext context)
-                      => new StartGame(
-                            opponentName: message["data"], // Name of the opponent
-                            character: 'O',
-                        ),
-        ));
-        break;
-      case 'create_game':
+      case 'creates_game':
         Navigator.push(context, new MaterialPageRoute(
         builder: (BuildContext context) 
                   => new WaitingPage(
-                    opponentName: message["name"],
-                    character: 'A',
+                    playerName: playerName,
                     playersList: playersList,
+                    roomId: roomId.toString(),
                   ),
         ));
     }

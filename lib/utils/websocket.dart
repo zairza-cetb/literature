@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -44,6 +46,8 @@ class WebSocket {
       print('connected');
       _channel.emit('msg', 'test');
     });
+
+    listenForEvents(_channel);
   }
 
   // Resets communication
@@ -76,10 +80,27 @@ class WebSocket {
   /// Callback which is invoked each time that we are receiving
   /// a message from the server
   /// ----------------------------------------------------------
-  _onReceptionOfMessageFromServer(message){
-    _isOn = true;
-    _listeners.forEach((Function callback){
-      callback(message);
+  listenForEvents(IO.Socket socket) {
+    // On event Create game
+    socket.on("created", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      message["name"] = messageRecieved["name"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+    // On event join Game
+    socket.on("joined", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
     });
   }
 }
