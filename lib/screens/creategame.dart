@@ -31,13 +31,13 @@ class _CreateGame extends State<CreateGame> {
         child: new ListView(children: <Widget>[
             Stack(children: <Widget>[
                 Container(
-                  height: MediaQuery.of(context).size.height,
+                  height: MediaQuery.of(context).size.height -100,
                   width: MediaQuery.of(context).size.width,
                   color: Colors.transparent
                 ),
 
                 Positioned(
-                  top: 75.0,
+                  top: MediaQuery.of(context).size.height/15,
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.only(
@@ -46,7 +46,8 @@ class _CreateGame extends State<CreateGame> {
                       ),
                       color: Colors.white
                     ),
-                    height: MediaQuery.of(context).size.height ,
+                    height: MediaQuery.of(context).size.height -
+                        MediaQuery.of(context).size.height/15,
                     width: MediaQuery.of(context).size.width
                   )
                 ),
@@ -57,7 +58,7 @@ class _CreateGame extends State<CreateGame> {
                   children: <Widget>[
                     Center(child:
                       new Container(
-                        margin: EdgeInsets.only(top: 30.0),
+                        margin: EdgeInsets.only(top: 10.0),
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('assets/create_room_bg.png'),
