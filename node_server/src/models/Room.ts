@@ -19,12 +19,14 @@ export enum GameStatus {
 export type RoomDocument = mongoose.Document & {
   roomId: number,
   players: Player[],
-  status: GameStatus
+  status: GameStatus,
+  lobbyLeader: String
 }
 
 const roomSchema = new mongoose.Schema({
   players: { type: Array},
-  status: String
+  status: String,
+  lobbyLeader: String
 })
 
 roomSchema.plugin(autoIncrement.plugin, { model: 'Room', field: 'roomId'})
