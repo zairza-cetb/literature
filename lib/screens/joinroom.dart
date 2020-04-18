@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:literature/components/appbar.dart';
+import 'package:literature/models/player.dart';
 import 'package:literature/screens/waitingpage.dart';
 import 'package:literature/utils/audio.dart';
 
@@ -21,7 +22,7 @@ class JoinRoom extends StatefulWidget {
 class _JoinRoomState extends State<JoinRoom> {
   static final TextEditingController _name = new TextEditingController();
   static final TextEditingController _roomId = new TextEditingController();
-  String playerName;
+  Player currPlayer;
   List<dynamic> playersList = <dynamic>[];
 
   @override
@@ -48,7 +49,7 @@ class _JoinRoomState extends State<JoinRoom> {
   /// -------------------------------------------------------------------
   _onGameDataReceived(Map message) {
     playersList = (message["data"])["players"];
-    playerName = _name.text;
+    currPlayer = new Player(name: _name.text);
 
     switch (message["action"]) {
       ///
@@ -62,7 +63,7 @@ class _JoinRoomState extends State<JoinRoom> {
           builder: (BuildContext context) 
                       => new WaitingPage(
                           playersList: playersList,
-                          playerName: playerName,
+                          currPlayer: currPlayer,
                           roomId: message["data"]["roomId"].toString(),
                         ),
         ));

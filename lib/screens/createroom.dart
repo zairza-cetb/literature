@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:literature/components/appbar.dart';
+import 'package:literature/models/player.dart';
 import 'package:literature/screens/waitingpage.dart';
 import 'package:literature/utils/audio.dart';
 
@@ -20,7 +21,7 @@ class CreateRoom extends StatefulWidget {
 
 class _CreateRoomState extends State<CreateRoom> {
   static final TextEditingController _name = new TextEditingController();
-  String playerName;
+  Player currPlayer;
   List<dynamic> playersList = <dynamic>[];
   // TODO: Room ID should be a hashed value
   int roomId;
@@ -50,7 +51,10 @@ class _CreateRoomState extends State<CreateRoom> {
   _onGameDataReceived(Map message) {
     playersList = (message["data"])["players"];
     roomId = (message["data"])["roomId"];
-    playerName = (message["data"]["name"]);
+    // Validates if actually the player created the room,
+    // Need username matching in the db for any room. 
+    currPlayer = new Player(name: _name.text, lobbyLeader: (message["data"]["lobbyLeader"]) == _name.text ? true : false );
+
     switch (message["action"]) {
       ///
       /// Creates a new game with a Room ID, Redirect to
@@ -61,7 +65,7 @@ class _CreateRoomState extends State<CreateRoom> {
         Navigator.push(context, new MaterialPageRoute(
         builder: (BuildContext context) 
                   => new WaitingPage(
-                    playerName: playerName,
+                    currPlayer: currPlayer,
                     playersList: playersList,
                     roomId: roomId.toString(),
                   ),

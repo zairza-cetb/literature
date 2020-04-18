@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:literature/models/player.dart';
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
 // Start Game page
@@ -7,7 +8,7 @@ import 'package:literature/screens/startgame.dart';
 class WaitingPage extends StatefulWidget {
   WaitingPage({
     Key key,
-    this.playerName,
+    this.currPlayer,
     this.playersList,
     this.roomId,
   }): super(key: key);
@@ -15,7 +16,7 @@ class WaitingPage extends StatefulWidget {
   ///
   /// Name of the opponent
   ///
-  final String playerName;
+  final Player currPlayer;
 
   ///
   ///
@@ -124,7 +125,7 @@ class _WaitingPageState extends State<WaitingPage> {
     ///
     var _numberOfPlayers = widget.playersList.length;
     List<Widget> children = widget.playersList.map((playerInfo) {
-      if (playerInfo["gameCreator"] != null) {
+      if (widget.currPlayer.lobbyLeader == true) {
         // print(playerInfo);
         return new ListTile(
           title: new Text(playerInfo["name"] + " [Lobby leader]"),

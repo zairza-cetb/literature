@@ -37,7 +37,8 @@ io.on("connection", (socket) => {
     const newRoom = new Room({
       status: GameStatus.CREATED,
       // TODO: Id is always null
-      players: [{id, name}]
+      players: [{id, name}],
+      lobbyLeader: name,
     });
     await newRoom.save();
     // Create and join the socket room
@@ -47,7 +48,7 @@ io.on("connection", (socket) => {
       .emit(
         "created", 
         JSON.stringify({ 
-          data: {roomId: newRoom.roomId, players: players, name: name}, 
+          data: {roomId: newRoom.roomId, players: players, lobbyLeader: newRoom.lobbyLeader}, 
           action: 'creates_game' 
         })
       );
