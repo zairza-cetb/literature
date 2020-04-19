@@ -13,14 +13,44 @@ class LiteratureHomePage extends StatefulWidget {
   _LiteratureHomePage createState() => _LiteratureHomePage();
 }
 
-class _LiteratureHomePage extends State<LiteratureHomePage> {
+class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingObserver {
 
+  AppLifecycleState _lastLifecycleState;
   @override
   void initState() {
     super.initState();
     // Music should start here
     audioController = new AudioController();
+     WidgetsBinding.instance.addObserver(this);
   }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    audioController.stopMusic();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      _lastLifecycleState = state;      
+    });
+    print(state);
+    if(_lastLifecycleState == AppLifecycleState.paused){
+      setState(() {
+        audioController.stopMusic();
+      });
+    }else if(_lastLifecycleState == AppLifecycleState.resumed){
+      if(audioController.getMusicPlaying() == true){
+        setState(() {
+          audioController.playMusic();
+        });
+      }
+    }
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
