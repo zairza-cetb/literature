@@ -33,12 +33,12 @@ io.on("connection", (socket) => {
    * send the numerical roomId back in callback 
    * which will be used to join the game
    */
-  socket.on("create_game", async function(name: string, id: string) {
+  socket.on("create_game", async function(name: string, id: number = 0) {
     const newRoom = new Room({
       status: GameStatus.CREATED,
       // TODO: Id is always null
       players: [{id, name}],
-      lobbyLeader: name,
+      lobbyLeader: {id, name},
     });
     await newRoom.save();
     // Create and join the socket room
@@ -49,7 +49,7 @@ io.on("connection", (socket) => {
         "created", 
         JSON.stringify({ 
           data: {roomId: newRoom.roomId, players: players, lobbyLeader: newRoom.lobbyLeader}, 
-          action: 'creates_game' 
+          action: "creates_game" 
         })
       );
   });
@@ -60,14 +60,15 @@ io.on("connection", (socket) => {
    * Send other players details to the player
    */
   socket.on("join_game", async function(data) {
-    let parsedData = JSON.parse(data);
+    const parsedData = JSON.parse(data);
     const roomId = parseInt(parsedData.roomId);
     const name = parsedData.name;
     const room = await Room.findOne({roomId});
     if(room.status === GameStatus.CREATED) {
+      const newPlayerId = room.players.slice(-1)[0].id + 1;
       await Room.update(
         { roomId },
-        { $push: { players: { name }}}
+        { $push: { players: { name, id: newPlayerId }}}
       );
       //Join the room
       socket.join(room.roomId.toString());
