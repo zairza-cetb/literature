@@ -7,7 +7,7 @@ autoIncrement.initialize(connection)
 
 type Player = {
   name: string,
-  id: string
+  // id: string
 }
 
 export enum GameStatus {
