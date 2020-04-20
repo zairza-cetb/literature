@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:literature/utils/audio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GlobalAppBar extends StatefulWidget implements PreferredSizeWidget  {
   final AudioController audioController;
@@ -14,6 +15,9 @@ class GlobalAppBar extends StatefulWidget implements PreferredSizeWidget  {
 }
 
 class _GlobalAppBarState extends State<GlobalAppBar> {
+  
+   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
   ImageIcon getAudioIcon(musicPlaying) {
     if (musicPlaying == false) {
       return ImageIcon(AssetImage('assets/speaker_icon.png'));
@@ -21,14 +25,19 @@ class _GlobalAppBarState extends State<GlobalAppBar> {
     return ImageIcon(AssetImage('assets/mute_icon.png'));
   }
 
-  toggleMusicState(musicPlaying) {
+  toggleMusicState(musicPlaying) async {
+    final SharedPreferences prefs = await _prefs;
     if (musicPlaying == true) {
-      setState(() {
-        audioController.stopMusic();
+      prefs.setBool('wasMusicPlayed',false).then((bool success){
+          setState(() {
+            audioController.stopMusic();
+          });
       });
     } else {
-      setState(() {
-        audioController.playMusic();
+      prefs.setBool('wasMusicPlayed',true).then((bool success){
+          setState(() {
+                audioController.playMusic();
+              });
       });
     }
   }

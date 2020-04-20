@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:literature/screens/creategame.dart';
 import 'package:literature/utils/audio.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LiteratureHomePage extends StatefulWidget {
   LiteratureHomePage({Key key, this.title}) : super(key: key);
@@ -13,14 +13,48 @@ class LiteratureHomePage extends StatefulWidget {
   _LiteratureHomePage createState() => _LiteratureHomePage();
 }
 
-class _LiteratureHomePage extends State<LiteratureHomePage> {
+class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingObserver {
+
+  AppLifecycleState _lastLifecycleState;
+  
 
   @override
   void initState() {
     super.initState();
     // Music should start here
     audioController = new AudioController();
+    WidgetsBinding.instance.addObserver(this);
   }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    audioController.stopMusic();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    setState(() {
+      _lastLifecycleState = state;      
+    });
+    print(state);
+    if(_lastLifecycleState == AppLifecycleState.paused){
+      setState(() {
+        audioController.stopMusic();
+      });
+    }else if(_lastLifecycleState == AppLifecycleState.resumed){
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool wasMusicPlayed = prefs.getBool('wasMusicPlayed'); 
+      if(wasMusicPlayed){
+        setState(() {
+          audioController.playMusic();
+        });
+      }
+    }
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
