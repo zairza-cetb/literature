@@ -97,7 +97,7 @@ class _WaitingPageState extends State<WaitingPage> {
   }
 
   _getPlayButton(_numberOfPlayers, playerInfo) {
-    if (_numberOfPlayers > 2) {
+    if (_numberOfPlayers == 6) {
       return new RaisedButton(
         onPressed: (){
           _onPlayGame(widget.currPlayer.name, widget.playersList, context);
@@ -129,7 +129,7 @@ class _WaitingPageState extends State<WaitingPage> {
     ///
     var _numberOfPlayers = widget.playersList.length;
     List<Widget> children = widget.playersList.map((playerInfo) {
-      if (widget.currPlayer.lobbyLeader == true) {
+      if (widget.currPlayer.lobbyLeader == true && widget.currPlayer.name == playerInfo["name"]) {
         // print(playerInfo);
         return new ListTile(
           title: new Text(playerInfo["name"] + " [Lobby leader]"),
