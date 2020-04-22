@@ -71,9 +71,11 @@ io.on("connection", (socket) => {
       );
       //Join the room
       socket.join(room.roomId.toString());
+      // Send the new room's details, not the old one's
+      const updatedRoom = await Room.findOne({roomId});
       // Send data to the room after it has joined.
       io.to(room.roomId.toString())
-        .emit("joined", JSON.stringify({ data: { players: room.players, roomId: room.roomId }, action: "joined" }));
+        .emit("joined", JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId }, action: "joined" }));
     } else {
       socket.emit("invalid room");
     }

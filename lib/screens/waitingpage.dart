@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
 // Game communication helper import
@@ -41,7 +43,7 @@ class _WaitingPageState extends State<WaitingPage> {
     /// Ask to be notified when messages related to the game
     /// are sent by the server
     ///
-    // game.addListener(_onGameDataReceived);
+    game.addListener(_onGameDataReceived);
   }
 
   @override
@@ -64,7 +66,9 @@ class _WaitingPageState extends State<WaitingPage> {
       ///   * rebuild the list of all the players
       ///
       case "joined":
+        print("joined");
         widget.playersList = (message["data"])["players"];
+        print(widget.playersList);
         
         // force rebuild
         setState(() {});
@@ -74,14 +78,14 @@ class _WaitingPageState extends State<WaitingPage> {
 
   /// --------------------------------------------------------------
   /// We launch a new Game, we need to:
-  ///    * send the action "new_game", together with the ID
-  ///      of the opponent we choosed
-  ///    * redirect to the game
-  ///      As we are the game initiator, we will play with the "X"
+  ///    * send the action "new_game", together with the players
+  /// 
+  ///    * redirect to the game as we are the game initiator
   /// --------------------------------------------------------------
-  _onPlayGame(String opponentName, String opponentId, context){
+  _onPlayGame(String opponentName, List<dynamic> playersList, context){
+    Map data = { playersList: playersList };
     // We need to send the opponentId to initiate a new game
-    game.send('new_game', opponentId);
+    game.send('new_game', json.encode(data));
 	
     Navigator.push(context, new MaterialPageRoute(
       builder: (BuildContext context) 
@@ -93,10 +97,10 @@ class _WaitingPageState extends State<WaitingPage> {
   }
 
   _getPlayButton(_numberOfPlayers, playerInfo) {
-    if (_numberOfPlayers > 6) {
+    if (_numberOfPlayers == 6) {
       return new RaisedButton(
         onPressed: (){
-          _onPlayGame(playerInfo["name"], playerInfo["id"], context);
+          _onPlayGame(widget.currPlayer.name, widget.playersList, context);
         },
         child: new Text('Play'),
       );
@@ -125,7 +129,7 @@ class _WaitingPageState extends State<WaitingPage> {
     ///
     var _numberOfPlayers = widget.playersList.length;
     List<Widget> children = widget.playersList.map((playerInfo) {
-      if (widget.currPlayer.lobbyLeader == true) {
+      if (widget.currPlayer.lobbyLeader == true && widget.currPlayer.name == playerInfo["name"]) {
         // print(playerInfo);
         return new ListTile(
           title: new Text(playerInfo["name"] + " [Lobby leader]"),
