@@ -49,5 +49,4 @@ class PlayingCard {
       return CardColor.black;
     }
   }
-
 }

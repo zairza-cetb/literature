@@ -22,7 +22,7 @@ const http = createServer(app);
 
 const io = socketio(http);
 
-app.get("/", function(req, res) {
+app.get("/", function(_req, res) {
   res.send("Hello World");
 });
 app.set("port", PORT);
@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
       const updatedRoom = await Room.findOne({roomId});
       // Send data to the room after it has joined.
       io.to(room.roomId.toString())
-        .emit("joined", JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId }, action: "joined" }));
+        .emit("joined", JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId, lobbyLeader: room.lobbyLeader }, action: "joined" }));
     } else {
       socket.emit("invalid room");
     }
@@ -87,13 +87,31 @@ io.on("connection", (socket) => {
    * Make a deck of shuffled cards and return it to everyone in the room
    */
   socket.on("start_game", async function(roomId: number) {
+    socket.to(roomId.toString()).emit("game_started", JSON.stringify({ action: "game_started" }));
     await Room.findOneAndUpdate(
       {roomId},
       {status: GameStatus.IN_PROGRESS}
-    );
+    );  
     const cards = divideAndShuffleCards();
-    socket.to(roomId.toString()).emit("get_cards", cards);
+    // This is a specific room details.
+    // and it's connections.
+    let socketRoom = io.sockets.adapter.rooms[roomId.toString()];
+    let cardIndex=0;
+    Object.keys(socketRoom).map((key: string, index) => {
+      if (key === "sockets") {  
+        Object.keys(socketRoom[key]).map((socketId: string) => {
+          // Add an if condition if connection == true
+          io.to(socketId).emit("opening_hand", JSON.stringify({ data: {cards: cards.slice(cardIndex*8, cardIndex*8+8)}, action: "opening_hand" }));
+          cardIndex += 1;
+        });
+      }
+    });
+    // Reassign index back to 0.
+    // For handling next group of people.
+    cardIndex = 0;
   });
+
+
 
   /**
    * On making a card request send the request details
