@@ -34,7 +34,8 @@ function riffleShuffle(cards: Card[]): Card[] {
 function divide(cards: Card[]): Card[] {
   const divided = [];
   let n = 0, offset = 1;
-  while(n !== 47) {
+  while(n <= 47) {
+    if(offset === 7) break
     divided.push(cards[n]);
     if(n+6 > 47) {
       n = offset;
