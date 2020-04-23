@@ -1,13 +1,13 @@
-import mongoose from 'mongoose'
-import autoIncrement from 'mongoose-auto-increment'
-import { MONGODB_URI } from '../util/secrets'
+import mongoose from "mongoose";
+import autoIncrement from "mongoose-auto-increment";
+import { MONGODB_URI } from "../util/secrets";
 
-const connection = mongoose.createConnection(MONGODB_URI)
-autoIncrement.initialize(connection)
+const connection = mongoose.createConnection(MONGODB_URI);
+autoIncrement.initialize(connection);
 
 type Player = {
-  name: string,
-  // id: string
+  name: string;
+  id: number;
 }
 
 export enum GameStatus {
@@ -17,18 +17,25 @@ export enum GameStatus {
 }
 
 export type RoomDocument = mongoose.Document & {
-  roomId: number,
-  players: Player[],
-  status: GameStatus,
-  lobbyLeader: String
+  roomId: number;
+  players: Player[];
+  status: GameStatus;
+  lobbyLeader: Player;
 }
 
 const roomSchema = new mongoose.Schema({
-  players: { type: Array},
+  players: [{
+    _id: false,
+    id: Number,
+    name: String
+  }],
   status: String,
-  lobbyLeader: String
-})
+  lobbyLeader: {
+    id: Number,
+    name: String
+  }
+});
 
-roomSchema.plugin(autoIncrement.plugin, { model: 'Room', field: 'roomId'})
+roomSchema.plugin(autoIncrement.plugin, { model: "Room", field: "roomId"});
 
-export const Room = mongoose.model<RoomDocument>("Room", roomSchema)
+export const Room = mongoose.model<RoomDocument>("Room", roomSchema);
