@@ -6,8 +6,6 @@ import 'package:literature/utils/audio.dart';
 
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
-// Start Game page
-import 'package:literature/screens/startgame.dart';
 
 class CreateRoom extends StatefulWidget {
   // Initialise AudioPlayer instance
@@ -33,12 +31,12 @@ class _CreateRoomState extends State<CreateRoom> {
     /// Ask to be notified when messages related to the game
     /// are sent by the server
     ///
-    game.addListener(_onGameDataReceived);
+    game.addListener(_createRoomListener);
   }
 
   @override
   void dispose() {
-    game.removeListener(_onGameDataReceived);
+    game.removeListener(_createRoomListener);
     super.dispose();
   }
 
@@ -48,12 +46,12 @@ class _CreateRoomState extends State<CreateRoom> {
   ///  - players_list
   ///  - new_game
   /// -------------------------------------------------------------------
-  _onGameDataReceived(Map message) {
+  _createRoomListener(Map message) {
     playersList = (message["data"])["players"];
     roomId = (message["data"])["roomId"];
     // Validates if actually the player created the room,
     // Need username matching in the db for any room. 
-    currPlayer = new Player(name: _name.text, lobbyLeader: (message["data"]["lobbyLeader"]) == _name.text ? true : false );
+    currPlayer = new Player(name: _name.text, lobbyLeader: (message["data"]["lobbyLeader"]["name"]) == _name.text ? true : false );
 
     switch (message["action"]) {
       ///

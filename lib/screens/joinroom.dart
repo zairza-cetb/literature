@@ -32,12 +32,13 @@ class _JoinRoomState extends State<JoinRoom> {
     /// Ask to be notified when messages related to the game
     /// are sent by the server
     ///
-    game.addListener(_onGameDataReceived);
+    game.addListener(_joinRoomListener);
   }
 
   @override
   void dispose() {
-    game.removeListener(_onGameDataReceived);
+    print("Disposing");
+    game.removeListener(_joinRoomListener);
     super.dispose();
   }
 
@@ -47,9 +48,18 @@ class _JoinRoomState extends State<JoinRoom> {
   ///  - players_list
   ///  - new_game
   /// -------------------------------------------------------------------
-  _onGameDataReceived(Map message) {
-    playersList = (message["data"])["players"];
-    currPlayer = new Player(name: _name.text);
+  _joinRoomListener(Map message) {
+    if (playersList.length == 0) {
+      playersList = (message["data"])["players"];
+      // print(playersList);
+      currPlayer = new Player(name: _name.text);
+      // Assign the ID of the player
+      playersList.forEach((player) {
+        if (player["name"] == _name.text) {
+          currPlayer.id = player["id"].toString();
+        }
+      });
+    }
 
     switch (message["action"]) {
       ///
