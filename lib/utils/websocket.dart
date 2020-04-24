@@ -102,5 +102,25 @@ class WebSocket {
         callback(message);
       });
     });
+    // Waiting clients also need to move 
+    // to the start game page
+    socket.on("game_started", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+    // On event getting initial cards
+    socket.on("opening_hand", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
   }
 }
