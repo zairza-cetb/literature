@@ -47,9 +47,6 @@ class _CreateRoomState extends State<CreateRoom> {
   ///  - new_game
   /// -------------------------------------------------------------------
   _createRoomListener(Map message) {
-    playersList = (message["data"])["players"];
-    roomId = (message["data"])["roomId"];
-
     switch (message["action"]) {
       ///
       /// Creates a new game with a Room ID, Redirect to
@@ -57,6 +54,8 @@ class _CreateRoomState extends State<CreateRoom> {
       /// the lobby.
       ///
       case 'creates_game':
+        playersList = (message["data"])["players"];
+        roomId = (message["data"])["roomId"];
         // Validates if actually the player created the room,
         // Need username matching in the db for any room. 
         currPlayer = new Player(name: _name.text, lobbyLeader: (message["data"]["lobbyLeader"])["name"] == _name.text ? true : false );
