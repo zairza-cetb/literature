@@ -49,18 +49,6 @@ class _JoinRoomState extends State<JoinRoom> {
   ///  - new_game
   /// -------------------------------------------------------------------
   _joinRoomListener(Map message) {
-    if (playersList.length == 0) {
-      playersList = (message["data"])["players"];
-      // print(playersList);
-      currPlayer = new Player(name: _name.text);
-      // Assign the ID of the player
-      playersList.forEach((player) {
-        if (player["name"] == _name.text) {
-          currPlayer.id = player["id"];
-        }
-      });
-    }
-
     switch (message["action"]) {
       ///
       /// Each time a new player joins, we need to
@@ -68,6 +56,17 @@ class _JoinRoomState extends State<JoinRoom> {
       ///   * rebuild the list of all the players
       ///
       case "joined":
+        if (playersList.length == 0) {
+          playersList = (message["data"])["players"];
+          // print(playersList);
+          currPlayer = new Player(name: _name.text);
+          // Assign the ID of the player
+          playersList.forEach((player) {
+            if (player["name"] == _name.text) {
+              currPlayer.id = player["id"];
+            }
+          });
+        }
         // force rebuild
         Navigator.push(context, new MaterialPageRoute(
           builder: (BuildContext context) 
