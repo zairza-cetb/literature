@@ -36,7 +36,7 @@ class WebSocket {
     // reset();
 
     // Initiate communication
-    _channel = IO.io('http://127.0.0.1:3000', <String, dynamic>{
+    _channel = IO.io('https://calm-mesa-77375.herokuapp.com/', <String, dynamic>{
       'transports': ['websocket'],
         // 'extraHeaders': {'foo': 'bar'} // optional
     });
