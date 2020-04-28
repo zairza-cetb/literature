@@ -38,3 +38,6 @@ lib/generated_plugin_registrant.dart
 
 # Node js app
 node_server/node_modules
+
+#vscode launch config
+.vscode
