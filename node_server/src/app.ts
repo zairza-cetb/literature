@@ -64,26 +64,30 @@ io.on("connection", (socket) => {
     const roomId = parseInt(parsedData.roomId);
     const name = parsedData.name;
     const room = await Room.findOne({ roomId });
-    if (room.status === GameStatus.CREATED) {
-      if(room.players.length < 6){
-        const newPlayerId = room.players.slice(-1)[0].id + 1;
-      await Room.update(
-        { roomId },
-        { $push: { players: { name, id: newPlayerId } } }
-      );
-      //Join the room
-      socket.join(room.roomId.toString());
-      // Send the new room's details, not the old one's
-      const updatedRoom = await Room.findOne({ roomId });
-      // Send data to the room after it has joined.
-      io.to(room.roomId.toString())
-        .emit("joined", JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId, lobbyLeader: room.lobbyLeader }, action: "joined" }));
+    // The value is not null
+    if(room != null){
+      if (room.status === GameStatus.CREATED) {
+        if(room.players.length < 6){
+          const newPlayerId = room.players.slice(-1)[0].id + 1;
+        await Room.update(
+          { roomId },
+          { $push: { players: { name, id: newPlayerId } } }
+        );
+        //Join the room
+        socket.join(room.roomId.toString());
+        // Send the new room's details, not the old one's
+        const updatedRoom = await Room.findOne({ roomId });
+        // Send data to the room after it has joined.
+        io.to(room.roomId.toString())
+          .emit("joined", JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId, lobbyLeader: room.lobbyLeader }, action: "joined" }));
+        } else {
+          io.emit("roomisfull", JSON.stringify({ data: { roomId:roomId }, action: "roomisfull" }));
+        }
       } else {
-        console.log(roomId);
-        io.emit("roomisfull", JSON.stringify({ data: { roomId:roomId }, action: "roomisfull" }));
-      }
+        socket.emit("invalid room",JSON.stringify({data : { roomId: roomId }, action : "invalid room"}));
+      } 
     } else {
-      socket.emit("invalid room");
+      socket.emit("invalid room",JSON.stringify({data : { roomId: roomId }, action : "invalid room"}));
     }
   });
 

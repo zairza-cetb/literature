@@ -81,14 +81,11 @@ class _JoinRoomState extends State<JoinRoom> {
           ),
         );
         break;
-      case "send_playerlist":
-        playersList = (message["data"])["players"];
-        if (playersList.length <= 6) {
-          print(playersList.length);
-          _onJoinGame();
-        } else {
-          showCustomDialogWithImage(context);
-        }
+      case "roomisfull":
+        showCustomDialogWithImage(context,"full");
+        break;
+      case "invalid room":
+        showCustomDialogWithImage(context, "invalid");
         break;
     }
   }
@@ -125,7 +122,7 @@ class _JoinRoomState extends State<JoinRoom> {
           new Padding(
             padding: const EdgeInsets.all(8.0),
             child: new RaisedButton(
-              onPressed: _onRequestPlayerList,
+              onPressed: _onJoinGame,
               child: new Text('Join'),
             ),
           ),
@@ -140,14 +137,6 @@ class _JoinRoomState extends State<JoinRoom> {
   _onJoinGame() {
     Map joinDetails = {"roomId": _roomId.text, "name": _name.text};
     game.send("join_game", json.encode(joinDetails));
-  }
-
-  ///
-  /// Sends a message to server on room join request
-  ///
-  _onRequestPlayerList() {
-    Map joinDetails = {"roomId": _roomId.text};
-    game.send("request_playerlist", json.encode(joinDetails));
   }
 
   @override
@@ -176,7 +165,7 @@ class _JoinRoomState extends State<JoinRoom> {
 /// ------------------------
 /// Show Dialog for Users
 /// ------------------------
-void showCustomDialogWithImage(BuildContext context) {
+void showCustomDialogWithImage(BuildContext context, String arg) {
   Dialog dialogWithImage = Dialog(
     child: Container(
       height: 300.0,
@@ -201,7 +190,7 @@ void showCustomDialogWithImage(BuildContext context) {
             height: 200,
             width: 300,
             child: Image.asset(
-              'assets/roomisfull.png',
+              (arg == "full") ? 'assets/roomisfull.png' : 'assets/noroom.png',
               fit: BoxFit.scaleDown,
             ),
           ),
