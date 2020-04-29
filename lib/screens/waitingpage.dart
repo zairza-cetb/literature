@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:literature/models/player.dart';
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
 // Start Game page
 import 'package:literature/screens/gamescreen.dart';
+// Local Notification Helper
+import 'package:literature/utils/local_notification_helper.dart';
 
 class WaitingPage extends StatefulWidget {
+
   WaitingPage({
     Key key,
     this.currPlayer,
     this.playersList,
     this.roomId,
-  }): super(key: key);
+  }) : super(key: key);
 
   ///
   /// Holds the current player
@@ -34,14 +38,36 @@ class WaitingPage extends StatefulWidget {
 // Should contain a form of Room ID and
 // Player name to join.
 class _WaitingPageState extends State<WaitingPage> {
+  final notifications = FlutterLocalNotificationsPlugin();
+
   @override
   void initState() {
     super.initState();
+
     ///
     /// Ask to be notified when messages related to the game
     /// are sent by the server
     ///
     game.addListener(_waitingPageListener);
+    final settingsAndroid = AndroidInitializationSettings('app_icon');
+    final settingsIOS = IOSInitializationSettings(
+        onDidReceiveLocalNotification: (id, title, body, payload) =>
+            onSelectNotification(payload));
+
+    notifications.initialize(
+        InitializationSettings(settingsAndroid, settingsIOS),
+        onSelectNotification: onSelectNotification);
+    
+    // A Push Notification Check
+    if( widget.playersList.length == 6 ) {
+      showOngoingNotification(notifications, title: 'Start The Game', body: 'The Room is full. You can start the Game.'); 
+    }
+
+  }
+
+  Future onSelectNotification(String payload) async { 
+    setState(() {});
+    notifications.cancel(0);  
   }
 
   @override
@@ -58,6 +84,7 @@ class _WaitingPageState extends State<WaitingPage> {
   /// -------------------------------------------------------------------
   _waitingPageListener(message) {
     switch (message["action"]) {
+
       ///
       /// Each time a new player joins, we need to
       ///   * record the new list of players
@@ -73,40 +100,44 @@ class _WaitingPageState extends State<WaitingPage> {
       // Move any waiting clients
       // to the game page.
       case "game_started":
-        Navigator.push(context, new MaterialPageRoute(
-          builder: (BuildContext context) 
-                      => new GameScreen(
-                          player: widget.currPlayer, 
-                          playersList: widget.playersList,
-                        ),
-        ));
+        Navigator.push(
+            context,
+            new MaterialPageRoute(
+              builder: (BuildContext context) => new GameScreen(
+                player: widget.currPlayer,
+                playersList: widget.playersList,
+              ),
+            ));
         break;
+
+        
     }
   }
 
   /// --------------------------------------------------------------
   /// We launch a new Game, we need to:
   ///    * send the action "new_game", together with the players
-  /// 
+  ///
   ///    * redirect to the game as we are the game initiator
   /// --------------------------------------------------------------
-  _onPlayGame(context){
+  _onPlayGame(context) {
     // We need to send the opponentId to initiate a new game
     game.send('start_game', widget.roomId);
 
-    Navigator.push(context, new MaterialPageRoute(
-      builder: (BuildContext context) 
-                  => new GameScreen(
-                      player: widget.currPlayer, 
-                      playersList: widget.playersList,
-                    ),
-    ));
+    Navigator.push(
+        context,
+        new MaterialPageRoute(
+          builder: (BuildContext context) => new GameScreen(
+            player: widget.currPlayer,
+            playersList: widget.playersList,
+          ),
+        ));
   }
 
   _getPlayButton(playerInfo) {
     if (widget.playersList.length == 6) {
       return new RaisedButton(
-        onPressed: (){
+        onPressed: () {
           _onPlayGame(context);
         },
         child: new Text('Play'),
@@ -137,7 +168,8 @@ class _WaitingPageState extends State<WaitingPage> {
     /// TODO: Fix this stale state behaviour.
     List<Widget> children = widget.playersList?.map((playerInfo) {
       // print(widget.currPlayer.name + " " + playerInfo["name"]);
-      if (widget.currPlayer.lobbyLeader == true && widget.currPlayer.name == playerInfo["name"]) {
+      if (widget.currPlayer.lobbyLeader == true &&
+          widget.currPlayer.name == playerInfo["name"]) {
         // print(playerInfo);
         return new ListTile(
           title: new Text(playerInfo["name"] + " [Lobby leader]"),
@@ -149,21 +181,19 @@ class _WaitingPageState extends State<WaitingPage> {
           title: new Text(playerInfo["name"]),
         );
       }
-      })?.toList();
-      
-    return new Column(
-      children: children
-    );
+    })?.toList();
+
+    return new Column(children: children);
   }
 
   Widget roomInformation() {
     return Container(
       alignment: Alignment.center,
       child: Center(
-        child: (
-          new Text("ROOM ID: " + widget.roomId, style: new TextStyle(fontSize: 30.0),)
-        )
-      ),
+          child: (new Text(
+        "ROOM ID: " + widget.roomId,
+        style: new TextStyle(fontSize: 30.0),
+      ))),
     );
   }
 

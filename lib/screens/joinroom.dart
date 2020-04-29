@@ -28,6 +28,7 @@ class _JoinRoomState extends State<JoinRoom> {
   @override
   void initState() {
     super.initState();
+
     ///
     /// Ask to be notified when messages related to the game
     /// are sent by the server
@@ -50,6 +51,7 @@ class _JoinRoomState extends State<JoinRoom> {
   /// -------------------------------------------------------------------
   _joinRoomListener(Map message) {
     switch (message["action"]) {
+
       ///
       /// Each time a new player joins, we need to
       ///   * record the new list of players
@@ -68,14 +70,23 @@ class _JoinRoomState extends State<JoinRoom> {
           });
         }
         // force rebuild
-        Navigator.push(context, new MaterialPageRoute(
-          builder: (BuildContext context) 
-                      => WaitingPage(
-                          playersList: playersList,
-                          currPlayer: currPlayer,
-                          roomId: message["data"]["roomId"].toString(),
-                        ),
-        ));
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (BuildContext context) => WaitingPage(
+              playersList: playersList,
+              currPlayer: currPlayer,
+              roomId: message["data"]["roomId"].toString(),
+            ),
+          ),
+        );
+        break;
+      case "roomisfull":
+        showCustomDialogWithImage(context,"full");
+        break;
+      case "invalid room":
+        showCustomDialogWithImage(context, "invalid");
+        break;
     }
   }
 
@@ -124,7 +135,7 @@ class _JoinRoomState extends State<JoinRoom> {
   /// Sends a message to server on room join request
   ///
   _onJoinGame() {
-    Map joinDetails = { "roomId": _roomId.text, "name": _name.text };
+    Map joinDetails = {"roomId": _roomId.text, "name": _name.text};
     game.send("join_game", json.encode(joinDetails));
   }
 
@@ -149,4 +160,60 @@ class _JoinRoomState extends State<JoinRoom> {
       ),
     );
   }
+}
+
+/// ------------------------
+/// Show Dialog for Users
+/// ------------------------
+void showCustomDialogWithImage(BuildContext context, String arg) {
+  Dialog dialogWithImage = Dialog(
+    child: Container(
+      height: 300.0,
+      width: 300.0,
+      child: Column(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(10),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.blue[300],
+            ),
+            child: Text(
+              "SORRY !!!",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+          Container(
+            height: 200,
+            width: 300,
+            child: Image.asset(
+              (arg == "full") ? 'assets/roomisfull.png' : 'assets/noroom.png',
+              fit: BoxFit.scaleDown,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              RaisedButton(
+                color: Colors.red,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'Go To Main Screen',
+                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
+  showDialog(
+      context: context, builder: (BuildContext context) => dialogWithImage);
 }

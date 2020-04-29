@@ -23,11 +23,15 @@ dependencies:
   #Custom Plugins
   audioplayers: ^0.15.0
   shared_preferences: ^0.5.6+3
+  flutter_local_notifications: ^0.6.0
+  path_provider: ^1.5.1
+  socket_io_client: ^0.9.9
+  enum_to_string: ^1.0.9
+  
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-  socket_io_client: ^0.9.9
-  enum_to_string: ^1.0.9
+  
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +58,8 @@ flutter:
     - assets/mute_icon.png
     - assets/speaker_icon.png
     - assets/google.png
+    - assets/roomisfull.png
+    - assets/noroom.png
     - assets/clubs.png
     - assets/diamonds.png
     - assets/hearts.png

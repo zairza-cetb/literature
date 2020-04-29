@@ -35,8 +35,10 @@ class WebSocket {
     // reset previous communication, if any
     // reset();
 
-    // Initiate communication
-    _channel = IO.io('http://127.0.0.1:3000', <String, dynamic>{
+    // Initiate communication 
+    // To Connect to the Localhost in the App, Read this following
+    // https://stackoverflow.com/questions/4779963/how-can-i-access-my-localhost-from-my-android-device
+    _channel = IO.io('http://192.168.1.103:3000/', <String, dynamic>{
       'transports': ['websocket'],
         // 'extraHeaders': {'foo': 'bar'} // optional
     });
@@ -122,5 +124,28 @@ class WebSocket {
         callback(message);
       });
     });
+    // On Event Getting Room is Full
+    socket.on("roomisfull", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      print(message["data"]);
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+    // On Event Getting Invalid Room
+    socket.on("invalid room", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      print(message["data"]);
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+
   }
 }
