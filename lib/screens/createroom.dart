@@ -6,13 +6,14 @@ import 'package:literature/utils/audio.dart';
 
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
+import 'package:literature/utils/loader.dart';
 
 class CreateRoom extends StatefulWidget {
   // Initialise AudioPlayer instance
   final AudioController audioController;
   // Passed -> "creategame.dart"
   CreateRoom(this.audioController);
-  
+
   @override
   _CreateRoomState createState() => _CreateRoomState();
 }
@@ -20,6 +21,7 @@ class CreateRoom extends StatefulWidget {
 class _CreateRoomState extends State<CreateRoom> {
   static final TextEditingController _name = new TextEditingController();
   Player currPlayer;
+  bool isLoading = false;
   List<dynamic> playersList = <dynamic>[];
   // TODO: Room ID should be a hashed value
   int roomId;
@@ -27,6 +29,7 @@ class _CreateRoomState extends State<CreateRoom> {
   @override
   void initState() {
     super.initState();
+
     ///
     /// Ask to be notified when messages related to the game
     /// are sent by the server
@@ -48,25 +51,34 @@ class _CreateRoomState extends State<CreateRoom> {
   /// -------------------------------------------------------------------
   _createRoomListener(Map message) {
     switch (message["action"]) {
+
       ///
       /// Creates a new game with a Room ID, Redirect to
-      /// waiting page and wait for other players in 
+      /// waiting page and wait for other players in
       /// the lobby.
       ///
       case 'creates_game':
         playersList = (message["data"])["players"];
         roomId = (message["data"])["roomId"];
         // Validates if actually the player created the room,
-        // Need username matching in the db for any room. 
-        currPlayer = new Player(name: _name.text, lobbyLeader: (message["data"]["lobbyLeader"])["name"] == _name.text ? true : false );
-        Navigator.push(context, new MaterialPageRoute(
-        builder: (BuildContext context) 
-                  => WaitingPage(
-                    currPlayer: currPlayer,
-                    playersList: playersList,
-                    roomId: roomId.toString(),
-                  ),
-        ));
+        // Need username matching in the db for any room.
+        currPlayer = new Player(
+            name: _name.text,
+            lobbyLeader: (message["data"]["lobbyLeader"])["name"] == _name.text
+                ? true
+                : false);
+        setState(() {
+          isLoading = false;
+        });
+        Navigator.push(
+            context,
+            new MaterialPageRoute(
+              builder: (BuildContext context) => WaitingPage(
+                currPlayer: currPlayer,
+                playersList: playersList,
+                roomId: roomId.toString(),
+              ),
+            ));
     }
   }
 
@@ -108,8 +120,11 @@ class _CreateRoomState extends State<CreateRoom> {
   _onCreateGame() {
     // Send a message to server to create a new game
     // and then move to join room page
-    game.send("create_game", _name.text);
 
+    game.send("create_game", _name.text);
+    setState(() {
+      isLoading = true;
+    });
     // Forces a rebuild
     setState(() {});
   }
@@ -122,14 +137,20 @@ class _CreateRoomState extends State<CreateRoom> {
       top: false,
       child: Scaffold(
         appBar: appBar,
-        body: SingleChildScrollView(
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              _createNewGame(),
-            ],
-          ),
-        ),
+        body: isLoading
+            ? Container(
+              width: double.infinity,
+              height: double.infinity,
+              child: Loader(),
+            )
+            : SingleChildScrollView(
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    _createNewGame(),
+                  ],
+                ),
+              ),
       ),
     );
   }
