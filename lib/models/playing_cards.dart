@@ -8,7 +8,7 @@ enum CardSuit {
 }
 
 enum CardType {
-  one,
+  ace,
   two,
   three,
   four,

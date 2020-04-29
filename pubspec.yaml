@@ -60,6 +60,10 @@ flutter:
     - assets/google.png
     - assets/roomisfull.png
     - assets/noroom.png
+    - assets/clubs.png
+    - assets/diamonds.png
+    - assets/hearts.png
+    - assets/spades.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
