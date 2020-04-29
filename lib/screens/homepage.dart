@@ -45,11 +45,13 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
       });
     }else if(_lastLifecycleState == AppLifecycleState.resumed){
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      bool wasMusicPlayed = prefs.getBool('wasMusicPlayed'); 
-      if(wasMusicPlayed){
+      bool wasMusicPlayed = prefs.getBool('wasMusicPlayed');
+      if(wasMusicPlayed != null){
+        if(wasMusicPlayed == true){
         setState(() {
           audioController.playMusic();
         });
+      }
       }
     }
   }

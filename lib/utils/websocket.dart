@@ -36,7 +36,7 @@ class WebSocket {
     // reset();
 
     // Initiate communication
-    _channel = IO.io('https://calm-mesa-77375.herokuapp.com/', <String, dynamic>{
+    _channel = IO.io('https://arcane-wildwood-03943.herokuapp.com/', <String, dynamic>{
       'transports': ['websocket'],
         // 'extraHeaders': {'foo': 'bar'} // optional
     });
@@ -122,5 +122,16 @@ class WebSocket {
         callback(message);
       });
     });
+    // On Event Getting Playerlist
+    socket.on("send_playerlist", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+    
   }
 }
