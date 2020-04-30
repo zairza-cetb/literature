@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:literature/screens/creategame.dart';
 import 'package:literature/utils/audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as JSON;
 
 class LiteratureHomePage extends StatefulWidget {
   LiteratureHomePage({Key key, this.title}) : super(key: key);
@@ -56,116 +59,193 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
     }
   }
 
-  
+  bool _isLoggedIn = false;
+  Map userProfile;
+  final facebookLogin = FacebookLogin();
+
+  _login() async{
+    final result = await facebookLogin.logIn(['email']);
+
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final token = result.accessToken.token;
+        final graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,'
+            'picture,email&access_token=${token}');
+        final profile = JSON.jsonDecode(graphResponse.body);
+
+        setState(() {
+          userProfile = profile;
+          _isLoggedIn = true;
+          Navigator.push(
+            context,
+            new MaterialPageRoute(builder: (context) =>
+            new CreateGame(audioController: audioController,
+                userProfile:userProfile)),
+          );
+        });
+        break;
+
+      case FacebookLoginStatus.cancelledByUser:
+        setState(() => _isLoggedIn = false );
+        break;
+      case FacebookLoginStatus.error:
+        setState(() => _isLoggedIn = false );
+        break;
+    }
+  }
+
+  _logout(){
+    facebookLogin.logOut();
+    setState(() {
+      _isLoggedIn = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: GestureDetector(
-        onTap: () {
-          setState(() {});
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreateGame(audioController)),
-          );
-        },
-
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Color(0xFFe1f5fe),
-                  shape: BoxShape.circle,
-                ),
+      body: Center(
+        child:Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children:<Widget>[
+            GestureDetector(
+              onTap: () {
+                setState(() {});
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CreateGame(audioController: audioController,
+                      userProfile:userProfile)),
+                );
+              },
+              child: Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image(image: AssetImage('assets/logo.png'),
-                    ),
-                    Text('Literature',
-                    style: TextStyle(fontFamily:'Monteserrat',
-                      fontWeight: FontWeight.bold,color:
-                      Color(0xFF37474f),fontSize: 20.0),
-                    ),
-                    Text('Tap to Go!',style: TextStyle(color:
-                      Color(0xFF37474f))
-                    ),
-                  ]
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFe1f5fe),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Image(image: AssetImage('assets/logo.png'),
+                              ),
+                              Text('Literature',
+                                style: TextStyle(fontFamily:'Monteserrat',
+                                    fontWeight: FontWeight.bold,color:
+                                    Color(0xFF37474f),fontSize: 20.0),
+                              ),
+                            ]
+                        ),
+                      ),
+                    ]
                 ),
               ),
-              SizedBox(
-                height: 100.0,
-                width: 100.0,
-              ),
-              Container(
-                child: Row(
+            ),
+            SizedBox(
+              height: 100.0,
+              width: 100.0,
+            ),
+            Container(
+                child: _isLoggedIn ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey,
-                            offset: const Offset(3.0, 3.0),
-                            blurRadius: 5.0,
-                            spreadRadius: 2.0,
-                          )
-                        ],
-                        border: Border.all(
-                          color: Colors.black,
-                          style: BorderStyle.solid,
-                          width: 1.0,
-                        ),
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(40.0)
-                      ),
-                      child: Center(
-                        child:
-                        ImageIcon(AssetImage('assets/facebook.png')
-                        )
-                      )
+                    Text(userProfile["name"]
                     ),
-                    SizedBox(
-                      width: 30.0,
-                    ),
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey,
-                            offset: const Offset(3.0, 3.0),
-                            blurRadius: 5.0,
-                            spreadRadius: 2.0,
-                          )
-                        ],
-                        border: Border.all(
-                          color: Colors.black,
-                          style: BorderStyle.solid,
-                          width: 1.0,
-                        ),
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(40.0),
-                      ),
-                      child: Center(
-                          child:
-                          ImageIcon(AssetImage('assets/google.png')
-                          )
-                      )
-                    ),
+                    OutlineButton( child: Text("Logout"),
+                      onPressed: (){
+                        _logout();
+                      },)
                   ],
-                ),
-              ),
-            ]
-          ),
+                )
+                    : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text('Login to Go!',style: TextStyle(fontFamily:'Monteserrat',
+                          fontWeight: FontWeight.bold,color:
+                          Color(0xFF37474f),fontSize: 15.0),
+                      ),
+                      SizedBox(
+                        height: 15.0,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          InkWell(
+                            onTap: () {
+                              _login();
+                            },
+                            child: Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey,
+                                        offset: const Offset(3.0, 3.0),
+                                        blurRadius: 5.0,
+                                        spreadRadius: 2.0,
+                                      )
+                                    ],
+                                    border: Border.all(
+                                      color: Colors.black,
+                                      style: BorderStyle.solid,
+                                      width: 1.0,
+                                    ),
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(40.0)
+                                ),
+                                child: Center(
+                                    child:
+                                    ImageIcon(AssetImage('assets/facebook.png')
+                                    )
+                                )
+                            ),
+                          ),
+                          SizedBox(
+                            width: 30.0,
+                          ),
+                          InkWell(
+                            onTap: () {
+                            },
+                            child:Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey,
+                                      offset: const Offset(3.0, 3.0),
+                                      blurRadius: 5.0,
+                                      spreadRadius: 2.0,
+                                    )
+                                  ],
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    style: BorderStyle.solid,
+                                    width: 1.0,
+                                  ),
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(40.0),
+                                ),
+                                child: Center(
+                                    child:
+                                    ImageIcon(AssetImage('assets/signup.png')
+                                    )
+                                )
+                            ),
+                          ),
+                        ],
+                      )
+                    ]
+                )
+            ),
+          ],
         ),
       ),
     );

@@ -9,13 +9,18 @@ import 'package:literature/utils/game_communication.dart';
 class CreateGame extends StatefulWidget {
   // Initialise AudioPlayer instance
   final AudioController audioController;
+  final Map userProfile;
+
   // Passed from "homepage.dart"
-  CreateGame(this.audioController);
+  CreateGame({Key key, @required this.audioController,
+    @required this.userProfile}): super(key: key);
 
   _CreateGame createState() => _CreateGame();
 }
 
 class _CreateGame extends State<CreateGame> {
+
+  static Map userInfo;
 
   @override
   void initState() {
@@ -42,6 +47,7 @@ class _CreateGame extends State<CreateGame> {
 
   @override
   Widget build(BuildContext context) {
+    userInfo = widget.userProfile;
     var appBar = GlobalAppBar(audioController);
     return Scaffold(
       backgroundColor: Color(0xFFb3e5fc),
@@ -87,6 +93,20 @@ class _CreateGame extends State<CreateGame> {
                         height: 339.0,
                         width: 241.0,
                       ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        CircleAvatar(
+                          radius: 50.0,
+                          backgroundImage:
+                          NetworkImage(userInfo["picture"]["data"]["url"]
+                          ),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        Text(userInfo["name"]
+                        ),
+                      ],
                     ),
                     Container(
                       padding: EdgeInsets.only(top: 30.0, left: 30.0, right: 30.0),
