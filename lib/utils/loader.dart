@@ -28,8 +28,6 @@ class _LoaderState extends State<Loader>
     radius = widget.radius;
     dotRadius = widget.dotRadius;
 
-    print(dotRadius);
-
     controller = AnimationController(
         lowerBound: 0.0,
         upperBound: 1.0,

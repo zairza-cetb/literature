@@ -8,6 +8,7 @@ import 'package:literature/utils/audio.dart';
 
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
+import 'package:literature/utils/loader.dart';
 
 class JoinRoom extends StatefulWidget {
   // Initialise AudioPlayer instance
@@ -24,7 +25,7 @@ class _JoinRoomState extends State<JoinRoom> {
   static final TextEditingController _roomId = new TextEditingController();
   Player currPlayer;
   List<dynamic> playersList = <dynamic>[];
-
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -58,6 +59,9 @@ class _JoinRoomState extends State<JoinRoom> {
       ///   * rebuild the list of all the players
       ///
       case "joined":
+        setState(() {
+          isLoading = false;
+        });
         if (playersList.length == 0) {
           playersList = (message["data"])["players"];
           // print(playersList);
@@ -82,7 +86,7 @@ class _JoinRoomState extends State<JoinRoom> {
         );
         break;
       case "roomisfull":
-        showCustomDialogWithImage(context,"full");
+        showCustomDialogWithImage(context, "full");
         break;
       case "invalid room":
         showCustomDialogWithImage(context, "invalid");
@@ -137,6 +141,9 @@ class _JoinRoomState extends State<JoinRoom> {
   _onJoinGame() {
     Map joinDetails = {"roomId": _roomId.text, "name": _name.text};
     game.send("join_game", json.encode(joinDetails));
+    setState(() {
+      isLoading = true;
+    });
   }
 
   @override
@@ -147,16 +154,22 @@ class _JoinRoomState extends State<JoinRoom> {
       top: false,
       child: Scaffold(
         appBar: appBar,
-        body: SingleChildScrollView(
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              // _buildJoin(),
-              _joinGame(),
-              // _playersList(),
-            ],
-          ),
-        ),
+        body: isLoading
+            ? Container(
+                width: double.infinity,
+                height: double.infinity,
+                child: Loader(),
+              )
+            : SingleChildScrollView(
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    // _buildJoin(),
+                    _joinGame(),
+                    // _playersList(),
+                  ],
+                ),
+              ),
       ),
     );
   }
