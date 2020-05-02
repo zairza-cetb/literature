@@ -13,8 +13,13 @@ import 'package:literature/utils/loader.dart';
 class JoinRoom extends StatefulWidget {
   // Initialise AudioPlayer instance
   final AudioController audioController;
+
+  /// TODO: Remove this after player object
+  /// is in the global namespace.
+  final String playerId;
+
   // Passed -> "creategame.dart"
-  JoinRoom(this.audioController);
+  JoinRoom(this.audioController, this.playerId);
 
   @override
   _JoinRoomState createState() => _JoinRoomState();
@@ -67,11 +72,7 @@ class _JoinRoomState extends State<JoinRoom> {
           // print(playersList);
           currPlayer = new Player(name: _name.text);
           // Assign the ID of the player
-          playersList.forEach((player) {
-            if (player["name"] == _name.text) {
-              currPlayer.id = player["id"];
-            }
-          });
+          currPlayer.id = widget.playerId;
         }
         // force rebuild
         Navigator.push(
@@ -139,7 +140,7 @@ class _JoinRoomState extends State<JoinRoom> {
   /// Sends a message to server on room join request
   ///
   _onJoinGame() {
-    Map joinDetails = {"roomId": _roomId.text, "name": _name.text};
+    Map joinDetails = {"roomId": _roomId.text, "name": _name.text, "playerId": widget.playerId};
     game.send("join_game", json.encode(joinDetails));
     setState(() {
       isLoading = true;

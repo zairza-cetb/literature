@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:literature/components/appbar.dart';
 import 'package:literature/models/player.dart';
@@ -11,8 +13,13 @@ import 'package:literature/utils/loader.dart';
 class CreateRoom extends StatefulWidget {
   // Initialise AudioPlayer instance
   final AudioController audioController;
+
+  /// TODO: Remove this after player object
+  /// is in the global namespace.
+  final playerId;
+
   // Passed -> "creategame.dart"
-  CreateRoom(this.audioController);
+  CreateRoom(this.audioController, this.playerId);
 
   @override
   _CreateRoomState createState() => _CreateRoomState();
@@ -64,6 +71,7 @@ class _CreateRoomState extends State<CreateRoom> {
         // Need username matching in the db for any room.
         currPlayer = new Player(
             name: _name.text,
+            id: widget.playerId,
             lobbyLeader: (message["data"]["lobbyLeader"])["name"] == _name.text
                 ? true
                 : false);
@@ -119,9 +127,9 @@ class _CreateRoomState extends State<CreateRoom> {
   /// -----------------------------------------
   _onCreateGame() {
     // Send a message to server to create a new game
-    // and then move to join room page
-
-    game.send("create_game", _name.text);
+    // and then move to join room page.
+    Map message = { "name": _name.text, "playerId": widget.playerId };
+    game.send("create_game", json.encode(message));
     setState(() {
       isLoading = true;
     });

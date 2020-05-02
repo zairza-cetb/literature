@@ -7,7 +7,7 @@ autoIncrement.initialize(connection);
 
 type Player = {
   name: string;
-  id: number;
+  id: String;
 }
 
 export enum GameStatus {
@@ -26,12 +26,12 @@ export type RoomDocument = mongoose.Document & {
 const roomSchema = new mongoose.Schema({
   players: [{
     _id: false,
-    id: Number,
+    id: String,
     name: String
   }],
   status: String,
   lobbyLeader: {
-    id: Number,
+    id: String,
     name: String
   }
 });

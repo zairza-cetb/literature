@@ -16,6 +16,7 @@ class CreateGame extends StatefulWidget {
 }
 
 class _CreateGame extends State<CreateGame> {
+  String playerId;
 
   @override
   void initState() {
@@ -31,10 +32,13 @@ class _CreateGame extends State<CreateGame> {
     game.removeListener(_startConnection);
   }
 
-  // Just an empty stub here that
-  // initiates the communication.
+  // Initiates the communication.
   _startConnection(message) {
-    switch(message) {
+    switch(message["action"]) {
+      case "set_id":
+        // Set the player ID.
+        playerId = message["data"]["player_id"];
+        break;
       default:
         break;
     }
@@ -96,7 +100,10 @@ class _CreateGame extends State<CreateGame> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => CreateRoom(audioController)),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                  CreateRoom(audioController, playerId)
+                                ),
                               );
                             },
                             child: Container(
@@ -124,7 +131,10 @@ class _CreateGame extends State<CreateGame> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => JoinRoom(audioController)),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                  JoinRoom(audioController, playerId)
+                                ),
                               );
                             },
                             child: Container(
@@ -152,7 +162,10 @@ class _CreateGame extends State<CreateGame> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => JoinRoom(audioController)),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                  JoinRoom(audioController, playerId)
+                                ),
                               );
                             },
                             child:Container(
