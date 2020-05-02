@@ -14,12 +14,8 @@ class JoinRoom extends StatefulWidget {
   // Initialise AudioPlayer instance
   final AudioController audioController;
 
-  /// TODO: Remove this after player object
-  /// is in the global namespace.
-  final String playerId;
-
   // Passed -> "creategame.dart"
-  JoinRoom(this.audioController, this.playerId);
+  JoinRoom(this.audioController);
 
   @override
   _JoinRoomState createState() => _JoinRoomState();
@@ -31,6 +27,7 @@ class _JoinRoomState extends State<JoinRoom> {
   Player currPlayer;
   List<dynamic> playersList = <dynamic>[];
   bool isLoading = false;
+  String playerId;
   @override
   void initState() {
     super.initState();
@@ -57,6 +54,12 @@ class _JoinRoomState extends State<JoinRoom> {
   /// -------------------------------------------------------------------
   _joinRoomListener(Map message) {
     switch (message["action"]) {
+      case "set_id":
+        // Set the player ID.
+        playerId = message["data"]["player_id"];
+        Map joinDetails = {"roomId": _roomId.text, "name": _name.text, "playerId": playerId};
+        game.send("join_game", json.encode(joinDetails));
+        break;
 
       ///
       /// Each time a new player joins, we need to
@@ -72,7 +75,7 @@ class _JoinRoomState extends State<JoinRoom> {
           // print(playersList);
           currPlayer = new Player(name: _name.text);
           // Assign the ID of the player
-          currPlayer.id = widget.playerId;
+          currPlayer.id = playerId;
         }
         // force rebuild
         Navigator.push(
@@ -140,8 +143,9 @@ class _JoinRoomState extends State<JoinRoom> {
   /// Sends a message to server on room join request
   ///
   _onJoinGame() {
-    Map joinDetails = {"roomId": _roomId.text, "name": _name.text, "playerId": widget.playerId};
-    game.send("join_game", json.encode(joinDetails));
+    // Connect to the
+    // socket.
+    game.connect();
     setState(() {
       isLoading = true;
     });

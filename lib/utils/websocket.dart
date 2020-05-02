@@ -48,14 +48,17 @@ class WebSocket {
       print('connected');
       _channel.emit('msg', 'test');
     });
+    _channel.on('disconnect', (_) {
+      print('disconnected');
+    });
 
     listenForEvents(_channel);
   }
 
   // Resets communication
   reset() {
-    if (_channel != null) {
-      _channel.destroy();
+    if (_isOn == true) {
+      _channel.close();
       _isOn = false;
     }
   }

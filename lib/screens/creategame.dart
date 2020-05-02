@@ -3,7 +3,6 @@ import 'package:literature/components/appbar.dart';
 import 'package:literature/screens/joinroom.dart';
 import 'package:literature/screens/createroom.dart';
 import 'package:literature/utils/audio.dart';
-import 'package:literature/utils/game_communication.dart';
 
 
 class CreateGame extends StatefulWidget {
@@ -21,27 +20,10 @@ class _CreateGame extends State<CreateGame> {
   @override
   void initState() {
     super.initState();
-
-    // connect to the socket
-    game.addListener(_startConnection);
   }
 
   void dispose() {
     super.dispose();
-
-    game.removeListener(_startConnection);
-  }
-
-  // Initiates the communication.
-  _startConnection(message) {
-    switch(message["action"]) {
-      case "set_id":
-        // Set the player ID.
-        playerId = message["data"]["player_id"];
-        break;
-      default:
-        break;
-    }
   }
 
   @override
@@ -102,7 +84,7 @@ class _CreateGame extends State<CreateGame> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                  CreateRoom(audioController, playerId)
+                                  CreateRoom(audioController)
                                 ),
                               );
                             },
@@ -133,7 +115,7 @@ class _CreateGame extends State<CreateGame> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                  JoinRoom(audioController, playerId)
+                                  JoinRoom(audioController)
                                 ),
                               );
                             },
@@ -164,7 +146,7 @@ class _CreateGame extends State<CreateGame> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                  JoinRoom(audioController, playerId)
+                                  JoinRoom(audioController)
                                 ),
                               );
                             },
