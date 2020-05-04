@@ -5,7 +5,7 @@ import socketio from "socket.io";
 import { Room, GameStatus } from "./models/Room";
 import mongoose from "mongoose";
 import { MONGODB_URI, PORT } from "./util/secrets";
-import { divideAndShuffleCards } from "./util/helper";
+import { divideAndShuffleCards, divideIntoTeams } from "./util/helper";
 import { Move } from "./types";
 
 const app = express();
@@ -50,9 +50,8 @@ io.on("connection", (socket) => {
 
     const newRoom = new Room({
       status: GameStatus.CREATED,
-      // TODO: Id is always null
-      players: [{ id, name }],
-      lobbyLeader: { id, name },
+      players: [{ id, name, teamIdentifier: null }],
+      lobbyLeader: { id, name, teamIdentifier: null },
     });
     await newRoom.save();
     // Create and join the socket room
@@ -86,7 +85,7 @@ io.on("connection", (socket) => {
           const newPlayerId = playerId;
         await Room.update(
           { roomId },
-          { $push: { players: { name, id: newPlayerId } } }
+          { $push: { players: { name, id: newPlayerId, teamIdentifier: null } } }
         );
         //Join the room
         socket.join(room.roomId.toString());
@@ -112,10 +111,11 @@ io.on("connection", (socket) => {
    */
   socket.on("start_game", async function (roomId: number) {
     socket.to(roomId.toString()).emit("game_started", JSON.stringify({ action: "game_started" }));
-    await Room.findOneAndUpdate(
+    const room = await Room.findOneAndUpdate(
       { roomId },
       { status: GameStatus.IN_PROGRESS }
     );
+    const playersWithTeamIds = divideIntoTeams(room.players);
     const cards = divideAndShuffleCards();
     // This is a specific room details.
     // and it's connections.
@@ -125,7 +125,15 @@ io.on("connection", (socket) => {
       if (key === "sockets") {
         Object.keys(socketRoom[key]).map((socketId: string) => {
           // Add an if condition if connection == true
-          io.to(socketId).emit("opening_hand", JSON.stringify({ data: { cards: cards.slice(cardIndex * 8, cardIndex * 8 + 8) }, action: "opening_hand" }));
+          io.to(socketId).emit(
+            "pre_game_data",
+            JSON.stringify(
+              { 
+                data: { cards: cards.slice(cardIndex * 8, cardIndex * 8 + 8),
+                  playersWithTeamIds: playersWithTeamIds },
+                action: "pre_game_data" 
+              })
+            );
           cardIndex += 1;
         });
       }
