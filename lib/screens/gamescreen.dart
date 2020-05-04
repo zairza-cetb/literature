@@ -21,7 +21,7 @@ class GameScreen extends StatefulWidget {
   ///
   /// List of players in the room
   ///
-  final List<dynamic> playersList;
+  List<dynamic> playersList;
 
   _GameScreenState createState() => _GameScreenState();
 }
@@ -29,6 +29,8 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   List<PlayingCard> _cards = new List<PlayingCard>();
   bool _ready = false;
+  List<Player> teamRed = new List<Player>();
+  List<Player> teamBlue = new List<Player>();
 
   @override
   void initState() {
@@ -46,8 +48,9 @@ class _GameScreenState extends State<GameScreen> {
   _gameScreenListener(message) {
     switch(message["action"]) {
       // Gets cards from the server.
-      case "opening_hand":
+      case "pre_game_data":
         List cards = (message["data"])["cards"];
+        List players = (message["data"]["playersWithTeamIds"]);
         // Add to _cards list in the state
         cards.forEach((card) {
           _cards.add(new PlayingCard(
@@ -57,6 +60,31 @@ class _GameScreenState extends State<GameScreen> {
             opened: false)
           );
         });
+        // Override playersList.
+        widget.playersList = players;
+        // Assign red and blue teams
+        print(players);
+        players.forEach((player) {
+          if (player["teamIdentifier"] == "red") {
+            // team_red.add(p);
+            teamRed.add(
+              new Player(
+                name: player["name"],
+                id: player["id"],
+                teamIdentifier: player["teamIdentifier"]
+              )
+            );
+          } 
+          else teamBlue.add(
+            new Player(
+              name: player["name"],
+              id: player["id"],
+              teamIdentifier: player["teamIdentifier"]
+            )
+          );
+        });
+        // Force rebuild
+        setState(() { _ready = true; });
         break;
       default:
         print("Default case");

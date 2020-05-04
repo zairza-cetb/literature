@@ -118,7 +118,7 @@ class WebSocket {
       });
     });
     // On event getting initial cards
-    socket.on("opening_hand", (data) {
+    socket.on("pre_game_data", (data) {
       Map messageRecieved = json.decode(data);
       Map message = new Map();
       message["data"] = messageRecieved["data"];

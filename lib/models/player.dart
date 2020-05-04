@@ -7,11 +7,14 @@ class Player {
   String name;
   // ID of a player
   String id;
+  // Team identifier
+  String teamIdentifier;
 
   // Constructor
   Player({
     this.lobbyLeader = false,
     @required this.name,
     this.id,
+    this.teamIdentifier
   });
 }

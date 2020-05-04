@@ -1,4 +1,5 @@
 import { Card, Cards, Suits } from "../types";
+import { Player } from '../models/Room';
 
 function getInitialCardList(): Card[] {
   const initialCardList: Card[] = [];
@@ -49,4 +50,19 @@ function divide(cards: Card[]): Card[] {
 
 export function divideAndShuffleCards(): Card[] {
   return divide(riffleShuffle(getInitialCardList()));
+}
+
+export function divideIntoTeams(players: Player[]) {
+  // Initialise teams
+  players.map((value: Player, index: number) => {
+    if (index % 2 == 0) {
+      value["teamIdentifier"] = "red";
+    } else {
+      value["teamIdentifier"] = "blue";
+    };
+    console.log("======");
+    console.log(value);
+    console.log("======");
+  })
+  return players;
 }
