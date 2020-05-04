@@ -4,6 +4,7 @@ import 'package:literature/models/playing_cards.dart';
 import 'package:literature/utils/game_communication.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:literature/components/card_deck.dart';
+import 'package:literature/utils/loader.dart';
 
 class GameScreen extends StatefulWidget {
   GameScreen({
@@ -44,6 +45,7 @@ class _GameScreenState extends State<GameScreen> {
 
   _gameScreenListener(message) {
     switch(message["action"]) {
+      // Gets cards from the server.
       case "opening_hand":
         List cards = (message["data"])["cards"];
         // Add to _cards list in the state
@@ -55,9 +57,6 @@ class _GameScreenState extends State<GameScreen> {
             opened: false)
           );
         });
-        // Assign cards to the current user
-        // and setState.
-        setState(() {});
         break;
       default:
         print("Default case");
@@ -85,7 +84,7 @@ class _GameScreenState extends State<GameScreen> {
         // cause there won't be any forwarding
         // from there on.
         appBar: new AppBar(),
-        body:  Container(
+        body:  _ready ? Container(
           child: new Stack(
             children: <Widget> [
               new Positioned(
@@ -102,6 +101,11 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ]
           ),
+        ) :
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: Loader(),
         ),
       ),
     );

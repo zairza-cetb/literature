@@ -135,7 +135,7 @@ class _WaitingPageState extends State<WaitingPage> {
   }
 
   _getPlayButton(playerInfo) {
-    if (widget.playersList.length == 6) {
+    if (widget.playersList.length == 2) {
       return new RaisedButton(
         onPressed: () {
           _onPlayGame(context);
@@ -165,7 +165,7 @@ class _WaitingPageState extends State<WaitingPage> {
     /// to launch a new game, if it is an admin then only set
     /// play option.
     ///
-    /// TODO: Fix this stale state behaviour.
+
     List<Widget> children = widget.playersList?.map((playerInfo) {
       // print(widget.currPlayer.name + " " + playerInfo["name"]);
       if (widget.currPlayer.lobbyLeader == true &&
