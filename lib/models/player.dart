@@ -6,7 +6,7 @@ class Player {
   // Name of the player
   String name;
   // ID of a player
-  int id;
+  String id;
 
   // Constructor
   Player({

@@ -28,12 +28,26 @@ app.get("/", function (_req, res) {
 app.set("port", PORT);
 
 io.on("connection", (socket) => {
+  // On connection, send it's
+  // Id to the current player. This
+  // Id will be sent on each request.
+  // TODO: we may need to associate a
+  // session with this ID.
+  io.to(socket.id).emit(
+    "get_id",
+    JSON.stringify({ data: { player_id: socket.id }, action:"set_id" })
+  );
+
   /**
    * Create a game, add a room in db with status "CREATED",
    * send the numerical roomId back in callback 
    * which will be used to join the game
    */
-  socket.on("create_game", async function (name: string, id: number = 0) {
+  socket.on("create_game", async function (data) {
+    const parsedData = JSON.parse(data);
+    const name = parsedData.name;
+    const id = parsedData.playerId;
+
     const newRoom = new Room({
       status: GameStatus.CREATED,
       // TODO: Id is always null
@@ -63,12 +77,13 @@ io.on("connection", (socket) => {
     const parsedData = JSON.parse(data);
     const roomId = parseInt(parsedData.roomId);
     const name = parsedData.name;
+    const playerId = parsedData.playerId;
     const room = await Room.findOne({ roomId });
     // The value is not null
     if(room != null){
       if (room.status === GameStatus.CREATED) {
         if(room.players.length < 6){
-          const newPlayerId = room.players.slice(-1)[0].id + 1;
+          const newPlayerId = playerId;
         await Room.update(
           { roomId },
           { $push: { players: { name, id: newPlayerId } } }

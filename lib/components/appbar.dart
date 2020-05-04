@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:literature/utils/audio.dart';
+import 'package:literature/utils/game_communication.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GlobalAppBar extends StatefulWidget implements PreferredSizeWidget  {
@@ -48,6 +49,9 @@ class _GlobalAppBarState extends State<GlobalAppBar> {
       leading: IconButton(
         onPressed: () {
           Navigator.of(context).pop();
+          // Close socket connection
+          // after user presses back.
+          game.disconnect();
         },
         icon: Icon(Icons.arrow_back_ios),
         color: Color(0xFF303f9f),

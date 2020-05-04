@@ -3,7 +3,6 @@ import 'package:literature/components/appbar.dart';
 import 'package:literature/screens/joinroom.dart';
 import 'package:literature/screens/createroom.dart';
 import 'package:literature/utils/audio.dart';
-import 'package:literature/utils/game_communication.dart';
 
 
 class CreateGame extends StatefulWidget {
@@ -16,28 +15,15 @@ class CreateGame extends StatefulWidget {
 }
 
 class _CreateGame extends State<CreateGame> {
+  String playerId;
 
   @override
   void initState() {
     super.initState();
-
-    // connect to the socket
-    game.addListener(_startConnection);
   }
 
   void dispose() {
     super.dispose();
-
-    game.removeListener(_startConnection);
-  }
-
-  // Just an empty stub here that
-  // initiates the communication.
-  _startConnection(message) {
-    switch(message) {
-      default:
-        break;
-    }
   }
 
   @override
@@ -96,7 +82,10 @@ class _CreateGame extends State<CreateGame> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => CreateRoom(audioController)),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                  CreateRoom(audioController)
+                                ),
                               );
                             },
                             child: Container(
@@ -124,7 +113,10 @@ class _CreateGame extends State<CreateGame> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => JoinRoom(audioController)),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                  JoinRoom(audioController)
+                                ),
                               );
                             },
                             child: Container(
@@ -152,7 +144,10 @@ class _CreateGame extends State<CreateGame> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => JoinRoom(audioController)),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                  JoinRoom(audioController)
+                                ),
                               );
                             },
                             child:Container(

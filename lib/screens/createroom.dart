@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:literature/components/appbar.dart';
 import 'package:literature/models/player.dart';
@@ -11,6 +13,7 @@ import 'package:literature/utils/loader.dart';
 class CreateRoom extends StatefulWidget {
   // Initialise AudioPlayer instance
   final AudioController audioController;
+
   // Passed -> "creategame.dart"
   CreateRoom(this.audioController);
 
@@ -21,6 +24,7 @@ class CreateRoom extends StatefulWidget {
 class _CreateRoomState extends State<CreateRoom> {
   static final TextEditingController _name = new TextEditingController();
   Player currPlayer;
+  String playerId;
   bool isLoading = false;
   List<dynamic> playersList = <dynamic>[];
   // TODO: Room ID should be a hashed value
@@ -29,12 +33,6 @@ class _CreateRoomState extends State<CreateRoom> {
   @override
   void initState() {
     super.initState();
-
-    ///
-    /// Ask to be notified when messages related to the game
-    /// are sent by the server
-    ///
-    game.addListener(_createRoomListener);
   }
 
   @override
@@ -51,6 +49,12 @@ class _CreateRoomState extends State<CreateRoom> {
   /// -------------------------------------------------------------------
   _createRoomListener(Map message) {
     switch (message["action"]) {
+      case "set_id":
+        // Set the player ID.
+        playerId = message["data"]["player_id"];
+        Map createDetails = { "name": _name.text, "playerId": playerId };
+        game.send("create_game", json.encode(createDetails));
+        break;
 
       ///
       /// Creates a new game with a Room ID, Redirect to
@@ -64,6 +68,7 @@ class _CreateRoomState extends State<CreateRoom> {
         // Need username matching in the db for any room.
         currPlayer = new Player(
             name: _name.text,
+            id: playerId,
             lobbyLeader: (message["data"]["lobbyLeader"])["name"] == _name.text
                 ? true
                 : false);
@@ -119,9 +124,15 @@ class _CreateRoomState extends State<CreateRoom> {
   /// -----------------------------------------
   _onCreateGame() {
     // Send a message to server to create a new game
-    // and then move to join room page
+    // and then move to join room page.
 
-    game.send("create_game", _name.text);
+    ///
+    /// Ask to be notified when messages related to the game
+    /// are sent by the server, also creates the connection.
+    ///
+    game.addListener(_createRoomListener);
+    game.connect();
+
     setState(() {
       isLoading = true;
     });
