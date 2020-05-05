@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/models/playing_cards.dart';
@@ -28,9 +30,11 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   List<PlayingCard> _cards = new List<PlayingCard>();
+  List<dynamic> playersList = new List();
   bool _ready = false;
   List<Player> teamRed = new List<Player>();
   List<Player> teamBlue = new List<Player>();
+  double radius = 150.0;
 
   @override
   void initState() {
@@ -60,10 +64,7 @@ class _GameScreenState extends State<GameScreen> {
             opened: false)
           );
         });
-        // Override playersList.
-        widget.playersList = players;
         // Assign red and blue teams
-        print(players);
         players.forEach((player) {
           if (player["teamIdentifier"] == "red") {
             // team_red.add(p);
@@ -83,6 +84,8 @@ class _GameScreenState extends State<GameScreen> {
             )
           );
         });
+        // Override playersList.
+        playersList = players;
         // Force rebuild
         setState(() { _ready = true; });
         break;
@@ -102,6 +105,61 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
+  //
+  Widget _playerInGame(player) {
+    // Display profile picture and actions
+    // on Tap of the profile picture.
+    return new Container(
+      height: 60,
+      width: 60,
+      decoration: BoxDecoration(
+        shape: BoxShape.rectangle,
+        border: new Border.all(
+          color: Colors.black,
+          width: 1.0,
+        ),
+      ),
+      child: new Text(
+        player["name"]
+      ),
+    );
+  }
+
+  // Sets up a player view
+  // of a particular user.
+  Widget _playerView() {
+    var count = -1;
+
+    List playersTable = playersList.map((player) {
+      count += 1;
+      return new Transform.translate(
+        child: _playerInGame(player),
+        offset: Offset(
+          radius * cos(0.0 + count * pi / 3),
+          radius * sin(0.0 + count * pi / 3),
+        ),
+      );
+    }).toList();
+
+    var children = new Center(
+      child: Stack(
+        children: <Widget>[
+          new Transform.translate(
+            offset: Offset(0.0, 0.0),
+            child: new Text("Arena"),
+          ),
+          Stack(
+            children: playersTable
+          ),
+        ],
+      ),
+    );
+
+    return new Container(
+      child: children,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new SafeArea(
@@ -113,18 +171,17 @@ class _GameScreenState extends State<GameScreen> {
         // from there on.
         appBar: new AppBar(),
         body:  _ready ? Container(
-          child: new Stack(
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget> [
-              new Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
+              new Align(
                 child: _playerInformation(widget.player)
               ),
-              new Positioned(
-                bottom:20,
-                left: 0,
-                right: 0,
+              new Container(
+                child: _playerView(),
+              ),
+              new Align(
+                alignment: Alignment.bottomCenter,
                 child: CardDeck(cards: _cards)
               ),
             ]

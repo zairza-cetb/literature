@@ -60,9 +60,6 @@ export function divideIntoTeams(players: Player[]) {
     } else {
       value["teamIdentifier"] = "blue";
     };
-    console.log("======");
-    console.log(value);
-    console.log("======");
   })
   return players;
 }
