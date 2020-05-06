@@ -115,13 +115,19 @@ class _GameScreenState extends State<GameScreen> {
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
         border: new Border.all(
-          color: Colors.black,
-          width: 1.0,
+          color: player["teamIdentifier"] == "red" ? Colors.red : Colors.blue,
+          width: 5.0,
         ),
       ),
-      child: new Text(
-        player["name"]
-      ),
+      child: GestureDetector(
+        onLongPress: () {
+          // display player information
+          // and actions.
+        },
+        child: new Container(
+          child: new Image.asset("assets/person.png"),
+        ),
+      )
     );
   }
 
