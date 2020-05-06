@@ -357,7 +357,7 @@ class _CardDeckState extends State<CardDeck> {
                                 fontFamily: font,
                                 fontSize: 20.0,
                                 color: (
-                                  type == "clubs" || 
+                                  suit == "clubs" || 
                                   suit == "spades" ? Colors.black : Colors.red
                                 ),
                               ),
