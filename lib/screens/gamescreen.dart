@@ -97,16 +97,6 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  Widget _playerInformation(Player player) {
-    return Container(
-      child: Center(
-        child: (
-          new Text("Hi, " + player.name + "...", style: new TextStyle(fontSize: 30.0),)
-        )
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return new SafeArea(
@@ -122,19 +112,17 @@ class _GameScreenState extends State<GameScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget> [
               new Container(
-                // height: MediaQuery.of(context).size.height*0.05,
-                padding: EdgeInsets.all(0),
-                child: _playerInformation(widget.player)
-              ),
-              new Container(
                 height: MediaQuery.of(context).size.height*0.95,
                 padding: EdgeInsets.all(0),
                 color: Colors.blueGrey,
-                child: new PlayerView(
-                  containerHeight: MediaQuery.of(context).size.height*0.95,
-                  containerWidth: MediaQuery.of(context).size.width,
-                  currPlayer: widget.player,
-                  finalPlayersList: finalPlayersList,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: new PlayerView(
+                    containerHeight: MediaQuery.of(context).size.height*0.95,
+                    containerWidth: MediaQuery.of(context).size.width,
+                    currPlayer: widget.player,
+                    finalPlayersList: finalPlayersList,
+                  ),
                 ),
               ),
               // Allocate bottom with a few spaces.

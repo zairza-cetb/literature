@@ -22,15 +22,11 @@ class PlayerView extends StatefulWidget {
 class _PlayerViewState extends State<PlayerView> {
   void initState() {
     super.initState();
-
-    print(widget.finalPlayersList);
-    print(widget.containerHeight);
-    print(widget.containerWidth);
-    // Add players into a map.
   }
 
   @override
   Widget build(BuildContext context) {
+    // screen constants.
     var pContainerHeight = widget.containerHeight*0.176;
     var pContainerWidth = widget.containerWidth*0.241;
     var arenaContainerHeight = widget.containerHeight*0.353;
