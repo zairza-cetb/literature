@@ -93,7 +93,7 @@ class _WaitingPageState extends State<WaitingPage> {
       case "joined":
         print("joined");
         widget.playersList = (message["data"])["players"];
-        
+        print((message["data"])["players"].toString());
         // force rebuild
         setState(() {});
         break;
@@ -165,7 +165,6 @@ class _WaitingPageState extends State<WaitingPage> {
     /// to launch a new game, if it is an admin then only set
     /// play option.
     ///
-
     List<Widget> children = widget.playersList?.map((playerInfo) {
       // print(widget.currPlayer.name + " " + playerInfo["name"]);
       if (widget.currPlayer.lobbyLeader == true &&

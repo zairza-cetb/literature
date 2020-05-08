@@ -77,6 +77,7 @@ class _JoinRoomState extends State<JoinRoom> {
           // Assign the ID of the player
           currPlayer.id = playerId;
         }
+        
         // force rebuild
         Navigator.push(
           context,
@@ -91,9 +92,15 @@ class _JoinRoomState extends State<JoinRoom> {
         break;
       case "roomisfull":
         showCustomDialogWithImage(context, "full");
+        setState(() {
+          isLoading = false;
+        });
         break;
       case "invalid room":
         showCustomDialogWithImage(context, "invalid");
+        setState(() {
+          isLoading = false;
+        });
         break;
     }
   }
