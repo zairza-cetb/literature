@@ -6,9 +6,12 @@ class CardDeck extends StatefulWidget {
   CardDeck({
     Key key,
     this.cards,
+    this.containerHeight,
   }): super(key: key);
 
   List<PlayingCard> cards;
+
+  final double containerHeight;
 
   _CardDeckState createState() => _CardDeckState();
 }
@@ -19,10 +22,6 @@ class _CardDeckState extends State<CardDeck> {
   // Do we have to show
   // the miniView?
   bool _miniView = false;
-
-  // IMPORTANT: Container height
-  // See: card height.
-  double height = 200.0;
 
   @override
   void initState() {
@@ -37,59 +36,20 @@ class _CardDeckState extends State<CardDeck> {
     return _miniCardsDeck();
   }
 
-  Widget _rowCardsView() {
-    return _largeCardsDeck();
-  }
+  // Widget _rowCardsView() {
+  //   return _largeCardsDeck();
+  // }
   
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      color: Colors.transparent,
-      height: height,
-      child: new Column(
-        children: <Widget>[
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SizedBox(
-                height: 20,
-                width: 84,
-                child: new RaisedButton(
-                  onPressed: () {
-                    if (height == 320.0) {
-                      height = 200.0;
-                    } else {
-                      height = 320.0;
-                    }
-                    setState(() {
-                      _miniView = !_miniView;
-                    });
-                  },
-                  child: new Text(
-                    "switch",
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      color: Colors.white
-                    ),
-                  ),
-                  color: Colors.blue,
-                ),
-              )
-            ]
-          ),
-          _miniView == false ?
-          _rowCardsView():
-          _largeCardList()
-        ],
-      )
-    );
+    return _largeCardList();
   }
 
   // Mini representation of all
   // cards in a single view.
   Widget _miniCardsDeck() {
-    return Container(
-      height: 300,
+    return Padding(
+      padding: EdgeInsets.all(10.0),
       child: GridView.count(
         crossAxisCount: 6,
         children: widget.cards.map((card) {
@@ -102,6 +62,7 @@ class _CardDeckState extends State<CardDeck> {
   }
 
   // Large list of playing cards
+  // N/A right now.
   Widget _largeCardsDeck() {
     if (widget.cards == null) {
       return new Text("No cards yet");
@@ -204,8 +165,8 @@ class _CardDeckState extends State<CardDeck> {
           border: Border.all(color: Colors.black),
         ),
         // Height of each mini card.
-        height: 100,
-        width: 100,
+        height: widget.containerHeight-43.4,
+        width: 90,
         child: Stack(
           children: <Widget>[
             Center(
