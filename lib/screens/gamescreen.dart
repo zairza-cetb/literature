@@ -116,7 +116,7 @@ class _GameScreenState extends State<GameScreen> {
                 padding: EdgeInsets.all(0),
                 color: Colors.blueGrey,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                  padding: const EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
                   child: new PlayerView(
                     containerHeight: MediaQuery.of(context).size.height*0.95,
                     containerWidth: MediaQuery.of(context).size.width,
