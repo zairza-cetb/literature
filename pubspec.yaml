@@ -27,6 +27,7 @@ dependencies:
   path_provider: ^1.5.1
   socket_io_client: ^0.9.9
   enum_to_string: ^1.0.9
+  sliding_up_panel: ^1.0.2
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -65,6 +66,7 @@ flutter:
     - assets/hearts.png
     - assets/spades.png
     - assets/person.png
+    - assets/no_person.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

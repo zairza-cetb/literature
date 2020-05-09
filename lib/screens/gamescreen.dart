@@ -7,6 +7,8 @@ import 'package:literature/utils/game_communication.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:literature/components/card_deck.dart';
 import 'package:literature/utils/loader.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:literature/components/player_view.dart';
 
 class GameScreen extends StatefulWidget {
   GameScreen({
@@ -30,7 +32,7 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   List<PlayingCard> _cards = new List<PlayingCard>();
-  List<dynamic> playersList = new List();
+  List<dynamic> finalPlayersList = new List();
   bool _ready = false;
   List<Player> teamRed = new List<Player>();
   List<Player> teamBlue = new List<Player>();
@@ -65,27 +67,27 @@ class _GameScreenState extends State<GameScreen> {
           );
         });
         // Assign red and blue teams
-        players.forEach((player) {
-          if (player["teamIdentifier"] == "red") {
-            // team_red.add(p);
-            teamRed.add(
-              new Player(
-                name: player["name"],
-                id: player["id"],
-                teamIdentifier: player["teamIdentifier"]
-              )
-            );
-          } 
-          else teamBlue.add(
-            new Player(
-              name: player["name"],
-              id: player["id"],
-              teamIdentifier: player["teamIdentifier"]
-            )
-          );
-        });
+        // players.forEach((player) {
+        //   if (player["teamIdentifier"] == "red") {
+        //     // team_red.add(p);
+        //     teamRed.add(
+        //       new Player(
+        //         name: player["name"],
+        //         id: player["id"],
+        //         teamIdentifier: player["teamIdentifier"]
+        //       )
+        //     );
+        //   } 
+        //   else teamBlue.add(
+        //     new Player(
+        //       name: player["name"],
+        //       id: player["id"],
+        //       teamIdentifier: player["teamIdentifier"]
+        //     )
+        //   );
+        // });
         // Override playersList.
-        playersList = players;
+        finalPlayersList = players;
         // Force rebuild
         setState(() { _ready = true; });
         break;
@@ -93,77 +95,6 @@ class _GameScreenState extends State<GameScreen> {
         print("Default case");
         break;
     }
-  }
-
-  Widget _playerInformation(Player player) {
-    return Container(
-      child: Center(
-        child: (
-          new Text("Curr player: " + player.name, style: new TextStyle(fontSize: 30.0),)
-        )
-      ),
-    );
-  }
-
-  //
-  Widget _playerInGame(player) {
-    // Display profile picture and actions
-    // on Tap of the profile picture.
-    return new Container(
-      height: 60,
-      width: 60,
-      decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        border: new Border.all(
-          color: player["teamIdentifier"] == "red" ? Colors.red : Colors.blue,
-          width: 5.0,
-        ),
-      ),
-      child: GestureDetector(
-        onLongPress: () {
-          // display player information
-          // and actions.
-        },
-        child: new Container(
-          child: new Image.asset("assets/person.png"),
-        ),
-      )
-    );
-  }
-
-  // Sets up a player view
-  // of a particular user.
-  Widget _playerView() {
-    var count = -1;
-
-    List playersTable = playersList.map((player) {
-      count += 1;
-      return new Transform.translate(
-        child: _playerInGame(player),
-        offset: Offset(
-          radius * cos(0.0 + count * pi / 3),
-          radius * sin(0.0 + count * pi / 3),
-        ),
-      );
-    }).toList();
-
-    var children = new Center(
-      child: Stack(
-        children: <Widget>[
-          new Transform.translate(
-            offset: Offset(0.0, 0.0),
-            child: new Text("Arena"),
-          ),
-          Stack(
-            children: playersTable
-          ),
-        ],
-      ),
-    );
-
-    return new Container(
-      child: children,
-    );
   }
 
   @override
@@ -176,21 +107,30 @@ class _GameScreenState extends State<GameScreen> {
         // cause there won't be any forwarding
         // from there on.
         appBar: new AppBar(),
-        body:  _ready ? Container(
-          child: new Column(
+        body:  _ready ? SlidingUpPanel(
+          body: new Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget> [
-              new Align(
-                child: _playerInformation(widget.player)
-              ),
               new Container(
-                child: _playerView(),
+                height: MediaQuery.of(context).size.height*0.95,
+                padding: EdgeInsets.all(0),
+                color: Colors.blueGrey,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
+                  child: new PlayerView(
+                    containerHeight: MediaQuery.of(context).size.height*0.95,
+                    containerWidth: MediaQuery.of(context).size.width,
+                    currPlayer: widget.player,
+                    finalPlayersList: finalPlayersList,
+                  ),
+                ),
               ),
-              new Align(
-                alignment: Alignment.bottomCenter,
-                child: CardDeck(cards: _cards)
-              ),
+              // Allocate bottom with a few spaces.
             ]
+          ),
+          panel: new Container(
+            alignment: Alignment.bottomCenter,
+            child: CardDeck(cards: _cards, containerHeight: MediaQuery.of(context).size.height-467)
           ),
         ) :
         Container(

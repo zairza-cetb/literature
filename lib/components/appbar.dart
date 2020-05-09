@@ -45,37 +45,40 @@ class _GlobalAppBarState extends State<GlobalAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      leading: IconButton(
-        onPressed: () {
-          Navigator.of(context).pop();
-          // Close socket connection
-          // after user presses back.
-          game.disconnect();
-        },
-        icon: Icon(Icons.arrow_back_ios),
-        color: Color(0xFF303f9f),
-      ),
-      backgroundColor: Colors.transparent,
-      elevation: 0.0,
-      title: Text('Literature',
-      style: TextStyle(
-        fontFamily: 'Montserrat',
-        fontSize: 25.0,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF303f9f))
-      ),
-      centerTitle: true,
-      actions: <Widget>[
-        IconButton(
-          icon: getAudioIcon(audioController.getMusicPlaying()),
+    return Container(
+      height: MediaQuery.of(context).size.height*0.1,
+      child: AppBar(
+        leading: IconButton(
           onPressed: () {
-            // Mute the music
-            toggleMusicState(audioController.getMusicPlaying());
+            Navigator.of(context).pop();
+            // Close socket connection
+            // after user presses back.
+            game.disconnect();
           },
+          icon: Icon(Icons.arrow_back_ios),
           color: Color(0xFF303f9f),
         ),
-      ],
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        title: Text('Literature',
+        style: TextStyle(
+          fontFamily: 'Montserrat',
+          fontSize: 25.0,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF303f9f))
+        ),
+        centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: getAudioIcon(audioController.getMusicPlaying()),
+            onPressed: () {
+              // Mute the music
+              toggleMusicState(audioController.getMusicPlaying());
+            },
+            color: Color(0xFF303f9f),
+          ),
+        ],
+      ),
     );
   }
 }
