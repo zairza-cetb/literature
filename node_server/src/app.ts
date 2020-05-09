@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "http";
 import socketio from "socket.io";
-import { Room, GameStatus } from "./models/Room";
+import { Room, GameStatus, RoomDocument, Player } from "./models/Room";
 import mongoose from "mongoose";
 import { MONGODB_URI, PORT } from "./util/secrets";
 import { divideAndShuffleCards, divideIntoTeams } from "./util/helper";
@@ -26,6 +26,9 @@ app.get("/", function (_req, res) {
   res.send("Hello World");
 });
 app.set("port", PORT);
+
+let GAME_STATUS = "";
+const TURN_INTERVAL = 60000 // 60 seconds.
 
 io.on("connection", (socket) => {
   // On connection, send it's
@@ -53,6 +56,9 @@ io.on("connection", (socket) => {
       players: [{ id, name, teamIdentifier: null }],
       lobbyLeader: { id, name, teamIdentifier: null },
     });
+
+    GAME_STATUS = "CREATED";
+
     await newRoom.save();
     // Create and join the socket room
     socket.join(newRoom.roomId.toString());
@@ -141,16 +147,55 @@ io.on("connection", (socket) => {
     // Reassign index back to 0.
     // For handling next group of people.
     cardIndex = 0;
+    // Since each message to the socket
+    // get's spooled we do not need to worry about
+    // whether a player is ready or not, cause
+    // others will then recieve the request.
+    // Send to player 1 first.
+    let index = -2;
+    startGame(roomId, room.players, index);
   });
 
-  /**
-   * On making a card request send the request details
-   * to all the players to check whether the request is
-   * valid or not
-   */
-  socket.on("request_card", async function (roomId: number, move: Move) {
-    socket.to(roomId.toString()).emit("check_card", move);
-  });
+  // This function handles the game execution.
+  const startGame = async (roomId: number, players: Player[], index: number) => {
+    GAME_STATUS = "IN_PROGRESS";
+    // Send to player 1 first.
+    if (index == -2) {
+      // Send to player 1 immediately.
+      index = 0;
+      io.to(roomId.toString()).emit(
+        "whose_turn",
+        JSON.stringify({ data: { playerName: players[0]["name"] },
+        action: "make_move" })
+      );
+    }
+
+    // Send turn details to others players.
+    let timerId = setInterval(function() {
+      index += 1;
+      io.to(roomId.toString()).emit(
+        "whose_turn",
+        JSON.stringify({ data: { playerName: players[index]["name"] },
+        action: "make_move" })
+      );
+      if (index >= players.length - 1) {
+        index = -1;
+      }
+      return startGame(roomId, players, index)
+    }, TURN_INTERVAL);
+    // Handles a move for each player.
+    // Basically we have to swap cards if
+    // correct guess, or pass turn if incorrent
+    // Also the user can decide to fold.
+    // In that case we need to check if game
+    // status has been completed.
+    io.on('move_ends', async function(data: any) {
+      clearTimeout(timerId);
+      console.log(data);
+      // start next players turn.
+      return startGame(roomId, players, index)
+    });
+  }
 });
 
 

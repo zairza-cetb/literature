@@ -159,5 +159,15 @@ class WebSocket {
         callback(message);
       });
     });
+    // On event whose turn it is.
+    socket.on("whose_turn", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
   }
 }

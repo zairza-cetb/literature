@@ -91,6 +91,11 @@ class _GameScreenState extends State<GameScreen> {
         // Force rebuild
         setState(() { _ready = true; });
         break;
+      case "make_move":
+        print("Listening");
+        var name = message["data"]["playerName"];
+        print(name);
+        break;
       default:
         print("Default case");
         break;
