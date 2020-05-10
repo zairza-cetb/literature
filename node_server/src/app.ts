@@ -171,7 +171,7 @@ io.on("connection", (socket) => {
     }
 
     // Send turn details to others players.
-    let timerId = setInterval(function() {
+    const timerId = setInterval(function() {
       index += 1;
       io.to(roomId.toString()).emit(
         "whose_turn",
@@ -181,6 +181,7 @@ io.on("connection", (socket) => {
       if (index >= players.length - 1) {
         index = -1;
       }
+      clearTimeout(timerId);
       return startGame(roomId, players, index)
     }, TURN_INTERVAL);
     // Handles a move for each player.
