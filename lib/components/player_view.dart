@@ -38,9 +38,6 @@ class _PlayerViewState extends State<PlayerView> {
     var arenaPaddingTop = widget.containerHeight*0.188;
     var arenaPaddingLeft = widget.containerWidth*0.246;
 
-    print(pContainerHeight);
-    print(pContainerWidth);
-
     return Stack(
       children: [
         Column(
@@ -61,7 +58,8 @@ class _PlayerViewState extends State<PlayerView> {
                       child: _getPlayerInContainer(
                         playersList.length > 0 ? playersList[0] : null,
                         pContainerHeight,
-                        pContainerWidth
+                        pContainerWidth,
+                        "P1"
                       )
                     ),
                   ),
@@ -84,7 +82,8 @@ class _PlayerViewState extends State<PlayerView> {
                       child: _getPlayerInContainer(
                         playersList.length > 0 ? playersList[1] : null,
                         pContainerHeight,
-                        pContainerWidth
+                        pContainerWidth,
+                        "P2"
                       ),
                     ),
                   ),
@@ -99,7 +98,8 @@ class _PlayerViewState extends State<PlayerView> {
                       child: _getPlayerInContainer(
                         playersList.length > 2 ? playersList[2] : null,
                         pContainerHeight,
-                        pContainerWidth
+                        pContainerWidth,
+                        "P3"
                       ),
                     ),
                   ),
@@ -122,7 +122,8 @@ class _PlayerViewState extends State<PlayerView> {
                       child: _getPlayerInContainer(
                         playersList.length > 3 ? playersList[3] : null,
                         pContainerHeight,
-                        pContainerWidth
+                        pContainerWidth,
+                        "P4"
                       ),
                     ),
                   ),
@@ -137,7 +138,8 @@ class _PlayerViewState extends State<PlayerView> {
                       child: _getPlayerInContainer(
                         playersList.length > 4 ? playersList[4] : null,
                         pContainerHeight,
-                        pContainerWidth
+                        pContainerWidth,
+                        "P5"
                       ),
                     ),
                   ),
@@ -160,7 +162,8 @@ class _PlayerViewState extends State<PlayerView> {
                       child: _getPlayerInContainer(
                         playersList.length > 5 ? playersList[5] : null,
                         pContainerHeight,
-                        pContainerWidth
+                        pContainerWidth,
+                        "P6"
                       ),
                     ),
                   ),
@@ -186,7 +189,7 @@ class _PlayerViewState extends State<PlayerView> {
   }
 }
 
-Widget _getPlayerInContainer(player, h, w) {
+Widget _getPlayerInContainer(player, h, w, p) {
   var teamColor =  player != null ? player["teamIdentifier"] == "red" ?
                 Colors.orange : Colors.blue:
                 Colors.transparent;
@@ -201,7 +204,7 @@ Widget _getPlayerInContainer(player, h, w) {
           child: Container(
             height: h*0.628,
             child: new Hero(
-              tag: 'HeroImage',
+              tag: p,
               child: player == null ? Image.asset("assets/no_person.png") : Image.asset("assets/person.png"),
             ),
           ),
