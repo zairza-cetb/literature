@@ -161,6 +161,7 @@ class WebSocket {
     });
     // On event whose turn it is.
     socket.on("whose_turn", (data) {
+      print("My turn");
       Map messageRecieved = json.decode(data);
       Map message = new Map();
       message["data"] = messageRecieved["data"];
