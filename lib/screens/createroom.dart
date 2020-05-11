@@ -86,8 +86,6 @@ class _CreateRoomState extends State<CreateRoom> {
             context,
             new MaterialPageRoute(
               builder: (BuildContext context) => WaitingPage(
-                currPlayer: currPlayer,
-                playersList: playersList,
                 roomId: roomId.toString(),
               ),
             ));

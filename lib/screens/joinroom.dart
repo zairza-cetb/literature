@@ -55,7 +55,6 @@ class _JoinRoomState extends State<JoinRoom> {
   ///  - new_game
   /// -------------------------------------------------------------------
   _joinRoomListener(Map message) {
-    print(context.toString());
     switch (message["action"]) {
       case "set_id":
         // Set the player ID.
@@ -75,7 +74,7 @@ class _JoinRoomState extends State<JoinRoom> {
         });
         if (playersList.length == 0) {
           playersList = (message["data"])["players"];
-          print(playersList.toString());
+          // print(playersList.toString());
           currPlayer = new Player(name: _name.text);
           // Assign the ID of the player
           currPlayer.id = playerId;
@@ -85,19 +84,19 @@ class _JoinRoomState extends State<JoinRoom> {
         players.removeAll();
         List<Player> lp=[];
         for (var player in (message["data"])["players"]) {
-          print(player["id"]);
-          Player p = new Player(name: player["name"],id: player["id"]);
+          Player p;
+          if((message["data"])["lobbyLeader"]["id"] == player["id"])
+            p = new Player(name: player["name"],id: player["id"],lobbyLeader: true);
+          else
+            p = new Player(name: player["name"],id: player["id"]);
           lp.add(p);
         }
         players.addPlayers(lp);
-        print(players.players);
         // force rebuild
         Navigator.push(
           context,
           new MaterialPageRoute(
             builder: (BuildContext context) => WaitingPage(
-              playersList: playersList,
-              currPlayer: currPlayer,
               roomId: message["data"]["roomId"].toString(),
             ),
           ),

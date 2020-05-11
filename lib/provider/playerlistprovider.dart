@@ -12,13 +12,11 @@ class PlayerList extends ChangeNotifier {
 
   void addPlayer(Player p){
     _list.add(p);
-    print(p.name);
     notifyListeners();
   }
 
   void addCurrPlayer(Player p){
     _currPlayer.add(p);
-    print(p.name);
     notifyListeners();
   }
 
