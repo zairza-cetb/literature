@@ -78,6 +78,7 @@ class _CreateRoomState extends State<CreateRoom> {
                 : false);
         
         currPlayerProvider.addCurrPlayer(currPlayer);
+        currPlayerProvider.removeAll();
         currPlayerProvider.addPlayer(currPlayer);
         setState(() {
           isLoading = false;

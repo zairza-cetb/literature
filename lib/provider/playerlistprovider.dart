@@ -16,6 +16,7 @@ class PlayerList extends ChangeNotifier {
   }
 
   void addCurrPlayer(Player p){
+    _currPlayer.clear();
     _currPlayer.add(p);
     notifyListeners();
   }
