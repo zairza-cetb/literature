@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:literature/models/player.dart';
+import 'package:literature/provider/playerlistprovider.dart';
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
 // Start Game page
 import 'package:literature/screens/gamescreen.dart';
 // Local Notification Helper
 import 'package:literature/utils/local_notification_helper.dart';
+import 'package:provider/provider.dart';
 
 class WaitingPage extends StatefulWidget {
-
   WaitingPage({
     Key key,
-    this.currPlayer,
-    this.playersList,
     this.roomId,
   }) : super(key: key);
 
@@ -24,8 +23,7 @@ class WaitingPage extends StatefulWidget {
 
   ///
   ///
-  ///
-  List<dynamic> playersList;
+  //
 
   ///
   /// RoomId
@@ -57,21 +55,15 @@ class _WaitingPageState extends State<WaitingPage> {
     notifications.initialize(
         InitializationSettings(settingsAndroid, settingsIOS),
         onSelectNotification: onSelectNotification);
-    
-    // A Push Notification Check
-    if( widget.playersList.length == 6 ) {
-      showOngoingNotification(notifications, title: 'Start The Game', body: 'The Room is full. You can start the Game.'); 
-    }
-
   }
 
-  Future onSelectNotification(String payload) async { 
-    setState(() {});
-    notifications.cancel(0);  
+  Future onSelectNotification(String payload) async {
+    notifications.cancel(0);
   }
 
   @override
   void dispose() {
+    
     game.removeListener(_waitingPageListener);
     super.dispose();
   }
@@ -92,25 +84,42 @@ class _WaitingPageState extends State<WaitingPage> {
       ///
       case "joined":
         print("joined");
-        widget.playersList = (message["data"])["players"];
-        
-        // force rebuild
-        setState(() {});
+
+        final playerProvider = Provider.of<PlayerList>(context, listen: false);
+        playerProvider.removeAll();
+        List<Player> lp = [];
+        for (var player in (message["data"])["players"]) {
+          Player p;
+          if ((message["data"])["lobbyLeader"]["id"] == player["id"])
+            p = new Player(
+                name: player["name"], id: player["id"], lobbyLeader: true);
+          else
+            p = new Player(name: player["name"], id: player["id"]);
+          lp.add(p);
+        }
+        playerProvider.addPlayers(lp);
+
+        // Push Notification Check
+        if (playerProvider.players.length == 6) {
+          showOngoingNotification(notifications,
+              title: 'Start The Game',
+              body: 'The Room is full. You can start the Game.');
+        }
+
         break;
       // Move any waiting clients
       // to the game page.
       case "game_started":
+        final playerProvider = Provider.of<PlayerList>(context, listen: false);
         Navigator.push(
             context,
             new MaterialPageRoute(
               builder: (BuildContext context) => new GameScreen(
-                player: widget.currPlayer,
-                playersList: widget.playersList,
+                player: playerProvider.currPlayer,
+                playersList: playerProvider.players,
               ),
             ));
         break;
-
-        
     }
   }
 
@@ -124,18 +133,21 @@ class _WaitingPageState extends State<WaitingPage> {
     // We need to send the opponentId to initiate a new game
     game.send('start_game', widget.roomId);
 
+    final playerProvider = Provider.of<PlayerList>(context, listen: false);
     Navigator.push(
-        context,
-        new MaterialPageRoute(
-          builder: (BuildContext context) => new GameScreen(
-            player: widget.currPlayer,
-            playersList: widget.playersList,
-          ),
-        ));
+      context,
+      new MaterialPageRoute(
+        builder: (BuildContext context) => new GameScreen(
+          player: playerProvider.currPlayer,
+          playersList: playerProvider.players,
+        ),
+      ),
+    );
   }
 
   _getPlayButton(playerInfo) {
-    if (widget.playersList.length == 2) {
+    final players = Provider.of<PlayerList>(context, listen: false);
+    if (players.players.length == 2) {
       return new RaisedButton(
         onPressed: () {
           _onPlayGame(context);
@@ -166,24 +178,27 @@ class _WaitingPageState extends State<WaitingPage> {
     /// play option.
     ///
 
-    List<Widget> children = widget.playersList?.map((playerInfo) {
-      // print(widget.currPlayer.name + " " + playerInfo["name"]);
-      if (widget.currPlayer.lobbyLeader == true &&
-          widget.currPlayer.name == playerInfo["name"]) {
-        // print(playerInfo);
-        return new ListTile(
-          title: new Text(playerInfo["name"] + " [Lobby leader]"),
-          trailing: _getPlayButton(playerInfo),
-        );
-      } else {
-        // print(playerInfo);
-        return new ListTile(
-          title: new Text(playerInfo["name"]),
-        );
-      }
-    })?.toList();
+    return Consumer<PlayerList>(
+        builder: (BuildContext context, PlayerList value, Widget child) {
+      List<Widget> children = value.players?.map((playerInfo) {
+        // print(widget.currPlayer.name + " " + playerInfo["name"]);
 
-    return new Column(children: children);
+        if (playerInfo.lobbyLeader) {
+          print(playerInfo);
+          return new ListTile(
+            title: new Text(playerInfo.name + " [Lobby leader]"),
+            trailing: _getPlayButton(playerInfo),
+          );
+        } else {
+          // print(playerInfo);
+          return new ListTile(
+            title: new Text(playerInfo.name),
+          );
+        }
+      })?.toList();
+
+      return new Column(children: children);
+    });
   }
 
   Widget roomInformation() {

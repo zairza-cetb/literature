@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:literature/components/appbar.dart';
 import 'package:literature/models/player.dart';
+import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/screens/waitingpage.dart';
 import 'package:literature/utils/audio.dart';
 
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
 import 'package:literature/utils/loader.dart';
+import 'package:provider/provider.dart';
 
 class CreateRoom extends StatefulWidget {
   // Initialise AudioPlayer instance
@@ -48,6 +50,7 @@ class _CreateRoomState extends State<CreateRoom> {
   ///  - new_game
   /// -------------------------------------------------------------------
   _createRoomListener(Map message) {
+    final currPlayerProvider = Provider.of<PlayerList>(context,listen: false);
     switch (message["action"]) {
       case "set_id":
         // Set the player ID.
@@ -66,12 +69,17 @@ class _CreateRoomState extends State<CreateRoom> {
         roomId = (message["data"])["roomId"];
         // Validates if actually the player created the room,
         // Need username matching in the db for any room.
+        // print(playersList.toString());
         currPlayer = new Player(
             name: _name.text,
             id: playerId,
             lobbyLeader: (message["data"]["lobbyLeader"])["name"] == _name.text
                 ? true
                 : false);
+        
+        currPlayerProvider.addCurrPlayer(currPlayer);
+        currPlayerProvider.removeAll();
+        currPlayerProvider.addPlayer(currPlayer);
         setState(() {
           isLoading = false;
         });
@@ -79,8 +87,6 @@ class _CreateRoomState extends State<CreateRoom> {
             context,
             new MaterialPageRoute(
               builder: (BuildContext context) => WaitingPage(
-                currPlayer: currPlayer,
-                playersList: playersList,
                 roomId: roomId.toString(),
               ),
             ));
