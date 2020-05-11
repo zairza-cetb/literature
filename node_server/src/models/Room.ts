@@ -5,9 +5,10 @@ import { MONGODB_URI } from "../util/secrets";
 const connection = mongoose.createConnection(MONGODB_URI);
 autoIncrement.initialize(connection);
 
-type Player = {
+export type Player = {
   name: string;
-  id: number;
+  id: String;
+  teamIdentifier: String;
 }
 
 export enum GameStatus {
@@ -26,12 +27,13 @@ export type RoomDocument = mongoose.Document & {
 const roomSchema = new mongoose.Schema({
   players: [{
     _id: false,
-    id: Number,
-    name: String
+    id: String,
+    name: String,
+    teamIdentifier: String,
   }],
   status: String,
   lobbyLeader: {
-    id: Number,
+    id: String,
     name: String
   }
 });

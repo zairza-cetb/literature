@@ -1,8 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/models/playing_cards.dart';
 import 'package:literature/utils/game_communication.dart';
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:literature/components/card_deck.dart';
+import 'package:literature/utils/loader.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:literature/components/player_view.dart';
 
 class GameScreen extends StatefulWidget {
   GameScreen({
@@ -19,16 +25,18 @@ class GameScreen extends StatefulWidget {
   ///
   /// List of players in the room
   ///
-  final List<dynamic> playersList;
+  List<dynamic> playersList;
 
   _GameScreenState createState() => _GameScreenState();
 }
 
 class _GameScreenState extends State<GameScreen> {
   List<PlayingCard> _cards = new List<PlayingCard>();
-  // card ui options
-  static const font = "Courier New";
+  List<dynamic> finalPlayersList = new List();
   bool _ready = false;
+  List<Player> teamRed = new List<Player>();
+  List<Player> teamBlue = new List<Player>();
+  double radius = 150.0;
 
   @override
   void initState() {
@@ -45,8 +53,10 @@ class _GameScreenState extends State<GameScreen> {
 
   _gameScreenListener(message) {
     switch(message["action"]) {
-      case "opening_hand":
+      // Gets cards from the server.
+      case "pre_game_data":
         List cards = (message["data"])["cards"];
+        List players = (message["data"]["playersWithTeamIds"]);
         // Add to _cards list in the state
         cards.forEach((card) {
           _cards.add(new PlayingCard(
@@ -56,159 +66,39 @@ class _GameScreenState extends State<GameScreen> {
             opened: false)
           );
         });
-        // Assign cards to the current user
-        // and setState.
-        setState(() {});
+        // Assign red and blue teams
+        // players.forEach((player) {
+        //   if (player["teamIdentifier"] == "red") {
+        //     // team_red.add(p);
+        //     teamRed.add(
+        //       new Player(
+        //         name: player["name"],
+        //         id: player["id"],
+        //         teamIdentifier: player["teamIdentifier"]
+        //       )
+        //     );
+        //   } 
+        //   else teamBlue.add(
+        //     new Player(
+        //       name: player["name"],
+        //       id: player["id"],
+        //       teamIdentifier: player["teamIdentifier"]
+        //     )
+        //   );
+        // });
+        // Override playersList.
+        finalPlayersList = players;
+        // Force rebuild
+        setState(() { _ready = true; });
+        break;
+      case "make_move":
+        print("Listening");
+        var name = message["data"]["playerName"];
+        print(name);
         break;
       default:
         print("Default case");
         break;
-    }
-  }
-
-  Widget _playerInformation(Player player) {
-    return Container(
-      child: Center(
-        child: (
-          new Text("Curr player: " + player.name, style: new TextStyle(fontSize: 30.0),)
-        )
-      ),
-    );
-  }
-
-  Widget _cardsList() {
-    if (_cards == null) {
-      return new Text("No cards yet");
-    } else {
-      var children = _cards.map((card) {
-        return new Column(
-          children: <Widget>[
-            new Material(
-              color: Colors.white,
-              // The card number
-              // in the center.
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
-                  color: Colors.white,
-                  border: Border.all(color: Colors.black),
-                ),
-                height: 160.0,
-                width: 100,
-                child: Stack(
-                  children: <Widget>[
-                    Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Center(
-                            child: Text(
-                              // put the card type here
-                              _cardTypeToString(EnumToString.parse(card.cardType)),
-                              style: TextStyle(
-                                fontFamily: font,
-                                fontSize: 60.0,
-                                color: (
-                                  EnumToString.parse(card.cardSuit) == "clubs" || 
-                                  EnumToString.parse(card.cardSuit) == "spades" ? Colors.black : Colors.red
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Card emblem on the top.
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Container(
-                        // color: Colors.blue,
-                        child: Align(
-                          alignment: Alignment.topRight,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Column(
-                                children: <Widget>[
-                                  Container(
-                                    child: Text(
-                                      _cardTypeToString(EnumToString.parse(card.cardType)),
-                                      style: TextStyle(
-                                        fontFamily: font,
-                                        fontSize: 20.0,
-                                        color: (
-                                          EnumToString.parse(card.cardSuit) == "clubs" || 
-                                          EnumToString.parse(card.cardSuit) == "spades" ? Colors.black : Colors.red
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                  height: 16.0,
-                                    child: _cardSuitToImage(EnumToString.parse(card.cardSuit)),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Card emblem on the bottom.
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 115, 4.0, 0),
-                      child: Container(
-                        // color: Colors.blue,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Column(
-                                children: <Widget>[
-                                  Container(
-                                  height: 16.0,
-                                    child: _cardSuitToImage(EnumToString.parse(card.cardSuit)),
-                                  ),
-                                  Container(
-                                    child: Text(
-                                      _cardTypeToString(EnumToString.parse(card.cardType)),
-                                      style: TextStyle(
-                                        fontFamily: font,
-                                        fontSize: 20.0,
-                                        color: (
-                                          EnumToString.parse(card.cardSuit) == "clubs" || 
-                                          EnumToString.parse(card.cardSuit) == "spades" ? Colors.black : Colors.red
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      }).toList();
-      
-      return Center(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: children
-          ),
-        ),
-      );
     }
   }
 
@@ -222,89 +112,38 @@ class _GameScreenState extends State<GameScreen> {
         // cause there won't be any forwarding
         // from there on.
         appBar: new AppBar(),
-        body:  new Stack(
-          children: <Widget> [
-            new Positioned(
-              child: new Align(
-                alignment: Alignment.topCenter,
-                child: _playerInformation(widget.player)
-              )
-            ),
-            new Positioned(
-              bottom:0,
-              left: 0,
-              right: 0,
-              child: Container(color: Colors.blue ,child: _cardsList())
-            ),
-          ]
+        body:  _ready ? SlidingUpPanel(
+          body: new Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget> [
+              new Container(
+                height: MediaQuery.of(context).size.height*0.95,
+                padding: EdgeInsets.all(0),
+                color: Colors.blueGrey,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
+                  child: new PlayerView(
+                    containerHeight: MediaQuery.of(context).size.height*0.95,
+                    containerWidth: MediaQuery.of(context).size.width,
+                    currPlayer: widget.player,
+                    finalPlayersList: finalPlayersList,
+                  ),
+                ),
+              ),
+              // Allocate bottom with a few spaces.
+            ]
+          ),
+          panel: new Container(
+            alignment: Alignment.bottomCenter,
+            child: CardDeck(cards: _cards, containerHeight: MediaQuery.of(context).size.height-467)
+          ),
+        ) :
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: Loader(),
         ),
       ),
     );
-  }
-
-  // Returns a string representing
-  // the shorthand of a card suit.
-  String _cardTypeToString(String type) {
-    switch(type) {
-      case "ace":
-        return "A";
-        break;
-      case "two":
-        return "2";
-        break;
-      case "three":
-        return "3";
-        break;
-      case "four":
-        return "4";
-        break;
-      case "five":
-        return "5";
-        break;
-      case "six":
-        return "6";
-        break;
-      case "eight":
-        return "8";
-        break;
-      case "nine":
-        return "9";
-        break;
-      case "ten":
-        return "10";
-        break;
-      case "jack":
-        return "J";
-        break;
-      case "king":
-        return "K";
-        break;
-      case "queen":
-        return "Q";
-        break;
-      default:
-        return "0";
-        break;
-    }
-  }
-
-  Image _cardSuitToImage(String suit) {
-    switch(suit) {
-      case "hearts":
-        return Image.asset("assets/hearts.png");
-        break;
-      case "diamonds":
-        return Image.asset("assets/diamonds.png");
-        break;
-      case "clubs":
-        return Image.asset("assets/clubs.png");
-        break;
-      case "spades":
-        return Image.asset("assets/spades.png");
-        break;
-      default:
-        return Image.asset("assets/spades.png");
-        break;
-    }
   }
 }
