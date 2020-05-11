@@ -37,6 +37,7 @@ class _GameScreenState extends State<GameScreen> {
   List<Player> teamRed = new List<Player>();
   List<Player> teamBlue = new List<Player>();
   double radius = 150.0;
+  Map<String, String> turnsMapper = new Map<String, String>();
 
   @override
   void initState() {
@@ -88,13 +89,26 @@ class _GameScreenState extends State<GameScreen> {
         // });
         // Override playersList.
         finalPlayersList = players;
+        // build a map of players and turns.
+        finalPlayersList.forEach((player) {
+          turnsMapper.putIfAbsent(player["name"], () => "waiting");
+        });
         // Force rebuild
         setState(() { _ready = true; });
         break;
       case "make_move":
         print("Listening");
         var name = message["data"]["playerName"];
-        print(name);
+        // set turnsMapper value as true.
+        // and force rebuild.
+        // turnsMapper[name] = "true";
+        turnsMapper.forEach((key, value) {
+          if (key == name) {
+            turnsMapper[key] = "hasTurn";
+          } else turnsMapper[key] = "waiting";
+        });
+        // set opponents of that player.
+        setState(() {});
         break;
       default:
         print("Default case");
@@ -127,6 +141,7 @@ class _GameScreenState extends State<GameScreen> {
                     containerWidth: MediaQuery.of(context).size.width,
                     currPlayer: widget.player,
                     finalPlayersList: finalPlayersList,
+                    turnsMapper: turnsMapper
                   ),
                 ),
               ),
