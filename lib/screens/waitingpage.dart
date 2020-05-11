@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:literature/models/player.dart';
+import 'package:literature/provider/playerlistprovider.dart';
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
 // Start Game page
 import 'package:literature/screens/gamescreen.dart';
 // Local Notification Helper
 import 'package:literature/utils/local_notification_helper.dart';
+import 'package:provider/provider.dart';
 
 class WaitingPage extends StatefulWidget {
 
@@ -38,6 +40,7 @@ class WaitingPage extends StatefulWidget {
 // Should contain a form of Room ID and
 // Player name to join.
 class _WaitingPageState extends State<WaitingPage> {
+
   final notifications = FlutterLocalNotificationsPlugin();
 
   @override
@@ -83,6 +86,7 @@ class _WaitingPageState extends State<WaitingPage> {
   ///  - new_game
   /// -------------------------------------------------------------------
   _waitingPageListener(message) {
+
     switch (message["action"]) {
 
       ///
@@ -93,9 +97,17 @@ class _WaitingPageState extends State<WaitingPage> {
       case "joined":
         print("joined");
         widget.playersList = (message["data"])["players"];
-        print((message["data"])["players"].toString());
-        // force rebuild
-        setState(() {});
+        final playerProvider = Provider.of<PlayerList>(context,listen: false);
+        playerProvider.removeAll();
+        List<Player> lp=[];
+        for (var player in (message["data"])["players"]) {
+          print(player["id"]);
+          Player p = new Player(name: player["name"],id: player["id"]);
+          lp.add(p);
+        }
+        playerProvider.addPlayers(lp);
+        
+        
         break;
       // Move any waiting clients
       // to the game page.
@@ -165,24 +177,30 @@ class _WaitingPageState extends State<WaitingPage> {
     /// to launch a new game, if it is an admin then only set
     /// play option.
     ///
-    List<Widget> children = widget.playersList?.map((playerInfo) {
-      // print(widget.currPlayer.name + " " + playerInfo["name"]);
-      if (widget.currPlayer.lobbyLeader == true &&
-          widget.currPlayer.name == playerInfo["name"]) {
-        // print(playerInfo);
-        return new ListTile(
-          title: new Text(playerInfo["name"] + " [Lobby leader]"),
-          trailing: _getPlayButton(playerInfo),
-        );
-      } else {
-        // print(playerInfo);
-        return new ListTile(
-          title: new Text(playerInfo["name"]),
-        );
-      }
-    })?.toList();
 
-    return new Column(children: children);
+    return Consumer<PlayerList>(
+      builder: (BuildContext context, PlayerList value, Widget child) {
+         List<Widget> children = value.players?.map((playerInfo) {
+          // print(widget.currPlayer.name + " " + playerInfo["name"]);
+          
+          if (widget.currPlayer.lobbyLeader == true &&
+              widget.currPlayer.name == playerInfo.name) {
+            // print(playerInfo);
+            return new ListTile(
+              title: new Text(playerInfo.name + " [Lobby leader]"),
+              trailing: _getPlayButton(playerInfo),
+            );
+          } else {
+            // print(playerInfo);
+            return new ListTile(
+              title: new Text(playerInfo.name),
+            );
+          }
+        })?.toList();
+
+        return new Column(children: children);
+      }
+    );
   }
 
   Widget roomInformation() {
@@ -198,6 +216,8 @@ class _WaitingPageState extends State<WaitingPage> {
 
   @override
   Widget build(BuildContext context) {
+
+  
     // Roles: player.name or null
     return new SafeArea(
       bottom: false,

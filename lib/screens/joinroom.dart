@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:literature/components/appbar.dart';
 import 'package:literature/models/player.dart';
+import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/screens/waitingpage.dart';
 import 'package:literature/utils/audio.dart';
 
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
 import 'package:literature/utils/loader.dart';
+import 'package:provider/provider.dart';
 
 class JoinRoom extends StatefulWidget {
   // Initialise AudioPlayer instance
@@ -53,6 +55,7 @@ class _JoinRoomState extends State<JoinRoom> {
   ///  - new_game
   /// -------------------------------------------------------------------
   _joinRoomListener(Map message) {
+    print(context.toString());
     switch (message["action"]) {
       case "set_id":
         // Set the player ID.
@@ -72,12 +75,22 @@ class _JoinRoomState extends State<JoinRoom> {
         });
         if (playersList.length == 0) {
           playersList = (message["data"])["players"];
-          // print(playersList);
+          print(playersList.toString());
           currPlayer = new Player(name: _name.text);
           // Assign the ID of the player
           currPlayer.id = playerId;
         }
-        
+        final players = Provider.of<PlayerList>(context,listen: false);
+        players.addCurrPlayer(currPlayer);
+        players.removeAll();
+        List<Player> lp=[];
+        for (var player in (message["data"])["players"]) {
+          print(player["id"]);
+          Player p = new Player(name: player["name"],id: player["id"]);
+          lp.add(p);
+        }
+        players.addPlayers(lp);
+        print(players.players);
         // force rebuild
         Navigator.push(
           context,
@@ -160,6 +173,7 @@ class _JoinRoomState extends State<JoinRoom> {
 
   @override
   Widget build(BuildContext context) {
+
     var appBar = GlobalAppBar(audioController);
     return new SafeArea(
       bottom: false,
