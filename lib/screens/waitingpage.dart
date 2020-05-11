@@ -63,7 +63,6 @@ class _WaitingPageState extends State<WaitingPage> {
 
   @override
   void dispose() {
-    
     game.removeListener(_waitingPageListener);
     super.dispose();
   }
@@ -179,7 +178,7 @@ class _WaitingPageState extends State<WaitingPage> {
     ///
 
     return Consumer<PlayerList>(
-        builder: (BuildContext context, PlayerList value, Widget child) {
+      builder: (BuildContext context, PlayerList value, Widget child) {
       List<Widget> children = value.players?.map((playerInfo) {
         // print(widget.currPlayer.name + " " + playerInfo["name"]);
 

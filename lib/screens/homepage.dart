@@ -72,7 +72,7 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
         final graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,'
             'picture,email&access_token=${token}');
         final profile = JSON.jsonDecode(graphResponse.body);
-
+        print(profile.toString());
         setState(() {
           userProfile = profile;
           _isLoggedIn = true;
