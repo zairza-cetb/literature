@@ -17,7 +17,6 @@ class WebSocket {
   }
 
   WebSocket._internal();
-  
 
   // WebSocket channel
   IO.Socket _channel;
@@ -35,12 +34,12 @@ class WebSocket {
     // reset previous communication, if any
     // reset();
 
-    // Initiate communication 
+    // Initiate communication
     // To Connect to the Localhost in the App, Read this following
     // https://stackoverflow.com/questions/4779963/how-can-i-access-my-localhost-from-my-android-device
-    _channel = IO.io('http://localhost:3000', <String, dynamic>{
+    _channel = IO.io('http://192.168.43.234:3000/', <String, dynamic>{
       'transports': ['websocket'],
-        // 'extraHeaders': {'foo': 'bar'} // optional
+      // 'extraHeaders': {'foo': 'bar'} // optional
     });
     _channel.connect();
     _isOn = true;
@@ -74,14 +73,15 @@ class WebSocket {
     }
   }
 
-   /// ---------------------------------------------------------
+  /// ---------------------------------------------------------
   /// Adds a callback to be invoked in case of incoming
   /// notification
   /// ---------------------------------------------------------
-  addListener(Function callback){
+  addListener(Function callback) {
     _listeners.add(callback);
   }
-  removeListener(Function callback){
+
+  removeListener(Function callback) {
     _listeners.remove(callback);
   }
 
@@ -111,7 +111,7 @@ class WebSocket {
         callback(message);
       });
     });
-    // Waiting clients also need to move 
+    // Waiting clients also need to move
     // to the start game page
     socket.on("game_started", (data) {
       Map messageRecieved = json.decode(data);

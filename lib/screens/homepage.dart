@@ -14,8 +14,8 @@ class LiteratureHomePage extends StatefulWidget {
   _LiteratureHomePage createState() => _LiteratureHomePage();
 }
 
-class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingObserver {
-
+class _LiteratureHomePage extends State<LiteratureHomePage>
+    with WidgetsBindingObserver {
   AppLifecycleState _lastLifecycleState;
   //firebase instance
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -83,15 +83,16 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Image(image: AssetImage('assets/logo.png'),
+                    Image(
+                      image: AssetImage('assets/logo.png'),
                     ),
-                    Text('Literature',
-                    style: TextStyle(fontFamily:'Monteserrat',
-                      fontWeight: FontWeight.bold,color:
-                      Color(0xFF37474f),fontSize: 20.0),
-                    ),
-                    Text('Tap to Go!',style: TextStyle(color:
-                      Color(0xFF37474f))
+                    Text(
+                      'Literature',
+                      style: TextStyle(
+                          fontFamily: 'Monteserrat',
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF37474f),
+                          fontSize: 20.0),
                     ),
                   ]
                 ),
@@ -117,22 +118,21 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey,
-                            offset: const Offset(3.0, 3.0),
-                            blurRadius: 5.0,
-                            spreadRadius: 2.0,
-                          )
-                        ],
-                        border: Border.all(
-                          color: Colors.black,
-                          style: BorderStyle.solid,
-                          width: 1.0,
-                        ),
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(40.0)
-                      ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey,
+                              offset: const Offset(3.0, 3.0),
+                              blurRadius: 5.0,
+                              spreadRadius: 2.0,
+                            )
+                          ],
+                          border: Border.all(
+                            color: Colors.black,
+                            style: BorderStyle.solid,
+                            width: 1.0,
+                          ),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(40.0)),
                       child: Center(
                         child:
                         ImageIcon(AssetImage('assets/facebook.png')
