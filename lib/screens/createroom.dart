@@ -143,7 +143,7 @@ class _CreateRoomState extends State<CreateRoom> {
       isLoading = true;
     });
     // Forces a rebuild
-    setState(() {});
+   
   }
 
   @override

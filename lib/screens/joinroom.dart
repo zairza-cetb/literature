@@ -55,11 +55,19 @@ class _JoinRoomState extends State<JoinRoom> {
   ///  - new_game
   /// -------------------------------------------------------------------
   _joinRoomListener(Map message) {
+    final currPlayerProvider = Provider.of<PlayerList>(context, listen: false);
+    Player x = currPlayerProvider.currPlayer;
+    // print(x.name);
     switch (message["action"]) {
+      
       case "set_id":
         // Set the player ID.
         playerId = message["data"]["player_id"];
-        Map joinDetails = {"roomId": _roomId.text, "name": _name.text, "playerId": playerId};
+        Map joinDetails = {
+          "roomId": _roomId.text,
+          "name": x.name,
+          "playerId": playerId
+        };
         game.send("join_game", json.encode(joinDetails));
         break;
 
@@ -75,20 +83,22 @@ class _JoinRoomState extends State<JoinRoom> {
         if (playersList.length == 0) {
           playersList = (message["data"])["players"];
           // print(playersList.toString());
-          currPlayer = new Player(name: _name.text);
+          currPlayer = new Player(name: x.name);
           // Assign the ID of the player
           currPlayer.id = playerId;
+          currPlayer.photoURL = x.photoURL;
         }
-        final players = Provider.of<PlayerList>(context,listen: false);
+        final players = Provider.of<PlayerList>(context, listen: false);
         players.addCurrPlayer(currPlayer);
         players.removeAll();
-        List<Player> lp=[];
+        List<Player> lp = [];
         for (var player in (message["data"])["players"]) {
           Player p;
-          if((message["data"])["lobbyLeader"]["id"] == player["id"])
-            p = new Player(name: player["name"],id: player["id"],lobbyLeader: true);
+          if ((message["data"])["lobbyLeader"]["id"] == player["id"])
+            p = new Player(
+                name: player["name"], id: player["id"], lobbyLeader: true);
           else
-            p = new Player(name: player["name"],id: player["id"]);
+            p = new Player(name: player["name"], id: player["id"]);
           lp.add(p);
         }
         players.addPlayers(lp);
@@ -120,41 +130,48 @@ class _JoinRoomState extends State<JoinRoom> {
   Widget _joinGame() {
     return new Container(
       padding: const EdgeInsets.all(16.0),
-      child: new Column(
-        children: <Widget>[
-          new TextField(
-            controller: _name,
-            keyboardType: TextInputType.text,
-            decoration: new InputDecoration(
-              hintText: 'Enter your name...',
-              contentPadding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-              border: new OutlineInputBorder(
-                borderRadius: new BorderRadius.circular(32.0),
+      child: Center(
+
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 40.0),
               ),
-              icon: const Icon(Icons.person),
-            ),
-          ),
-          new TextField(
-            controller: _roomId,
-            keyboardType: TextInputType.text,
-            decoration: new InputDecoration(
-              hintText: 'Enter Room ID...',
-              contentPadding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-              border: new OutlineInputBorder(
-                borderRadius: new BorderRadius.circular(32.0),
+              new Text(
+                "Enter the room code",
+                style: TextStyle(
+                    fontFamily: 'Cinzel',
+                    fontStyle: FontStyle.normal,
+                    fontSize: 30.0),
               ),
-              icon: const Icon(Icons.person),
-            ),
+              Padding(
+                padding: EdgeInsets.only(top: 20.0),
+              ),
+              new TextField(
+                controller: _roomId,
+                keyboardType: TextInputType.text,
+                decoration: new InputDecoration(
+                  hintText: 'Enter Room ID...',
+                  contentPadding:
+                      const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                  border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(32.0),
+                  ),
+                  icon: const Icon(Icons.store),
+                ),
+              ),
+              new Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: new RaisedButton(
+                  onPressed: _onJoinGame,
+                  child: new Text('Join'),
+                ),
+              ),
+            ],
           ),
-          new Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: new RaisedButton(
-              onPressed: _onJoinGame,
-              child: new Text('Join'),
-            ),
-          ),
-        ],
-      ),
+        ),
     );
   }
 
@@ -172,7 +189,6 @@ class _JoinRoomState extends State<JoinRoom> {
 
   @override
   Widget build(BuildContext context) {
-
     var appBar = GlobalAppBar(audioController);
     return new SafeArea(
       bottom: false,

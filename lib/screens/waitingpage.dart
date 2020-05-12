@@ -183,13 +183,11 @@ class _WaitingPageState extends State<WaitingPage> {
         // print(widget.currPlayer.name + " " + playerInfo["name"]);
 
         if (playerInfo.lobbyLeader) {
-          print(playerInfo);
           return new ListTile(
             title: new Text(playerInfo.name + " [Lobby leader]"),
             trailing: _getPlayButton(playerInfo),
           );
         } else {
-          // print(playerInfo);
           return new ListTile(
             title: new Text(playerInfo.name),
           );

@@ -13,12 +13,15 @@ class Player extends ChangeNotifier {
   // Team identifier
   String teamIdentifier;
 
+  // Image URl
+  String photoURL;
   // Constructor
   Player({
     this.lobbyLeader = false,
     @required this.name,
     this.id,
     this.teamIdentifier,
+    this.photoURL,
     this.teamLeader = false
   });
 
