@@ -83,7 +83,7 @@ class _LiteratureHomePage extends State<LiteratureHomePage>
         final currPlayerProvider =
             Provider.of<PlayerList>(context, listen: false);
         currPlayerProvider.addCurrPlayer(p);
-
+        
         setState(() {
           userProfile = profile;
           _isLoggedIn = true;

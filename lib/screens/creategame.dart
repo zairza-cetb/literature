@@ -63,12 +63,13 @@ class _CreateGame extends State<CreateGame> {
   }
 
   _createRoomListener(Map message) {
+
     final currPlayerProvider = Provider.of<PlayerList>(context, listen: false);
     Player x = currPlayerProvider.currPlayer;
     // print(x.name);
     switch (message["action"]) {
       case "set_id":
-
+        currPlayerProvider.removeAll();
         // Set the player ID.
         playerId = message["data"]["player_id"];
         Map createDetails = {"name": x.name, "playerId": playerId};
@@ -95,6 +96,7 @@ class _CreateGame extends State<CreateGame> {
         // print(currPlayer.photoURL);
         currPlayerProvider.removeAll();
         currPlayerProvider.addPlayer(currPlayer);
+        currPlayerProvider.addCurrPlayer(currPlayer);
         setState(() {
           isLoading = false;
         });

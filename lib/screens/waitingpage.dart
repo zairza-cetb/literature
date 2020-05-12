@@ -63,7 +63,6 @@ class _WaitingPageState extends State<WaitingPage> {
 
   @override
   void dispose() {
-    
     game.removeListener(_waitingPageListener);
     super.dispose();
   }
@@ -90,15 +89,14 @@ class _WaitingPageState extends State<WaitingPage> {
         List<Player> lp = [];
         for (var player in (message["data"])["players"]) {
           Player p;
-          if ((message["data"])["lobbyLeader"]["id"] == player["id"])
-            p = new Player(
-                name: player["name"], id: player["id"], lobbyLeader: true);
-          else
+          print(player["id"]);
+          if ((message["data"])["lobbyLeader"]["id"] == player["id"]) {
+            p = new Player(name: player["name"], id: player["id"], lobbyLeader: true);
+          } else
             p = new Player(name: player["name"], id: player["id"]);
           lp.add(p);
         }
         playerProvider.addPlayers(lp);
-
         // Push Notification Check
         if (playerProvider.players.length == 6) {
           showOngoingNotification(notifications,
@@ -167,7 +165,7 @@ class _WaitingPageState extends State<WaitingPage> {
     /// If the user has not yet joined, do not display
     /// the list of players
     ///
-    // if (game.playerName == "") {
+    // if (game.playerName == "") {_getPlayButton
     //   return new Container();
     // }
 
@@ -180,15 +178,17 @@ class _WaitingPageState extends State<WaitingPage> {
     ///
     final currPlayer = Provider.of<PlayerList>(context).currPlayer;
     return Consumer<PlayerList>(
-      builder: (BuildContext context, PlayerList value, Widget child) {
+        builder: (BuildContext context, PlayerList value, Widget child) {
       List<Widget> children = value.players?.map((playerInfo) {
         // print(widget.currPlayer.name + " " + playerInfo["name"]);
 
         if (playerInfo.lobbyLeader) {
-          // print(playerInfo);
+        
           return new ListTile(
             title: new Text(playerInfo.name + " [Lobby leader]"),
-            trailing: (currPlayer.id == playerInfo.id) ? _getPlayButton(playerInfo):null,
+            trailing: (currPlayer.id == playerInfo.id)
+                ? _getPlayButton(playerInfo)
+                : null,
           );
         } else {
           // print(playerInfo);
