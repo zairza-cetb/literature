@@ -189,6 +189,7 @@ class _JoinRoomState extends State<JoinRoom> {
 
   @override
   Widget build(BuildContext context) {
+
     var appBar = GlobalAppBar(audioController);
     return new SafeArea(
       bottom: false,

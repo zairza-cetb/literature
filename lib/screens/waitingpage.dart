@@ -63,6 +63,7 @@ class _WaitingPageState extends State<WaitingPage> {
 
   @override
   void dispose() {
+    
     game.removeListener(_waitingPageListener);
     super.dispose();
   }
@@ -176,18 +177,21 @@ class _WaitingPageState extends State<WaitingPage> {
     /// to launch a new game, if it is an admin then only set
     /// play option.
     ///
-
+    ///
+    final currPlayer = Provider.of<PlayerList>(context).currPlayer;
     return Consumer<PlayerList>(
       builder: (BuildContext context, PlayerList value, Widget child) {
       List<Widget> children = value.players?.map((playerInfo) {
         // print(widget.currPlayer.name + " " + playerInfo["name"]);
 
         if (playerInfo.lobbyLeader) {
+          // print(playerInfo);
           return new ListTile(
             title: new Text(playerInfo.name + " [Lobby leader]"),
-            trailing: _getPlayButton(playerInfo),
+            trailing: (currPlayer.id == playerInfo.id) ? _getPlayButton(playerInfo):null,
           );
         } else {
+          // print(playerInfo);
           return new ListTile(
             title: new Text(playerInfo.name),
           );
@@ -233,3 +237,4 @@ class _WaitingPageState extends State<WaitingPage> {
     );
   }
 }
+// print(playerInfo);
