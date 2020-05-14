@@ -54,7 +54,7 @@ class _CreateRoomState extends State<CreateRoom> {
     switch (message["action"]) {
       case "set_id":
         // Set the player ID.
-        playerId = message["data"]["player_id"];
+        playerId = message["data"]["playerId"];
         Map createDetails = { "name": _name.text, "playerId": playerId };
         game.send("create_game", json.encode(createDetails));
         break;
