@@ -182,7 +182,7 @@ class _WaitingPageState extends State<WaitingPage> {
         builder: (BuildContext context, PlayerList value, Widget child) {
       List<Widget> children = value.players?.map((playerInfo) {
         // print(widget.currPlayer.name + " " + playerInfo["name"]);
-        String name = (playerInfo.name == currPlayer.name) ? "you" : playerInfo.name;
+        String name = (playerInfo.id == currPlayer.id) ? "you" : playerInfo.name;
         if (playerInfo.lobbyLeader) {
           print(playerInfo);
           return new ListTile(
