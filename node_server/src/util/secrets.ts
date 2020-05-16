@@ -29,4 +29,4 @@ if (!MONGODB_URI) {
     process.exit(1);
 }
 
-export const PORT = process.env["PORT"]
+export const PORT = process.env["PORT"];
