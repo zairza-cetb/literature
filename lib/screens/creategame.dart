@@ -5,7 +5,6 @@ import 'package:literature/components/appbar.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/screens/joinroom.dart';
-import 'package:literature/screens/createroom.dart';
 import 'package:literature/screens/waitingpage.dart';
 import 'package:literature/utils/audio.dart';
 import 'package:literature/utils/game_communication.dart';
@@ -15,12 +14,12 @@ import 'package:provider/provider.dart';
 class CreateGame extends StatefulWidget {
   // Initialise AudioPlayer instance
   final AudioController audioController;
-  final Map userProfile;
 
   // Passed from "homepage.dart"
-  CreateGame(
-      {Key key, @required this.audioController, @required this.userProfile})
-      : super(key: key);
+  CreateGame({
+    Key key,
+    @required this.audioController,
+  }) : super(key: key);
 
   _CreateGame createState() => _CreateGame();
 }
@@ -32,12 +31,14 @@ class _CreateGame extends State<CreateGame> {
   bool isLoading = false;
   // TODO: Room ID should be a hashed value
   int roomId;
-
-  static Map userInfo;
+  var currPlayerProvider;
 
   @override
   void initState() {
     super.initState();
+    // setState(() {
+    //   isLoading = false;
+    // });
   }
 
   void dispose() {
@@ -57,22 +58,26 @@ class _CreateGame extends State<CreateGame> {
     game.connect();
     // print(isLoading);
     setState(() {
-      isLoading = true;
+      this.isLoading = true;
     });
     // Forces a rebuild
   }
 
-  _createRoomListener(Map message) {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    currPlayerProvider = Provider.of<PlayerList>(context, listen: false);
+  }
 
-    final currPlayerProvider = Provider.of<PlayerList>(context, listen: false);
+  _createRoomListener(Map message) {
     Player x = currPlayerProvider.currPlayer;
     // print(x.name);
     switch (message["action"]) {
       case "set_id":
-        currPlayerProvider.removeAll();
         // Set the player ID.
         playerId = message["data"]["player_id"];
-        Map createDetails = {"name": x.name, "playerId": playerId};
+        currPlayerProvider.setCurrPlayerId(playerId);
+        Map createDetails = {"name": x.name, "playerId": x.id};
         game.send("create_game", json.encode(createDetails));
         break;
 
@@ -81,16 +86,17 @@ class _CreateGame extends State<CreateGame> {
       /// waiting page and wait for other players in
       /// the lobby.
       ///
+
       case 'creates_game':
         roomId = (message["data"])["roomId"];
         // Validates if actually the player created the room,
         // Need username matching in the db for any room.
         // print(playersList.toString());
         currPlayer = new Player(
-            name: currPlayerProvider.currPlayer.name,
+            name: x.name,
             id: playerId,
             photoURL: x.photoURL,
-            lobbyLeader: (message["data"]["lobbyLeader"])["name"] == currPlayerProvider.currPlayer.name
+            lobbyLeader: (message["data"]["lobbyLeader"])["name"] == x.name
                 ? true
                 : false);
         // print(currPlayer.photoURL);
@@ -98,8 +104,9 @@ class _CreateGame extends State<CreateGame> {
         currPlayerProvider.addPlayer(currPlayer);
         currPlayerProvider.addCurrPlayer(currPlayer);
         setState(() {
-          isLoading = false;
+          this.isLoading = false;
         });
+        game.removeListener(_createRoomListener);
         Navigator.push(
             context,
             new MaterialPageRoute(
@@ -112,7 +119,7 @@ class _CreateGame extends State<CreateGame> {
 
   @override
   Widget build(BuildContext context) {
-    userInfo = widget.userProfile;
+    var currPlayer = Provider.of<PlayerList>(context).currPlayer;
     var appBar = GlobalAppBar(audioController);
     return Scaffold(
       backgroundColor: Color(0xFFb3e5fc),
@@ -163,11 +170,10 @@ class _CreateGame extends State<CreateGame> {
                         children: <Widget>[
                           CircleAvatar(
                             radius: 50.0,
-                            backgroundImage: NetworkImage(
-                                userInfo["picture"]["data"]["url"]),
+                            backgroundImage: NetworkImage(currPlayer.photoURL),
                             backgroundColor: Colors.transparent,
                           ),
-                          Text(userInfo["name"]),
+                          Text(currPlayer.name),
                         ],
                       ),
                       Container(
@@ -176,7 +182,7 @@ class _CreateGame extends State<CreateGame> {
                         child: Column(
                           children: <Widget>[
                             InkWell(
-                                onTap: _onCreateGame, 
+                                onTap: _onCreateGame,
                                 // () {
                                 //   Navigator.push(
                                 //     context,

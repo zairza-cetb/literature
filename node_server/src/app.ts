@@ -28,7 +28,7 @@ app.get("/", function (_req, res) {
 app.set("port", PORT);
 
 let GAME_STATUS = "";
-const TURN_INTERVAL = 60000 // 60 seconds.
+const TURN_INTERVAL = 60000; // 60 seconds.
 
 io.on("connection", (socket) => {
   // On connection, send it's
@@ -38,7 +38,7 @@ io.on("connection", (socket) => {
   // session with this ID.
   io.to(socket.id).emit(
     "get_id",
-    JSON.stringify({ data: { player_id: socket.id }, action:"set_id" })
+    JSON.stringify({ data: { playerId: socket.id }, action:"set_id" })
   );
 
   /**
@@ -111,6 +111,48 @@ io.on("connection", (socket) => {
     }
   });
 
+    // This function handles the game execution.
+    const startGame = async (roomId: number, players: Player[], index: number) => {
+      GAME_STATUS = "IN_PROGRESS";
+      // Send to player 1 first.
+      if (index == -2) {
+        // Send to player 1 immediately.
+        index = 0;
+        io.to(roomId.toString()).emit(
+          "whose_turn",
+          JSON.stringify({ data: { playerName: players[0]["name"] },
+          action: "make_move" })
+        );
+      }
+  
+      // Send turn details to others players.
+      const timerId = setInterval(function() {
+        index += 1;
+        io.to(roomId.toString()).emit(
+          "whose_turn",
+          JSON.stringify({ data: { playerName: players[index]["name"] },
+          action: "make_move" })
+        );
+        if (index >= players.length - 1) {
+          index = -1;
+        }
+        clearTimeout(timerId);
+        return startGame(roomId, players, index);
+      }, TURN_INTERVAL);
+      // Handles a move for each player.
+      // Basically we have to swap cards if
+      // correct guess, or pass turn if incorrent
+      // Also the user can decide to fold.
+      // In that case we need to check if game
+      // status has been completed.
+      io.on("move_ends", async function(data: any) {
+        clearTimeout(timerId);
+        console.log(data);
+        // start next players turn.
+        return startGame(roomId, players, index);
+      });
+    };
+
   /**
    * Update game status to be IN_PROGRESS(so that room cannot be joined)
    * Make a deck of shuffled cards and return it to everyone in the room
@@ -125,7 +167,7 @@ io.on("connection", (socket) => {
     const cards = divideAndShuffleCards();
     // This is a specific room details.
     // and it's connections.
-    let socketRoom = io.sockets.adapter.rooms[roomId.toString()];
+    const socketRoom = io.sockets.adapter.rooms[roomId.toString()];
     let cardIndex = 0;
     Object.keys(socketRoom).map((key: string, index) => {
       if (key === "sockets") {
@@ -152,51 +194,11 @@ io.on("connection", (socket) => {
     // whether a player is ready or not, cause
     // others will then recieve the request.
     // Send to player 1 first.
-    let index = -2;
+    const index = -2;
     startGame(roomId, room.players, index);
   });
 
-  // This function handles the game execution.
-  const startGame = async (roomId: number, players: Player[], index: number) => {
-    GAME_STATUS = "IN_PROGRESS";
-    // Send to player 1 first.
-    if (index == -2) {
-      // Send to player 1 immediately.
-      index = 0;
-      io.to(roomId.toString()).emit(
-        "whose_turn",
-        JSON.stringify({ data: { playerName: players[0]["name"] },
-        action: "make_move" })
-      );
-    }
 
-    // Send turn details to others players.
-    const timerId = setInterval(function() {
-      index += 1;
-      io.to(roomId.toString()).emit(
-        "whose_turn",
-        JSON.stringify({ data: { playerName: players[index]["name"] },
-        action: "make_move" })
-      );
-      if (index >= players.length - 1) {
-        index = -1;
-      }
-      clearTimeout(timerId);
-      return startGame(roomId, players, index)
-    }, TURN_INTERVAL);
-    // Handles a move for each player.
-    // Basically we have to swap cards if
-    // correct guess, or pass turn if incorrent
-    // Also the user can decide to fold.
-    // In that case we need to check if game
-    // status has been completed.
-    io.on('move_ends', async function(data: any) {
-      clearTimeout(timerId);
-      console.log(data);
-      // start next players turn.
-      return startGame(roomId, players, index)
-    });
-  }
 });
 
 

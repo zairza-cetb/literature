@@ -7,8 +7,8 @@ autoIncrement.initialize(connection);
 
 export type Player = {
   name: string;
-  id: String;
-  teamIdentifier: String;
+  id: string;
+  teamIdentifier: string;
 }
 
 export enum GameStatus {

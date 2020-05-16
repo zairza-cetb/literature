@@ -63,6 +63,7 @@ class _JoinRoomState extends State<JoinRoom> {
       case "set_id":
         // Set the player ID.
         playerId = message["data"]["player_id"];
+        
         Map joinDetails = {
           "roomId": _roomId.text,
           "name": x.name,

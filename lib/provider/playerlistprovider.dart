@@ -15,6 +15,10 @@ class PlayerList extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setCurrPlayerId(String pid){
+    _currPlayer.first.id=pid;
+    
+  }
   void addCurrPlayer(Player p){
     _currPlayer.clear();
     _currPlayer.add(p);
