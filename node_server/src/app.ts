@@ -8,6 +8,8 @@ import { MONGODB_URI, PORT } from "./util/secrets";
 import { divideAndShuffleCards, divideIntoTeams } from "./util/helper";
 import { Move } from "./types";
 
+const shortid = require('shortid');
+
 const app = express();
 app.use(cors());
 
@@ -50,11 +52,12 @@ io.on("connection", (socket) => {
     const parsedData = JSON.parse(data);
     const name = parsedData.name;
     const id = parsedData.playerId;
-
+    const roomId = shortid.generate();
     const newRoom = new Room({
       status: GameStatus.CREATED,
       players: [{ id, name, teamIdentifier: null }],
       lobbyLeader: { id, name, teamIdentifier: null },
+      roomId: roomId
     });
 
     GAME_STATUS = "CREATED";
@@ -80,7 +83,7 @@ io.on("connection", (socket) => {
    */
   socket.on("join_game", async function (data) {
     const parsedData = JSON.parse(data);
-    const roomId = parseInt(parsedData.roomId);
+    const roomId = parsedData.roomId;
     const name = parsedData.name;
     const playerId = parsedData.playerId;
     const room = await Room.findOne({ roomId });
@@ -112,7 +115,7 @@ io.on("connection", (socket) => {
   });
 
     // This function handles the game execution.
-    const startGame = async (roomId: number, players: Player[], index: number) => {
+    const startGame = async (roomId: string, players: Player[], index: number) => {
       GAME_STATUS = "IN_PROGRESS";
       // Send to player 1 first.
       if (index == -2) {
@@ -157,7 +160,7 @@ io.on("connection", (socket) => {
    * Update game status to be IN_PROGRESS(so that room cannot be joined)
    * Make a deck of shuffled cards and return it to everyone in the room
    */
-  socket.on("start_game", async function (roomId: number) {
+  socket.on("start_game", async function (roomId: string) {
     socket.to(roomId.toString()).emit("game_started", JSON.stringify({ action: "game_started" }));
     const room = await Room.findOneAndUpdate(
       { roomId },
