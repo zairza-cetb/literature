@@ -18,7 +18,7 @@ export enum GameStatus {
 }
 
 export type RoomDocument = mongoose.Document & {
-  roomId: String;
+  roomId: string;
   players: Player[];
   status: GameStatus;
   lobbyLeader: Player;

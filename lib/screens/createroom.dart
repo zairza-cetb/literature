@@ -30,7 +30,7 @@ class _CreateRoomState extends State<CreateRoom> {
   bool isLoading = false;
   List<dynamic> playersList = <dynamic>[];
   // TODO: Room ID should be a hashed value
-  int roomId;
+  String roomId;
 
   @override
   void initState() {
@@ -67,6 +67,7 @@ class _CreateRoomState extends State<CreateRoom> {
       case 'creates_game':
         playersList = (message["data"])["players"];
         roomId = (message["data"])["roomId"];
+        
         // Validates if actually the player created the room,
         // Need username matching in the db for any room.
         // print(playersList.toString());
@@ -87,7 +88,7 @@ class _CreateRoomState extends State<CreateRoom> {
             context,
             new MaterialPageRoute(
               builder: (BuildContext context) => WaitingPage(
-                roomId: roomId.toString(),
+                roomId: roomId,
               ),
             ));
     }

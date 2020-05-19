@@ -59,14 +59,17 @@ io.on("connection", (socket) => {
       lobbyLeader: { id, name, teamIdentifier: null },
       roomId: roomId
     });
-
     GAME_STATUS = "CREATED";
-
+    try{
     await newRoom.save();
+    } catch (e) {
+      console.log(e);
+    }
     // Create and join the socket room
-    socket.join(newRoom.roomId.toString());
+    console.log(newRoom.roomId);
+    socket.join(newRoom.roomId);
     const players = newRoom.players;
-    io.to(newRoom.roomId.toString())
+    io.to(newRoom.roomId)
       .emit(
         "created",
         JSON.stringify({
@@ -97,11 +100,11 @@ io.on("connection", (socket) => {
           { $push: { players: { name, id: newPlayerId, teamIdentifier: null } } }
         );
         //Join the room
-        socket.join(room.roomId.toString());
+        socket.join(room.roomId);
         // Send the new room's details, not the old one's
         const updatedRoom = await Room.findOne({ roomId });
         // Send data to the room after it has joined.
-        io.to(room.roomId.toString())
+        io.to(room.roomId)
           .emit("joined", JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId, lobbyLeader: room.lobbyLeader }, action: "joined" }));
         } else {
           io.emit("roomisfull", JSON.stringify({ data: { roomId:roomId }, action: "roomisfull" }));
@@ -121,7 +124,7 @@ io.on("connection", (socket) => {
       if (index == -2) {
         // Send to player 1 immediately.
         index = 0;
-        io.to(roomId.toString()).emit(
+        io.to(roomId).emit(
           "whose_turn",
           JSON.stringify({ data: { playerName: players[0]["name"] },
           action: "make_move" })
@@ -131,7 +134,7 @@ io.on("connection", (socket) => {
       // Send turn details to others players.
       const timerId = setInterval(function() {
         index += 1;
-        io.to(roomId.toString()).emit(
+        io.to(roomId).emit(
           "whose_turn",
           JSON.stringify({ data: { playerName: players[index]["name"] },
           action: "make_move" })
@@ -161,7 +164,7 @@ io.on("connection", (socket) => {
    * Make a deck of shuffled cards and return it to everyone in the room
    */
   socket.on("start_game", async function (roomId: string) {
-    socket.to(roomId.toString()).emit("game_started", JSON.stringify({ action: "game_started" }));
+    socket.to(roomId).emit("game_started", JSON.stringify({ action: "game_started" }));
     const room = await Room.findOneAndUpdate(
       { roomId },
       { status: GameStatus.IN_PROGRESS }
@@ -170,7 +173,7 @@ io.on("connection", (socket) => {
     const cards = divideAndShuffleCards();
     // This is a specific room details.
     // and it's connections.
-    const socketRoom = io.sockets.adapter.rooms[roomId.toString()];
+    const socketRoom = io.sockets.adapter.rooms[roomId];
     let cardIndex = 0;
     Object.keys(socketRoom).map((key: string, index) => {
       if (key === "sockets") {
