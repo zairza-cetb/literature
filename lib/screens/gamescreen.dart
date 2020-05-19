@@ -34,10 +34,11 @@ class _GameScreenState extends State<GameScreen> {
   List<PlayingCard> _cards = new List<PlayingCard>();
   List<dynamic> finalPlayersList = new List();
   bool _ready = false;
-  List<Player> teamRed = new List<Player>();
-  List<Player> teamBlue = new List<Player>();
+  // List<Player> teamRed = new List<Player>();
+  // List<Player> teamBlue = new List<Player>();
   double radius = 150.0;
   Map<String, String> turnsMapper = new Map<String, String>();
+  Set<String> selfOpponents = new Set();
 
   @override
   void initState() {
@@ -92,6 +93,16 @@ class _GameScreenState extends State<GameScreen> {
         // build a map of players and turns.
         finalPlayersList.forEach((player) {
           turnsMapper.putIfAbsent(player["name"], () => "waiting");
+          // Sets the current player team.
+          if (player["name"] == widget.player.name) {
+            widget.player.teamIdentifier = player["teamIdentifier"];
+          }
+        });
+        // set opponents of that player.
+        finalPlayersList.forEach((player) {
+          if (player["teamIdentifier"] != widget.player.teamIdentifier) {
+            selfOpponents.add(player["name"]);
+          }
         });
         // Force rebuild
         setState(() { _ready = true; });
@@ -107,7 +118,6 @@ class _GameScreenState extends State<GameScreen> {
             turnsMapper[key] = "hasTurn";
           } else turnsMapper[key] = "waiting";
         });
-        // set opponents of that player.
         setState(() {});
         break;
       default:
@@ -141,7 +151,8 @@ class _GameScreenState extends State<GameScreen> {
                     containerWidth: MediaQuery.of(context).size.width,
                     currPlayer: widget.player,
                     finalPlayersList: finalPlayersList,
-                    turnsMapper: turnsMapper
+                    turnsMapper: turnsMapper,
+                    selfOpponents: selfOpponents
                   ),
                 ),
               ),

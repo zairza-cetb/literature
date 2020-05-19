@@ -158,7 +158,6 @@ io.on("connection", (socket) => {
     for (let player of room.players) {
       handleTurns.set(index++, player["name"]);
     }
-    console.log(handleTurns);
     // Initiator -> send to player 1 immediately.
     io.to(roomId.toString()).emit(
       "whose_turn",

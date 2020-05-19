@@ -7,6 +7,7 @@ class PlayerView extends StatefulWidget {
     this.containerWidth,
     this.finalPlayersList,
     this.turnsMapper,
+    this.selfOpponents,
   });
 
   final currPlayer;
@@ -18,6 +19,8 @@ class PlayerView extends StatefulWidget {
   double containerWidth;
 
   Map<String, String> turnsMapper;
+
+  Set<String> selfOpponents;
 
   _PlayerViewState createState() => _PlayerViewState();
 }
@@ -63,6 +66,7 @@ class _PlayerViewState extends State<PlayerView> {
                         pContainerHeight,
                         pContainerWidth,
                         playersList[0] != null ? widget.turnsMapper[playersList[0]["name"]] : null,
+                        playersList[0] != null ? widget.selfOpponents : null,
                         "P1"
                       )
                     ),
@@ -87,7 +91,8 @@ class _PlayerViewState extends State<PlayerView> {
                         playersList.length > 0 ? playersList[1] : null,
                         pContainerHeight,
                         pContainerWidth,
-                        playersList.length > 0 ? widget.turnsMapper[playersList[1]["name"]] : null,
+                        playersList.length > 1 ? widget.turnsMapper[playersList[1]["name"]] : null,
+                        playersList.length > 1 ? widget.selfOpponents : null,
                         "P2"
                       ),
                     ),
@@ -105,6 +110,7 @@ class _PlayerViewState extends State<PlayerView> {
                         pContainerHeight,
                         pContainerWidth,
                         playersList.length > 2 ? widget.turnsMapper[playersList[2]["name"]] : null,
+                        playersList.length > 2 ? widget.selfOpponents : null,
                         "P3"
                       ),
                     ),
@@ -130,6 +136,7 @@ class _PlayerViewState extends State<PlayerView> {
                         pContainerHeight,
                         pContainerWidth,
                         playersList.length > 3 ? widget.turnsMapper[playersList[3]["name"]] : null,
+                        playersList.length > 3 ? widget.selfOpponents : null,
                         "P4"
                       ),
                     ),
@@ -147,6 +154,7 @@ class _PlayerViewState extends State<PlayerView> {
                         pContainerHeight,
                         pContainerWidth,
                         playersList.length > 4 ? widget.turnsMapper[playersList[4]["name"]] : null,
+                        playersList.length > 4 ? widget.selfOpponents : null,
                         "P5"
                       ),
                     ),
@@ -172,6 +180,7 @@ class _PlayerViewState extends State<PlayerView> {
                         pContainerHeight,
                         pContainerWidth,
                         playersList.length > 5 ? widget.turnsMapper[playersList[5]["name"]] : null,
+                        playersList.length > 5 ? widget.selfOpponents : null,
                         "P6"
                       ),
                     ),
@@ -198,7 +207,7 @@ class _PlayerViewState extends State<PlayerView> {
   }
 }
 
-Widget _getPlayerInContainer(player, h, w, turn, p) {
+Widget _getPlayerInContainer(player, h, w, turn, opponents, p) {
   var teamColor =  player != null ? 
     turn == "hasTurn" ? Colors.green : player["teamIdentifier"] == "red" ?
       Colors.orange : Colors.blue:
@@ -273,7 +282,11 @@ Widget _getPlayerInContainer(player, h, w, turn, p) {
                         print("Asking for cards");
                       },
                       color: Colors.white,
-                      child: Align(alignment: Alignment.centerLeft, child: new Text("Ask")),
+                      child: (opponents != null ?
+                        opponents.contains(player["name"]) ? new Container(
+                          child: new Text("Ask"),
+                        ): new Container()
+                      : new Container()),
                     ),
                   ),
                 ),
