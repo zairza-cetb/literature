@@ -167,8 +167,12 @@ io.on("connection", (socket) => {
   });
 
   // Passes a player's turn.
-  socket.on("finished_turn", async (name: string, roomId: number) => {
+  socket.on("finished_turn", async (data: any) => {
+    const parsedData = JSON.parse(data);
+    const roomId = parsedData.roomId;
+    const name = parsedData.name;
     let playerIndex;
+    console.log(name + " has finished turn...");
     handleTurns.forEach((n, index) => {
       if (n === name) {
         playerIndex = index;
