@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:literature/models/player.dart';
 
 class PlayerView extends StatefulWidget {
   PlayerView({
@@ -10,7 +11,7 @@ class PlayerView extends StatefulWidget {
     this.selfOpponents, this.callback,
   });
 
-  final currPlayer;
+  final Player currPlayer;
 
   final List<dynamic> finalPlayersList;
 
@@ -30,9 +31,19 @@ class PlayerView extends StatefulWidget {
 class _PlayerViewState extends State<PlayerView> {
   Function cb;
   List<dynamic> playersList;
+  bool askingForCard = false;
+  Player playerBeingAskedObj;
+  // This function rebuilds the state
+  // when a player asks for cards.
+  setCardAskingProps(Player playerBeingAsked, bool res) {
+    // Forces rebuild.
+    setState(() {
+      askingForCard = true;
+      playerBeingAskedObj = playerBeingAsked;
+    });
+  }
   void initState() {
     super.initState();
-
     // Initialise variable to the state.
     playersList = widget.finalPlayersList;
     cb = widget.callback;
@@ -65,13 +76,31 @@ class _PlayerViewState extends State<PlayerView> {
                       decoration: BoxDecoration(
                         border: _getContainerBorder(playersList.length > 0 ? playersList[0] : null),
                       ),
+                      // The props to this function
+                      // might get confusing so bear with it.
                       child: _getPlayerInContainer(
                         playersList.length > 0 ? playersList[0] : null,
+                        // Height and width of each
+                        // player's area on the screen.
                         pContainerHeight,
                         pContainerWidth,
-                        playersList[0] != null ? widget.turnsMapper[playersList[0]["name"]] : null,
-                        playersList[0] != null ? widget.selfOpponents : null,
+                        // This is to find if current player has his turn,
+                        // change his portfolio color to green.
+                        playersList.length > 0 ? widget.turnsMapper[playersList[0]["name"]] : null,
+                        // If current player has turn
+                        // and if this player is an opponent,
+                        // then only he can ask for the cards. (turnFactor)
+                        playersList.length > 0 ? 
+                          widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
+                            && widget.selfOpponents.contains(playersList[0]["name"]) 
+                          : null,
+                        // This is a function to set State when
+                        // a user is asking for a card.
+                        setCardAskingProps,
+                        // Default hero tag.
                         "P1",
+                        // Updates the parent component
+                        // so that it clears the timer.
                         cb
                       )
                     ),
@@ -97,7 +126,11 @@ class _PlayerViewState extends State<PlayerView> {
                         pContainerHeight,
                         pContainerWidth,
                         playersList.length > 1 ? widget.turnsMapper[playersList[1]["name"]] : null,
-                        playersList.length > 1 ? widget.selfOpponents : null,
+                        playersList.length > 1 ? 
+                          widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
+                            && widget.selfOpponents.contains(playersList[1]["name"]) 
+                          : null,
+                        setCardAskingProps,
                         "P2",
                         cb
                       ),
@@ -116,7 +149,11 @@ class _PlayerViewState extends State<PlayerView> {
                         pContainerHeight,
                         pContainerWidth,
                         playersList.length > 2 ? widget.turnsMapper[playersList[2]["name"]] : null,
-                        playersList.length > 2 ? widget.selfOpponents : null,
+                        playersList.length > 2 ? 
+                          widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
+                            && widget.selfOpponents.contains(playersList[2]["name"]) 
+                          : null,
+                        setCardAskingProps,
                         "P3",
                         cb
                       ),
@@ -143,7 +180,11 @@ class _PlayerViewState extends State<PlayerView> {
                         pContainerHeight,
                         pContainerWidth,
                         playersList.length > 3 ? widget.turnsMapper[playersList[3]["name"]] : null,
-                        playersList.length > 3 ? widget.selfOpponents : null,
+                        playersList.length > 3 ? 
+                          widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
+                            && widget.selfOpponents.contains(playersList[3]["name"]) 
+                          : null,
+                        setCardAskingProps,
                         "P4",
                         cb
                       ),
@@ -162,7 +203,11 @@ class _PlayerViewState extends State<PlayerView> {
                         pContainerHeight,
                         pContainerWidth,
                         playersList.length > 4 ? widget.turnsMapper[playersList[4]["name"]] : null,
-                        playersList.length > 4 ? widget.selfOpponents : null,
+                        playersList.length > 4 ? 
+                          widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
+                            && widget.selfOpponents.contains(playersList[4]["name"]) 
+                          : null,
+                        setCardAskingProps,
                         "P5",
                         cb
                       ),
@@ -189,7 +234,11 @@ class _PlayerViewState extends State<PlayerView> {
                         pContainerHeight,
                         pContainerWidth,
                         playersList.length > 5 ? widget.turnsMapper[playersList[5]["name"]] : null,
-                        playersList.length > 5 ? widget.selfOpponents : null,
+                        playersList.length > 5 ? 
+                          widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
+                            && widget.selfOpponents.contains(playersList[5]["name"]) 
+                          : null,
+                        setCardAskingProps,
                         "P6",
                         cb
                       ),
@@ -211,103 +260,122 @@ class _PlayerViewState extends State<PlayerView> {
             color: Colors.black,
             child: new Text("Arena"),
           ),
-        )
+        ),
+        askingForCard ? Positioned(
+          top: widget.containerHeight*0.031,
+          // left: arenaPaddingLeft,
+          child: new Container(
+            height: widget.containerHeight-widget.containerHeight*0.316,
+            width: widget.containerWidth,
+            color: Colors.white,
+            child: cardAskingWidget(playerBeingAskedObj),
+          ),
+        ) : new Container(),
       ]
     );
   }
 }
 
-Widget _getPlayerInContainer(player, h, w, turn, opponents, p, cb) {
+// Widget that handles when we ask for a card to a player.
+// TODO: Build this widget, Add a preview for the card
+// being currently selected to be asked,
+// add a close button to go back.
+Widget cardAskingWidget(Player playerBeingAsked) {
+  return new Container(
+    child: new Text(playerBeingAsked.name),
+  );
+}
+
+// Gets a specific player at a specific position.
+Widget _getPlayerInContainer(player, h, w, turn, turnFactor, setCardAskingProps, p, cb) {
   var teamColor =  player != null ? 
     turn == "hasTurn" ? Colors.green : player["teamIdentifier"] == "red" ?
       Colors.orange : Colors.blue:
       Colors.transparent;
-  return new GestureDetector(
-    onDoubleTap: () {
-      print("Tap");
-    },
-    child: new Stack(
-      children: [
-        new Align(
-          alignment: Alignment.topCenter,
-          child: Container(
-            height: h*0.628,
-            child: new Hero(
-              tag: p,
-              child: player == null ? Image.asset("assets/no_person.png") : Image.asset("assets/person.png"),
-            ),
+  return new Stack(
+    children: [
+      new Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          height: h*0.628,
+          child: new Hero(
+            tag: p,
+            child: player == null ? Image.asset("assets/no_person.png") : Image.asset("assets/person.png"),
           ),
         ),
-        // This container keeps
-        // track of how many cards
-        // a user has.
-        new Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            height: h*0.359,
-            color: Colors.white,
-            // Number of cards
-            // and ask button.
-            child: new Stack(
-              children: <Widget>[
-                new Align(
-                  alignment: Alignment.topLeft,
-                  child: new Container(
-                    width: w*0.221,
-                    height: h*0.359,
-                    decoration: new BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 1.0),
-                    ),
-                    // Gives the number of cards.
-                    child: new Center(child: new Text("6")),
+      ),
+      // This container keeps
+      // track of how many cards
+      // a user has.
+      new Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          height: h*0.359,
+          color: Colors.white,
+          // Number of cards
+          // and ask button.
+          child: new Stack(
+            children: <Widget>[
+              new Align(
+                alignment: Alignment.topLeft,
+                child: new Container(
+                  width: w*0.221,
+                  height: h*0.359,
+                  decoration: new BoxDecoration(
+                    border: Border.all(color: Colors.black, width: 1.0),
+                  ),
+                  // Gives the number of cards.
+                  child: new Center(child: new Text("6")),
+                ),
+              ),
+              new Align(
+                alignment: Alignment.topRight,
+                child: new Container(
+                  // Player name container
+                  // color is as per his team.
+                  color: teamColor,
+                  width: w*0.689, // 106 - 44
+                  height: h*0.179,
+                  child: (player != null ?
+                    new Text(
+                      player["name"],
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ):
+                    new Text("")
                   ),
                 ),
-                new Align(
-                  alignment: Alignment.topRight,
-                  child: new Container(
-                    // Player name container
-                    // color is as per his team.
-                    color: teamColor,
-                    width: w*0.689, // 106 - 44
-                    height: h*0.179,
-                    child: (player != null ?
-                      new Text(
-                        player["name"],
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ):
-                      new Text("")
-                    ),
+              ),
+              new Align(
+                alignment: Alignment.bottomRight,
+                child: new Container(
+                  width: w*0.689, // 106 - 44
+                  height: h*0.185,
+                  child: new RaisedButton(
+                    onPressed: (){
+                      // Asks for card.
+                      setCardAskingProps(
+                        new Player(
+                          name: player["name"],
+                          teamIdentifier: player["teamIdentifier"],
+                          id: player["id"],
+                        ), true);
+                      cb();
+                    },
+                    color: Colors.white,
+                    child: ( turnFactor == true  ? new Container(
+                      child: new Text("Ask"),
+                    ):new Container())
                   ),
                 ),
-                new Align(
-                  alignment: Alignment.bottomRight,
-                  child: new Container(
-                    width: w*0.689, // 106 - 44
-                    height: h*0.185,
-                    child: new RaisedButton(
-                      onPressed: (){
-                        print("Asking for cards");
-                        cb();
-                        // Set state?
-                      },
-                      color: Colors.white,
-                      child: (opponents != null ?
-                        opponents.contains(player["name"]) ? new Container(
-                          child: new Text("Ask"),
-                        ): new Container()
-                      : new Container()),
-                    ),
-                  ),
-                ),
-              ]
-            ),
+              ),
+            ]
           ),
         ),
-      ],
-    ),
+      ),
+    ],
   );
 }
 

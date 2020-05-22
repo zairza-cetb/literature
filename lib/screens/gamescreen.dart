@@ -147,6 +147,7 @@ class _GameScreenState extends State<GameScreen> {
         });
         // Starts the timer.
         startTimer();
+        print("Setting state after turn change");
         setState(() {});
         break;
       default:
