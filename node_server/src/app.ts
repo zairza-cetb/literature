@@ -186,7 +186,7 @@ io.on("connection", (socket) => {
     if (playerIndex === handleTurns.size-1) {
       playerIndex = -1;
     }
-    io.to(roomId.toString()).emit(
+    io.to(roomId).emit(
       "whose_turn",
       JSON.stringify({ data: { playerName: handleTurns.get(++playerIndex) },
       action: "make_move" })
