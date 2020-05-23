@@ -67,6 +67,9 @@ class _PlayerViewState extends State<PlayerView> {
     var arenaPaddingTop = widget.containerHeight*0.188;
     var arenaPaddingLeft = widget.containerWidth*0.246;
 
+    print(widget.containerHeight);
+    print(widget.containerWidth);
+
     return Stack(
       children: [
         Column(

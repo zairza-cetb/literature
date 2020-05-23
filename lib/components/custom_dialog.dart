@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:literature/models/playing_cards.dart';
+import 'package:literature/utils/card_previewer.dart';
 
 class CustomDialog extends StatefulWidget {
   final String title, description, buttonText;
@@ -139,10 +139,9 @@ class _CustomDialogState extends State<CustomDialog> {
                 ]
               ),
               SizedBox(height: 24.0),
-              // TODO: This should be the card previewer.
               Align(
                 alignment: Alignment.bottomCenter,
-                child: new Text("A"),
+                child: new CardPreviewer(cardSuit: cardSuit, cardType: cardType),
               ),
             ],
           ),
