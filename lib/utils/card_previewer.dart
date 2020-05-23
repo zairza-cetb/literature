@@ -20,10 +20,13 @@ class _CardPreviewerState extends State<CardPreviewer> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildLargeCard(widget.cardType, widget.cardSuit);
+    var containerHeight = MediaQuery.of(context).size.height;
+    var containerWidth = MediaQuery.of(context).size.width;
+
+    return _buildLargeCard(widget.cardType, widget.cardSuit, containerHeight, containerWidth);
   }
 
-  Widget _buildLargeCard(type, suit) {
+  Widget _buildLargeCard(type, suit, h, w) {
     return new Material(
       color: Colors.white,
       // The card number
@@ -35,8 +38,8 @@ class _CardPreviewerState extends State<CardPreviewer> {
           border: Border.all(color: Colors.black),
         ),
         // See: height of each card.
-        height: 160.0,
-        width: 100,
+        height: h*0.188,
+        width: w*0.2415,
         child: Stack(
           children: <Widget>[
             Center(
@@ -49,7 +52,7 @@ class _CardPreviewerState extends State<CardPreviewer> {
                       _cardTypeToString(type),
                       style: TextStyle(
                         fontFamily: font,
-                        fontSize: 60.0,
+                        fontSize: w*0.145,
                         color: (
                           suit == "clubs" || 
                           suit == "spades" ? Colors.black : Colors.red
@@ -78,7 +81,7 @@ class _CardPreviewerState extends State<CardPreviewer> {
                               _cardTypeToString(type),
                               style: TextStyle(
                                 fontFamily: font,
-                                fontSize: 20.0,
+                                fontSize: w*0.0483,
                                 color: (
                                   suit == "clubs" || 
                                   suit == "spades" ? Colors.black : Colors.red
@@ -87,7 +90,7 @@ class _CardPreviewerState extends State<CardPreviewer> {
                             ),
                           ),
                           Container(
-                          height: 16.0,
+                          height: h*0.0188,
                             child: _cardSuitToImage(suit),
                           ),
                         ],
@@ -111,7 +114,7 @@ class _CardPreviewerState extends State<CardPreviewer> {
                       Column(
                         children: <Widget>[
                           Container(
-                          height: 16.0,
+                          height: h*0.0188,
                             child: _cardSuitToImage(suit),
                           ),
                           Container(
@@ -119,7 +122,7 @@ class _CardPreviewerState extends State<CardPreviewer> {
                               _cardTypeToString(type),
                               style: TextStyle(
                                 fontFamily: font,
-                                fontSize: 20.0,
+                                fontSize: w*0.0483,
                                 color: (
                                   suit == "clubs" || 
                                   suit == "spades" ? Colors.black : Colors.red

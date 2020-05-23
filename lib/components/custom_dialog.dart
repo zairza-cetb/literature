@@ -40,6 +40,9 @@ class _CustomDialogState extends State<CustomDialog> {
   }
 
   dialogContent(BuildContext context) {
+    var containerHeight = MediaQuery.of(context).size.height;
+    var containerWidth = MediaQuery.of(context).size.width;
+
     return Stack(
       children: <Widget>[
         //...bottom card part,
@@ -51,9 +54,8 @@ class _CustomDialogState extends State<CustomDialog> {
             left: Consts.padding,
             right: Consts.padding,
           ),
-          // TODO: Add media queries.
-          height: 500,
-          width: 340,
+          height: containerHeight*0.587,
+          width: containerWidth*0.821,
           margin: EdgeInsets.only(top: Consts.avatarRadius),
           decoration: new BoxDecoration(
             color: Colors.white,
@@ -73,11 +75,11 @@ class _CustomDialogState extends State<CustomDialog> {
               Text(
                 "You are asking a card to " + widget.title + ".",
                 style: TextStyle(
-                  fontSize: 24.0,
+                  fontSize: containerWidth*0.058,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: containerHeight*0.0188),
               new Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
