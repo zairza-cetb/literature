@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:literature/models/playing_cards.dart';
 
 class CustomDialog extends StatefulWidget {
   final String title, description, buttonText;
@@ -17,6 +18,10 @@ class CustomDialog extends StatefulWidget {
 }
 
 class _CustomDialogState extends State<CustomDialog> {
+  // Initial state variables
+  // that map to card previewer.
+  String cardType = 'ace';
+  String cardSuit = 'hearts';
   @override
   void initState() {
     super.initState();
@@ -26,8 +31,8 @@ class _CustomDialogState extends State<CustomDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Consts.padding),
-      ),      
+        borderRadius: BorderRadius.circular(Consts.padding),
+      ),
       elevation: 0.0,
       backgroundColor: Colors.transparent,
       child: dialogContent(context),
@@ -74,34 +79,70 @@ class _CustomDialogState extends State<CustomDialog> {
               ),
               SizedBox(height: 16.0),
               new Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
-                    widget.description,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                    ),
+                  DropdownButton<String>(
+                    value: cardType,
+                    onChanged: (String newValue) {
+                      setState(() {
+                        cardType = newValue;
+                      });
+                    },
+                    items: <String>[
+                      "ace",
+                      "two",
+                      "three",
+                      "four",
+                      "five",
+                      "six",
+                      "eight",
+                      "nine",
+                      "ten",
+                      "jack",
+                      "queen",
+                      "king"
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
-                  Text(
-                    widget.description,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                    ),
+                  DropdownButton<String>(
+                    value: cardSuit,
+                    onChanged: (String newValue) {
+                      setState(() {
+                        cardSuit = newValue;
+                      });
+                    },
+                    items: <String>[
+                      "spades",
+                      "hearts",
+                      "diamonds",
+                      "clubs",
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      // TODO: Ask for the particular card,
+                      // send message on socket to server.
+                      widget.cb();
+                    },
+                    child: Text(widget.buttonText),
                   ),
                 ]
               ),
               SizedBox(height: 24.0),
+              // TODO: This should be the card previewer.
               Align(
                 alignment: Alignment.bottomCenter,
-                child: FlatButton(
-                  onPressed: () {
-                    // TODO: Ask for the particular card,
-                    // send message on socket to server.
-                    widget.cb();
-                  },
-                  child: Text(widget.buttonText),
-                ),
+                child: new Text("A"),
               ),
             ],
           ),

@@ -271,7 +271,7 @@ class _PlayerViewState extends State<PlayerView> {
         ),
         askingForCard ? Positioned(
           top: 0,
-          child: CustomDialog(title: playerBeingAskedObj.name, description: "B", buttonText: "C", cb: closeDialog)
+          child: CustomDialog(title: playerBeingAskedObj.name, description: "B", buttonText: "Ask", cb: closeDialog)
         ) : new Container(),
       ]
     );
