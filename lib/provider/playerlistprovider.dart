@@ -30,4 +30,8 @@ class PlayerList extends ChangeNotifier {
   void removeAll(){
     _list.clear();
   }
+
+  Player getLeader(){
+    return _list.firstWhere((player) => player.lobbyLeader);
+  }
 }
