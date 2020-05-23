@@ -32,8 +32,7 @@ app.set("port", PORT);
 // ================
 // CONSTANTS
 // ================
-let GAME_STATUS = "";
-const TURN_INTERVAL = 60000; // 60 seconds.
+let GAME_STATUS = ""; // 60 seconds.
 let handleTurns = new Map<number, string>();
 
 io.on("connection", (socket) => {
@@ -184,7 +183,7 @@ io.on("connection", (socket) => {
         playerIndex = index;
       }
     });
-    if (playerIndex === handleTurns.size) {
+    if (playerIndex === handleTurns.size-1) {
       playerIndex = -1;
     }
     io.to(roomId.toString()).emit(
