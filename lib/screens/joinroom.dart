@@ -97,7 +97,7 @@ class _JoinRoomState extends State<JoinRoom> {
           context,
           new MaterialPageRoute(
             builder: (BuildContext context) => WaitingPage(
-              roomId: message["data"]["roomId"].toString(),
+              roomId: message["data"]["roomId"],
             ),
           ),
         );

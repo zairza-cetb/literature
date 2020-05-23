@@ -8,6 +8,8 @@ import { MONGODB_URI, PORT } from "./util/secrets";
 import { divideAndShuffleCards, divideIntoTeams } from "./util/helper";
 import { Move } from "./types";
 
+const shortid = require('shortid');
+
 const app = express();
 app.use(cors());
 
@@ -53,20 +55,24 @@ io.on("connection", (socket) => {
     const parsedData = JSON.parse(data);
     const name = parsedData.name;
     const id = parsedData.playerId;
-
+    const roomId = shortid.generate();
     const newRoom = new Room({
       status: GameStatus.CREATED,
       players: [{ id, name, teamIdentifier: null }],
       lobbyLeader: { id, name, teamIdentifier: null },
+      roomId: roomId
     });
-
     GAME_STATUS = "CREATED";
-
+    try{
     await newRoom.save();
+    } catch (e) {
+      console.log(e);
+    }
     // Create and join the socket room
-    socket.join(newRoom.roomId.toString());
+    console.log(newRoom.roomId);
+    socket.join(newRoom.roomId);
     const players = newRoom.players;
-    io.to(newRoom.roomId.toString())
+    io.to(newRoom.roomId)
       .emit(
         "created",
         JSON.stringify({
@@ -83,7 +89,7 @@ io.on("connection", (socket) => {
    */
   socket.on("join_game", async function (data) {
     const parsedData = JSON.parse(data);
-    const roomId = parseInt(parsedData.roomId);
+    const roomId = parsedData.roomId;
     const name = parsedData.name;
     const playerId = parsedData.playerId;
     const room = await Room.findOne({ roomId });
@@ -97,11 +103,11 @@ io.on("connection", (socket) => {
           { $push: { players: { name, id: newPlayerId, teamIdentifier: null } } }
         );
         //Join the room
-        socket.join(room.roomId.toString());
+        socket.join(room.roomId);
         // Send the new room's details, not the old one's
         const updatedRoom = await Room.findOne({ roomId });
         // Send data to the room after it has joined.
-        io.to(room.roomId.toString())
+        io.to(room.roomId)
           .emit("joined", JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId, lobbyLeader: room.lobbyLeader }, action: "joined" }));
         } else {
           io.emit("roomisfull", JSON.stringify({ data: { roomId:roomId }, action: "roomisfull" }));
@@ -118,8 +124,8 @@ io.on("connection", (socket) => {
    * Update game status to be IN_PROGRESS(so that room cannot be joined)
    * Make a deck of shuffled cards and return it to everyone in the room
    */
-  socket.on("start_game", async function (roomId: number) {
-    socket.to(roomId.toString()).emit("game_started", JSON.stringify({ action: "game_started" }));
+  socket.on("start_game", async function (roomId: string) {
+    socket.to(roomId).emit("game_started", JSON.stringify({ action: "game_started" }));
     const room = await Room.findOneAndUpdate(
       { roomId },
       { status: GameStatus.IN_PROGRESS }
@@ -128,7 +134,7 @@ io.on("connection", (socket) => {
     const cards = divideAndShuffleCards();
     // This is a specific room details.
     // and it's connections.
-    const socketRoom = io.sockets.adapter.rooms[roomId.toString()];
+    const socketRoom = io.sockets.adapter.rooms[roomId];
     let cardIndex = 0;
     Object.keys(socketRoom).map((key: string, index) => {
       if (key === "sockets") {
@@ -180,7 +186,7 @@ io.on("connection", (socket) => {
     if (playerIndex === handleTurns.size-1) {
       playerIndex = -1;
     }
-    io.to(roomId.toString()).emit(
+    io.to(roomId).emit(
       "whose_turn",
       JSON.stringify({ data: { playerName: handleTurns.get(++playerIndex) },
       action: "make_move" })
