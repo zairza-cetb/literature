@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
+import 'package:literature/components/custom_dialog.dart';
 
 class PlayerView extends StatefulWidget {
   PlayerView({
@@ -47,6 +48,13 @@ class _PlayerViewState extends State<PlayerView> {
     // Initialise variable to the state.
     playersList = widget.finalPlayersList;
     cb = widget.callback;
+  }
+
+  closeDialog() {
+    setState(() {
+      askingForCard = false;
+    });
+    cb();
   }
 
   @override
@@ -262,28 +270,12 @@ class _PlayerViewState extends State<PlayerView> {
           ),
         ),
         askingForCard ? Positioned(
-          top: widget.containerHeight*0.031,
-          // left: arenaPaddingLeft,
-          child: new Container(
-            height: widget.containerHeight-widget.containerHeight*0.316,
-            width: widget.containerWidth,
-            color: Colors.white,
-            child: cardAskingWidget(playerBeingAskedObj),
-          ),
+          top: 0,
+          child: CustomDialog(title: playerBeingAskedObj.name, description: "B", buttonText: "C", cb: closeDialog)
         ) : new Container(),
       ]
     );
   }
-}
-
-// Widget that handles when we ask for a card to a player.
-// TODO: Build this widget, Add a preview for the card
-// being currently selected to be asked,
-// add a close button to go back.
-Widget cardAskingWidget(Player playerBeingAsked) {
-  return new Container(
-    child: new Text(playerBeingAsked.name),
-  );
 }
 
 // Gets a specific player at a specific position.
@@ -355,14 +347,18 @@ Widget _getPlayerInContainer(player, h, w, turn, turnFactor, setCardAskingProps,
                   height: h*0.185,
                   child: new RaisedButton(
                     onPressed: (){
-                      // Asks for card.
+                      // This method
+                      // opens up the modal for
+                      // asking for a card.
+                      // Also binds the widget
+                      // to the current player you are
+                      // asking the card to.
                       setCardAskingProps(
                         new Player(
                           name: player["name"],
                           teamIdentifier: player["teamIdentifier"],
                           id: player["id"],
                         ), true);
-                      cb();
                     },
                     color: Colors.white,
                     child: ( turnFactor == true  ? new Container(
@@ -391,3 +387,4 @@ Border _getContainerBorder(player) {
     else return Border.all(color: Colors.blue, width: 4.0);
   }
 }
+
