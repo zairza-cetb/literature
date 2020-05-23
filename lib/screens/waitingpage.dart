@@ -63,7 +63,6 @@ class _WaitingPageState extends State<WaitingPage> {
 
   @override
   void dispose() {
-    
     game.removeListener(_waitingPageListener);
     super.dispose();
   }
@@ -155,7 +154,7 @@ class _WaitingPageState extends State<WaitingPage> {
         child: new Text('Play'),
       );
     } else {
-      return new Text("....");
+      return new Text("...");
     }
   }
 
@@ -177,22 +176,82 @@ class _WaitingPageState extends State<WaitingPage> {
     /// to launch a new game, if it is an admin then only set
     /// play option.
     ///
+
     final currPlayer = Provider.of<PlayerList>(context).currPlayer;
     return Consumer<PlayerList>(
         builder: (BuildContext context, PlayerList value, Widget child) {
       List<Widget> children = value.players?.map((playerInfo) {
         // print(widget.currPlayer.name + " " + playerInfo["name"]);
-        String name = (playerInfo.id == currPlayer.id) ? "you" : playerInfo.name;
+        String name =
+            (playerInfo.id == currPlayer.id) ? "You" : playerInfo.name;
+        
         if (playerInfo.lobbyLeader) {
-          print(playerInfo);
-          return new ListTile(
-            title: new Text(name + " [Lobby leader]"),
-            trailing: _getPlayButton(playerInfo),
+          // print(playerInfo.id);
+          bool isLeader = (playerInfo.id == currPlayer.id);
+          return new Card(
+            elevation: 8.0,
+            margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(64, 75, 96, .5),
+                gradient: LinearGradient(
+                  colors: [Colors.blue[300], Colors.blue],
+                ),
+                border: Border.all(color: Colors.lightBlue, width: 2),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: EdgeInsets.only(right: 12.0),
+                  decoration: new BoxDecoration(
+                    border: new Border(
+                      right: new BorderSide(width: 1.0, color: Colors.black),
+                    ),
+                  ),
+                  child: Image.asset("assets/person.png"),
+                ),
+                title: new Text(
+                  name,
+                  style: TextStyle(fontFamily: 'Montserrat', color: Colors.white),
+                ),
+                subtitle: new Text("[Lobby Leader]"),
+                trailing: (isLeader)
+                    ? _getPlayButton(playerInfo)
+                    : null,
+              ),  
+            ),
           );
         } else {
           // print(playerInfo);
-          return new ListTile(
-            title: new Text(name),
+          return new Card(
+            elevation: 8.0,
+            margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(64, 75, 96, .5),
+                gradient: LinearGradient(
+                  colors: [Colors.blue[300], Colors.blue],
+                ),
+                border: Border.all(color: Colors.lightBlue, width: 2),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: EdgeInsets.only(right: 12.0),
+                  decoration: new BoxDecoration(
+                    border: new Border(
+                      right: new BorderSide(width: 1.0, color: Colors.black),
+                    ),
+                  ),
+                  child: Image.asset("assets/person.png"),
+                ),
+                title: new Text(
+                  name,
+                  style: TextStyle(fontFamily: 'Montserrat', color: Colors.white),
+                ),
+                subtitle: new Text(" "),
+              ),
+            ),
           );
         }
       })?.toList();
@@ -202,19 +261,55 @@ class _WaitingPageState extends State<WaitingPage> {
   }
 
   Widget roomInformation() {
+    final leader = Provider.of<PlayerList>(context).getLeader();
     return Container(
       alignment: Alignment.center,
-      child: Center(
-          child: (new Text(
-        "ROOM ID: " + widget.roomId,
-        style: new TextStyle(fontSize: 30.0),
-      ))),
+      // child: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          new RichText(
+            text: TextSpan(
+              text: 'Welcome to ',
+              style: TextStyle(
+                  color: Colors.black, fontSize: 16, fontFamily: 'Montserrat'),
+              children: <TextSpan>[
+                TextSpan(
+                    text: leader.name,
+                    style: TextStyle(
+                        color: Colors.blue[300],
+                        fontSize: 16,
+                        fontFamily: 'Montserrat',
+                        fontWeight: FontWeight.bold)),
+                TextSpan(
+                  text: '\'s room',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontFamily: 'Montserrat'),
+                )
+              ],
+            ),
+          ),
+          new Text(
+            widget.roomId,
+            style: new TextStyle(fontSize: 20.0, fontFamily: 'Montserrat'),
+            textAlign: TextAlign.center,
+          ),
+          new Text(
+            "Please wait for the leader to start",
+            style: TextStyle(fontSize: 14.0, fontFamily: 'Montserrat'),
+          )
+        ],
+      ),
+      // ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     // Roles: player.name or null
+
     return new SafeArea(
       bottom: false,
       top: false,
