@@ -116,6 +116,7 @@ class _WaitingPageState extends State<WaitingPage> {
               builder: (BuildContext context) => new GameScreen(
                 player: playerProvider.currPlayer,
                 playersList: playerProvider.players,
+                roomId: widget.roomId
               ),
             ));
         break;
@@ -139,6 +140,7 @@ class _WaitingPageState extends State<WaitingPage> {
         builder: (BuildContext context) => new GameScreen(
           player: playerProvider.currPlayer,
           playersList: playerProvider.players,
+          roomId: widget.roomId
         ),
       ),
     );

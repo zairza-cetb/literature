@@ -1,4 +1,5 @@
-import 'dart:math';
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
@@ -11,10 +12,12 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:literature/components/player_view.dart';
 
 class GameScreen extends StatefulWidget {
+  // Game
   GameScreen({
     Key key,
     this.player,
     this.playersList,
+    this.roomId
   }): super(key: key);
 
   ///
@@ -27,6 +30,14 @@ class GameScreen extends StatefulWidget {
   ///
   List<dynamic> playersList;
 
+  ///
+  /// RoomId
+  ///
+  String roomId;
+
+  // Timer
+  Timer timer;
+
   _GameScreenState createState() => _GameScreenState();
 }
 
@@ -34,10 +45,11 @@ class _GameScreenState extends State<GameScreen> {
   List<PlayingCard> _cards = new List<PlayingCard>();
   List<dynamic> finalPlayersList = new List();
   bool _ready = false;
-  List<Player> teamRed = new List<Player>();
-  List<Player> teamBlue = new List<Player>();
+  // List<Player> teamRed = new List<Player>();
+  // List<Player> teamBlue = new List<Player>();
   double radius = 150.0;
   Map<String, String> turnsMapper = new Map<String, String>();
+  Set<String> selfOpponents = new Set();
 
   @override
   void initState() {
@@ -50,6 +62,22 @@ class _GameScreenState extends State<GameScreen> {
   dispose() {
     super.dispose();
     game.removeListener(_gameScreenListener);
+  }
+
+  // Starts the timer and resets it
+  // in the end.
+  startTimer() {
+    print("Starting the timer");
+    // cancel any existing timers.
+    widget.timer?.cancel();
+    // This runs asynchronously.
+    // Sends a message to the server automatically
+    // that the user has finished his turn after 60 seconds.
+    widget.timer = new Timer(Duration(seconds: 60), () {
+      // send a new message to the server.
+      Map turnDetails = {"name": widget.player.name, "roomId": widget.roomId};
+      game.send("finished_turn", json.encode(turnDetails));
+    });
   }
 
   _gameScreenListener(message) {
@@ -92,6 +120,16 @@ class _GameScreenState extends State<GameScreen> {
         // build a map of players and turns.
         finalPlayersList.forEach((player) {
           turnsMapper.putIfAbsent(player["name"], () => "waiting");
+          // Sets the current player team.
+          if (player["name"] == widget.player.name) {
+            widget.player.teamIdentifier = player["teamIdentifier"];
+          }
+        });
+        // set opponents of that player.
+        finalPlayersList.forEach((player) {
+          if (player["teamIdentifier"] != widget.player.teamIdentifier) {
+            selfOpponents.add(player["name"]);
+          }
         });
         // Force rebuild
         setState(() { _ready = true; });
@@ -107,13 +145,26 @@ class _GameScreenState extends State<GameScreen> {
             turnsMapper[key] = "hasTurn";
           } else turnsMapper[key] = "waiting";
         });
-        // set opponents of that player.
+        // Starts the timer.
+        startTimer();
+        print("Setting state after turn change");
         setState(() {});
         break;
       default:
         print("Default case");
         break;
     }
+  }
+
+
+  void callback() {
+    print("Cancelling the timer");
+    widget.timer?.cancel();
+    // cancels the timer.
+    // Force rebuild.
+    Map turnDetails = {"name": widget.player.name, "roomId": widget.roomId};
+    game.send("finished_turn", json.encode(turnDetails));
+    setState(() {});
   }
 
   @override
@@ -141,7 +192,9 @@ class _GameScreenState extends State<GameScreen> {
                     containerWidth: MediaQuery.of(context).size.width,
                     currPlayer: widget.player,
                     finalPlayersList: finalPlayersList,
-                    turnsMapper: turnsMapper
+                    turnsMapper: turnsMapper,
+                    selfOpponents: selfOpponents,
+                    callback: this.callback
                   ),
                 ),
               ),

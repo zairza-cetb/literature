@@ -34,5 +34,27 @@ better to follow a tutorial as per your requirements. There's a ton on the inter
 3. Hit on run and debug and choose your device/emulator.
 ```
 
+### Note:
+
+There might be problems connecting to your localhost server from an mobile device(not emulators). Here are some methods through which you can solve this issue.
+
+#### Connecting to the same local network.
+1. Connect your system(where your nodejs server is running) and the mobile device to the same local network.(Ex. Same wifi).
+2. After successful connection call your systems port through the IP address of the system or laptop.
+
+Refer: https://stackoverflow.com/questions/4779963/how-can-i-access-my-localhost-from-my-android-device
+
+#### Exposing your local server port to the internet by creating a safe local tunnel.
+This is a more easy and simple way to connect to your system. Create a local tunnel to your port through a tunneling service such as ngrok, pagekite, etc.
+
+To create a local tunnel to your port:
+1. Install ngrok in yout system. (Download and unzip the file).
+2. Connect to your account through the token. (Optional step).
+3. Expose your port through by running `./ngrok http ${port}`
+
+This command will give you a public url, which will directly connect you to your node server. Use this url to make connection to the server from your mobile device. 
+
+
+
 ### Frontend logic
 ![Frontend logic](https://user-images.githubusercontent.com/26324376/79640179-cdc84180-81ad-11ea-8be7-41438ae61afd.png)

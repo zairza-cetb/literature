@@ -1,5 +1,5 @@
 import { Card, Cards, Suits } from "../types";
-import { Player } from '../models/Room';
+import { Player } from "../models/Room";
 
 function getInitialCardList(): Card[] {
   const initialCardList: Card[] = [];
@@ -36,7 +36,7 @@ function divide(cards: Card[]): Card[] {
   const divided = [];
   let n = 0, offset = 1;
   while(n <= 47) {
-    if(offset === 7) break
+    if(offset === 7) break;
     divided.push(cards[n]);
     if(n+6 > 47) {
       n = offset;
@@ -60,6 +60,6 @@ export function divideIntoTeams(players: Player[]) {
     } else {
       value["teamIdentifier"] = "blue";
     };
-  })
+  });
   return players;
 }

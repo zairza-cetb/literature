@@ -58,7 +58,7 @@ class _JoinRoomState extends State<JoinRoom> {
     switch (message["action"]) {
       case "set_id":
         // Set the player ID.
-        playerId = message["data"]["player_id"];
+        playerId = message["data"]["playerId"];
         Map joinDetails = {"roomId": _roomId.text, "name": _name.text, "playerId": playerId};
         game.send("join_game", json.encode(joinDetails));
         break;
@@ -97,7 +97,7 @@ class _JoinRoomState extends State<JoinRoom> {
           context,
           new MaterialPageRoute(
             builder: (BuildContext context) => WaitingPage(
-              roomId: message["data"]["roomId"].toString(),
+              roomId: message["data"]["roomId"],
             ),
           ),
         );
