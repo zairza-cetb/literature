@@ -9,7 +9,9 @@ class PlayerView extends StatefulWidget {
     this.containerWidth,
     this.finalPlayersList,
     this.turnsMapper,
-    this.selfOpponents, this.callback,
+    this.selfOpponents,
+    this.roomId,
+    this.callback,
   });
 
   final Player currPlayer;
@@ -24,12 +26,16 @@ class PlayerView extends StatefulWidget {
 
   Set<String> selfOpponents;
 
+  final String roomId;
+
   _PlayerViewState createState() => _PlayerViewState();
 
   Function callback;
 }
 
 class _PlayerViewState extends State<PlayerView> {
+  // This callback function
+  // changes the turn.
   Function cb;
   List<dynamic> playersList;
   bool askingForCard = false;
@@ -54,7 +60,7 @@ class _PlayerViewState extends State<PlayerView> {
     setState(() {
       askingForCard = false;
     });
-    cb();
+    // cb();
   }
 
   @override
@@ -271,7 +277,12 @@ class _PlayerViewState extends State<PlayerView> {
         ),
         askingForCard ? Positioned(
           top: 0,
-          child: CustomDialog(title: playerBeingAskedObj.name, description: "B", buttonText: "Ask", cb: closeDialog)
+          child: CustomDialog(
+            askingTo: playerBeingAskedObj.name,
+            whoAsked: widget.currPlayer.name,
+            buttonText: "Ask",
+            roomId: widget.roomId,
+            cb: closeDialog)
         ) : new Container(),
       ]
     );

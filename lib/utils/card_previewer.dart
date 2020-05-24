@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 class CardPreviewer extends StatefulWidget {
   final cardSuit;
   final cardType;
+  final double height;
+  final double width;
   CardPreviewer({
     @required this.cardSuit,
     @required this.cardType,
+    @required this.height,
+    @required this.width
   });
   _CardPreviewerState createState() => _CardPreviewerState();
 }
@@ -20,26 +24,25 @@ class _CardPreviewerState extends State<CardPreviewer> {
 
   @override
   Widget build(BuildContext context) {
-    var containerHeight = MediaQuery.of(context).size.height;
-    var containerWidth = MediaQuery.of(context).size.width;
-
-    return _buildLargeCard(widget.cardType, widget.cardSuit, containerHeight, containerWidth);
+    return Container(
+      child: _buildLargeCard(widget.cardType, widget.cardSuit, widget.height, widget.width)
+    );
   }
 
-  Widget _buildLargeCard(type, suit, h, w) {
+  Widget _buildLargeCard(type, suit, double h, double w) {
     return new Material(
       color: Colors.white,
       // The card number
       // in the center.
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(w*0.012*2),
           color: Colors.white,
           border: Border.all(color: Colors.black),
         ),
         // See: height of each card.
-        height: h*0.188,
-        width: w*0.2415,
+        height: h*0.494,
+        width: w*0.471,
         child: Stack(
           children: <Widget>[
             Center(
@@ -52,7 +55,7 @@ class _CardPreviewerState extends State<CardPreviewer> {
                       _cardTypeToString(type),
                       style: TextStyle(
                         fontFamily: font,
-                        fontSize: w*0.145,
+                        fontSize: w*0.166,
                         color: (
                           suit == "clubs" || 
                           suit == "spades" ? Colors.black : Colors.red
@@ -65,7 +68,7 @@ class _CardPreviewerState extends State<CardPreviewer> {
             ),
             // Card emblem on the top.
             Padding(
-              padding: const EdgeInsets.all(4.0),
+              padding: EdgeInsets.all(w*0.012),
               child: Container(
                 // color: Colors.blue,
                 child: Align(
@@ -81,7 +84,7 @@ class _CardPreviewerState extends State<CardPreviewer> {
                               _cardTypeToString(type),
                               style: TextStyle(
                                 fontFamily: font,
-                                fontSize: w*0.0483,
+                                fontSize: w*0.059,
                                 color: (
                                   suit == "clubs" || 
                                   suit == "spades" ? Colors.black : Colors.red
@@ -90,7 +93,7 @@ class _CardPreviewerState extends State<CardPreviewer> {
                             ),
                           ),
                           Container(
-                          height: h*0.0188,
+                          height: h*0.030,
                             child: _cardSuitToImage(suit),
                           ),
                         ],
@@ -102,9 +105,9 @@ class _CardPreviewerState extends State<CardPreviewer> {
             ),
             // Card emblem on the bottom.
             Padding(
-              padding: const EdgeInsets.fromLTRB(0, 115, 4.0, 0),
+              // Margin top matters in this case.
+              padding: EdgeInsets.fromLTRB(0, h*0.4, w*0.012, 0),
               child: Container(
-                // color: Colors.blue,
                 child: Align(
                   alignment: Alignment.center,
                   child: Row(
@@ -114,7 +117,7 @@ class _CardPreviewerState extends State<CardPreviewer> {
                       Column(
                         children: <Widget>[
                           Container(
-                          height: h*0.0188,
+                          height: h*0.030,
                             child: _cardSuitToImage(suit),
                           ),
                           Container(
@@ -122,7 +125,7 @@ class _CardPreviewerState extends State<CardPreviewer> {
                               _cardTypeToString(type),
                               style: TextStyle(
                                 fontFamily: font,
-                                fontSize: w*0.0483,
+                                fontSize: w*0.0588,
                                 color: (
                                   suit == "clubs" || 
                                   suit == "spades" ? Colors.black : Colors.red

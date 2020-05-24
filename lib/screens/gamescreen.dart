@@ -146,9 +146,91 @@ class _GameScreenState extends State<GameScreen> {
           } else turnsMapper[key] = "waiting";
         });
         // Starts the timer.
-        startTimer();
-        print("Setting state after turn change");
+        // startTimer();
         setState(() {});
+        break;
+      // Please check if you have this card.
+      // Cause someone requested it from you.
+      case "send_card_on_request":
+        var name = message["data"]["recipient"];
+        // return early.
+        if (name == widget.player.name) {
+          // You're the recipient.
+          print("YOU ARE THE RECIPIENT");
+          var cardSuit = message["data"]["cardSuit"],
+            cardType = message["data"]["cardType"];
+          bool haveCard = _cards.any((card) {
+            return (EnumToString.parse(card.cardSuit) == cardSuit
+              &&
+              EnumToString.parse(card.cardType) == cardType
+            );
+          });
+          // Ideally, update the arena here.
+          if (haveCard == false) {
+            print("No such card");
+          } else {
+            print("I have it");
+          }
+          // Send message that will transfer card.
+          // from -> recipient.
+          Map cardTransferDetails = { 
+            "cardSuit": cardSuit,
+            "cardType": cardType,
+            "from": widget.player.name,
+            "recipient": message["data"]["inquirer"],
+            "roomId": widget.roomId,
+            "result": haveCard == false ? "false" : "true"
+          };
+          game.send("card_transfer", json.encode(cardTransferDetails));
+        }
+        break;
+      case "card_transfer_result":
+        var recipient = message["data"]["recipient"];
+        var transferFrom = message["data"]["inquirer"];
+        var result = message["data"]["result"];
+        var cardSuit = message["data"]["cardSuit"];
+        var cardType = message["data"]["cardType"];
+        if (recipient == widget.player.name || transferFrom == widget.player.name) {
+          if (result == "true" && transferFrom == widget.player.name) {
+            // remove the card from the current person.
+            for (var i=0; i < _cards.length; i++) {
+              if (EnumToString.parse(_cards[i].cardSuit) == cardSuit && EnumToString.parse(_cards[i].cardType) == cardType) {
+                _cards.remove(_cards[i]);
+                break;
+              }
+            }
+            _cards.forEach((card) {
+              print(card.cardType);
+            });
+            // Force rebuild
+            setState(() {
+              _cards = _cards;           
+            });
+          } else if (result == "true" && recipient == widget.player.name) {
+            // add the resulting card to this person.
+            _cards.add(
+              new PlayingCard(
+                cardSuit: EnumToString.fromString(CardSuit.values, cardSuit),
+                cardType: EnumToString.fromString(CardType.values, cardType),
+                name: null
+              ),
+            );
+            // Force rebuild
+            setState(() {
+              _cards = _cards;           
+            });
+          } else {
+            // result is false, just update that wrong guess,
+            // end turn here. (important).
+            Map turnDetails = {"name": widget.player.name, "roomId": widget.roomId};
+            game.send("finished_turn", json.encode(turnDetails));
+            setState(() {});
+          }
+        } else {
+          // We get here if this player does not take place in the whole 
+          // transaction. Just update the arena that x asked y about z card.
+          // and the result is r.
+        }
         break;
       default:
         print("Default case");
@@ -194,6 +276,7 @@ class _GameScreenState extends State<GameScreen> {
                     finalPlayersList: finalPlayersList,
                     turnsMapper: turnsMapper,
                     selfOpponents: selfOpponents,
+                    roomId: widget.roomId,
                     callback: this.callback
                   ),
                 ),

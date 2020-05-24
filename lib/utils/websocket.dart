@@ -38,7 +38,7 @@ class WebSocket {
     // Initiate communication 
     // To Connect to the Localhost in the App, Read this following
     // https://stackoverflow.com/questions/4779963/how-can-i-access-my-localhost-from-my-android-device
-    _channel = IO.io('http://3b3c70c1.ngrok.io/', <String, dynamic>{
+    _channel = IO.io('http://localhost:3000', <String, dynamic>{
       'transports': ['websocket'],
         // 'extraHeaders': {'foo': 'bar'} // optional
     });
@@ -162,6 +162,27 @@ class WebSocket {
     // On event whose turn it is.
     socket.on("whose_turn", (data) {
       print("My turn");
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+    // Can you check if you have this card?
+    socket.on("do_you_have_this_card", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+    // Card transfer result arrival.
+    socket.on("card_transfer_result", (data) {
+      print("Card transfer result");
       Map messageRecieved = json.decode(data);
       Map message = new Map();
       message["data"] = messageRecieved["data"];
