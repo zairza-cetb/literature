@@ -1,16 +1,20 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:literature/utils/card_previewer.dart';
+import 'package:literature/utils/game_communication.dart';
 
 class CustomDialog extends StatefulWidget {
-  final String title, description, buttonText;
+  final String askingTo, whoAsked, buttonText, roomId;
   final Image image;
   final Function cb;
 
   CustomDialog({
-    @required this.title,
-    @required this.description,
+    @required this.askingTo,
+    @required this.whoAsked,
     @required this.buttonText,
     this.image,
+    @required this.roomId,
     @required this.cb
   });
 
@@ -73,7 +77,7 @@ class _CustomDialogState extends State<CustomDialog> {
             mainAxisSize: MainAxisSize.min, // To make the card compact
             children: <Widget>[
               Text(
-                "You are asking a card to " + widget.title + ".",
+                "You are asking a card to " + widget.askingTo + ".",
                 style: TextStyle(
                   fontSize: containerWidth*0.058,
                   fontWeight: FontWeight.w700,
@@ -132,9 +136,18 @@ class _CustomDialogState extends State<CustomDialog> {
                   ),
                   RaisedButton(
                     onPressed: () {
-                      // TODO: Ask for the particular card,
+                      // Ask for the particular card,
                       // send message on socket to server.
+                      Map cardAskingDetails = { 
+                        "cardSuit": cardSuit,
+                        "cardType": cardType,
+                        "askingTo": widget.askingTo,
+                        "whoAsked": widget.whoAsked,
+                        "roomId": widget.roomId
+                      };
+                      // Closes the dialog.
                       widget.cb();
+                      game.send("card_asking_event", json.encode(cardAskingDetails));
                     },
                     child: Text(widget.buttonText),
                   ),
