@@ -41,3 +41,6 @@ node_server/node_modules
 
 #vscode launch config
 .vscode
+
+# env file
+.env 
