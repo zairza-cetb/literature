@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:literature/provider/playerlistprovider.dart';
-import 'package:literature/screens/homepage.dart';
+import 'package:literature/screens/landingpage.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(MyApp());
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           // is not restarted.
           primarySwatch: Colors.blue,
         ),
-        home: LiteratureHomePage(),
+        home: LandingPage(),
       ),
     );
   }

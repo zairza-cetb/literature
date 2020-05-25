@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 
 class Player extends ChangeNotifier {
@@ -13,12 +11,16 @@ class Player extends ChangeNotifier {
   // Team identifier
   String teamIdentifier;
 
+  // Profile Pic
+  String photoURL;
+
   // Constructor
   Player({
     this.lobbyLeader = false,
     @required this.name,
     this.id,
     this.teamIdentifier,
+    this.photoURL = "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     this.teamLeader = false
   });
 

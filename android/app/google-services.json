@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "585814846518",
+    "firebase_url": "https://literature-68537.firebaseio.com",
+    "project_id": "literature-68537",
+    "storage_bucket": "literature-68537.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585814846518:android:3ff64d5e0279c2af9a3c97",
+        "android_client_info": {
+          "package_name": "com.example.literature"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "585814846518-2fd4hdu3c38qsga9ha1g95mgvnt22mqq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.literature",
+            "certificate_hash": "44bbe782fcb980de3016f12ebd89168b619d8622"
+          }
+        },
+        {
+          "client_id": "585814846518-aiduf6puilfqi3972rcg0v9tu0rtp8ba.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBElLOzX8k9x7F1KZd4XLamofnYCx4It34"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "585814846518-aiduf6puilfqi3972rcg0v9tu0rtp8ba.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
