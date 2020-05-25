@@ -1,6 +1,8 @@
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/components/custom_dialog.dart';
+import 'package:literature/models/playing_cards.dart';
 
 class PlayerView extends StatefulWidget {
   PlayerView({
@@ -11,6 +13,7 @@ class PlayerView extends StatefulWidget {
     this.turnsMapper,
     this.selfOpponents,
     this.roomId,
+    this.cards,
     this.callback,
   });
 
@@ -28,6 +31,8 @@ class PlayerView extends StatefulWidget {
 
   final String roomId;
 
+  List<PlayingCard> cards;
+
   _PlayerViewState createState() => _PlayerViewState();
 
   Function callback;
@@ -40,6 +45,14 @@ class _PlayerViewState extends State<PlayerView> {
   List<dynamic> playersList;
   bool askingForCard = false;
   Player playerBeingAskedObj;
+
+  void initState() {
+    super.initState();
+    // Initialise variable to the state.
+    playersList = widget.finalPlayersList;
+    cb = widget.callback;
+  }
+
   // This function rebuilds the state
   // when a player asks for cards.
   setCardAskingProps(Player playerBeingAsked, bool res) {
@@ -48,12 +61,6 @@ class _PlayerViewState extends State<PlayerView> {
       askingForCard = true;
       playerBeingAskedObj = playerBeingAsked;
     });
-  }
-  void initState() {
-    super.initState();
-    // Initialise variable to the state.
-    playersList = widget.finalPlayersList;
-    cb = widget.callback;
   }
 
   closeDialog() {
@@ -282,6 +289,7 @@ class _PlayerViewState extends State<PlayerView> {
             whoAsked: widget.currPlayer.name,
             buttonText: "Ask",
             roomId: widget.roomId,
+            cards: widget.cards,
             cb: closeDialog)
         ) : new Container(),
       ]
