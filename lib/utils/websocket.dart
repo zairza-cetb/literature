@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:flutter_config/flutter_config.dart';
 
 /// Global variable, the whole class
 /// is accessible by this global variable
@@ -38,7 +39,8 @@ class WebSocket {
     // Initiate communication 
     // To Connect to the Localhost in the App, Read this following
     // https://stackoverflow.com/questions/4779963/how-can-i-access-my-localhost-from-my-android-device
-    _channel = IO.io('http://localhost:3000', <String, dynamic>{
+    String localhost = FlutterConfig.get('localhost_url'); 
+    _channel = IO.io(localhost, <String, dynamic>{
       'transports': ['websocket'],
         // 'extraHeaders': {'foo': 'bar'} // optional
     });
