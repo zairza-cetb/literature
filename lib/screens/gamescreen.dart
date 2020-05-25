@@ -277,6 +277,7 @@ class _GameScreenState extends State<GameScreen> {
                     turnsMapper: turnsMapper,
                     selfOpponents: selfOpponents,
                     roomId: widget.roomId,
+                    cards: _cards,
                     callback: this.callback
                   ),
                 ),

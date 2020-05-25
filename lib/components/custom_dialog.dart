@@ -1,13 +1,17 @@
 import 'dart:convert';
 
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
+import 'package:literature/models/playing_cards.dart';
 import 'package:literature/utils/card_previewer.dart';
 import 'package:literature/utils/game_communication.dart';
+import 'package:literature/utils/functions.dart';
 
 class CustomDialog extends StatefulWidget {
   final String askingTo, whoAsked, buttonText, roomId;
   final Image image;
   final Function cb;
+  List<PlayingCard> cards;
 
   CustomDialog({
     @required this.askingTo,
@@ -15,6 +19,7 @@ class CustomDialog extends StatefulWidget {
     @required this.buttonText,
     this.image,
     @required this.roomId,
+    this.cards,
     @required this.cb
   });
 
@@ -131,18 +136,26 @@ class _CustomDialogState extends State<CustomDialog> {
               ),
               RaisedButton(
                 onPressed: () {
-                  // Ask for the particular card,
-                  // send message on socket to server.
-                  Map cardAskingDetails = { 
-                    "cardSuit": cardSuit,
-                    "cardType": cardType,
-                    "askingTo": widget.askingTo,
-                    "whoAsked": widget.whoAsked,
-                    "roomId": widget.roomId
-                  };
                   // Closes the dialog.
                   widget.cb();
-                  game.send("card_asking_event", json.encode(cardAskingDetails));
+                  // Checks if the player has a card
+                  // from the same set or not, also he should
+                  // not have the same card he asked in his hand.
+                  if (!hasOneFromSameSet(cardSuit, cardType, widget.cards)) {
+                    // Spit out in the arena.
+                    print("You probably don't have a card from the same set or you might have that card yourself, move on.");
+                  } else {
+                    // Ask for the particular card,
+                    // send message on socket to server.
+                    Map cardAskingDetails = { 
+                      "cardSuit": cardSuit,
+                      "cardType": cardType,
+                      "askingTo": widget.askingTo,
+                      "whoAsked": widget.whoAsked,
+                      "roomId": widget.roomId
+                    };
+                    game.send("card_asking_event", json.encode(cardAskingDetails));
+                  }
                 },
                 child: Text(widget.buttonText),
               ),
