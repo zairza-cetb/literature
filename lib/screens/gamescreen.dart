@@ -258,7 +258,12 @@ class _GameScreenState extends State<GameScreen> {
         // Disable going to the waiting page
         // cause there won't be any forwarding
         // from there on.
-        appBar: new AppBar(),
+        // appBar: new AppBar(),
+        appBar: AppBar(
+          title: new Text("Literature"),
+          leading: new Container(),
+          backgroundColor: Colors.lightBlue[800],
+        ),
         body:  _ready ? SlidingUpPanel(
           body: new Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -266,7 +271,14 @@ class _GameScreenState extends State<GameScreen> {
               new Container(
                 height: MediaQuery.of(context).size.height*0.95,
                 padding: EdgeInsets.all(0),
-                color: Colors.blueGrey,
+                decoration: BoxDecoration(
+                  image: new DecorationImage(
+                    // We can add random game mats
+                    // as per store purchases of the user.
+                    image: new ExactAssetImage("assets/game_mat_royale.jpg"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
                   child: new PlayerView(
