@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/components/custom_dialog.dart';
+import 'package:literature/models/playing_cards.dart';
+import 'package:badges/badges.dart';
 
 class PlayerView extends StatefulWidget {
   PlayerView({
@@ -9,7 +11,10 @@ class PlayerView extends StatefulWidget {
     this.containerWidth,
     this.finalPlayersList,
     this.turnsMapper,
-    this.selfOpponents, this.callback,
+    this.selfOpponents,
+    this.roomId,
+    this.cards,
+    this.callback,
   });
 
   final Player currPlayer;
@@ -24,16 +29,30 @@ class PlayerView extends StatefulWidget {
 
   Set<String> selfOpponents;
 
+  final String roomId;
+
+  List<PlayingCard> cards;
+
   _PlayerViewState createState() => _PlayerViewState();
 
   Function callback;
 }
 
 class _PlayerViewState extends State<PlayerView> {
+  // This callback function
+  // changes the turn.
   Function cb;
   List<dynamic> playersList;
   bool askingForCard = false;
   Player playerBeingAskedObj;
+
+  void initState() {
+    super.initState();
+    // Initialise variable to the state.
+    playersList = widget.finalPlayersList;
+    cb = widget.callback;
+  }
+
   // This function rebuilds the state
   // when a player asks for cards.
   setCardAskingProps(Player playerBeingAsked, bool res) {
@@ -43,18 +62,12 @@ class _PlayerViewState extends State<PlayerView> {
       playerBeingAskedObj = playerBeingAsked;
     });
   }
-  void initState() {
-    super.initState();
-    // Initialise variable to the state.
-    playersList = widget.finalPlayersList;
-    cb = widget.callback;
-  }
 
   closeDialog() {
     setState(() {
       askingForCard = false;
     });
-    cb();
+    // cb();
   }
 
   @override
@@ -265,13 +278,72 @@ class _PlayerViewState extends State<PlayerView> {
           child: new Container(
             height: arenaContainerHeight,
             width: arenaContainerWidth,
-            color: Colors.black,
-            child: new Text("Arena"),
+            color: Colors.white24,
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Center(
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Container(
+                      width: arenaContainerWidth,
+                      child: new Text(
+                        "0-0",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontFamily: "Raleway",
+                          color: Colors.white
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: arenaContainerWidth,
+                      child: new Text(
+                        "Message",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: "Raleway",
+                          color: Colors.white
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: arenaContainerWidth,
+                      // For completed sets, most likely
+                      // iterate over which sets are complete
+                      // and update this component.
+                      child: new Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          // Ideally return a GridView.
+                          Badge(
+                            badgeColor: Colors.deepPurple,
+                            shape: BadgeShape.square,
+                            borderRadius: 20,
+                            toAnimate: false,
+                            badgeContent:
+                                Text('L-Clubs', style: TextStyle(color: Colors.white)),
+                          ),
+                        ],
+                      )
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
         askingForCard ? Positioned(
           top: 0,
-          child: CustomDialog(title: playerBeingAskedObj.name, description: "B", buttonText: "Ask", cb: closeDialog)
+          child: CustomDialog(
+            askingTo: playerBeingAskedObj.name,
+            whoAsked: widget.currPlayer.name,
+            buttonText: "Ask",
+            roomId: widget.roomId,
+            cards: widget.cards,
+            cb: closeDialog)
         ) : new Container(),
       ]
     );
@@ -292,7 +364,7 @@ Widget _getPlayerInContainer(player, h, w, turn, turnFactor, setCardAskingProps,
           height: h*0.628,
           child: new Hero(
             tag: p,
-            child: player == null ? Image.asset("assets/no_person.png") : Image.asset("assets/person.png"),
+            child: player == null ? Image.asset("assets/person-fb.jpg") : Image.asset("assets/person-fb.jpg"),
           ),
         ),
       ),
@@ -379,12 +451,12 @@ Widget _getPlayerInContainer(player, h, w, turn, turnFactor, setCardAskingProps,
 // per a player's team
 Border _getContainerBorder(player) {
   if (player == null) {
-    return Border.all(color: Colors.black, width: 2.0);
+    return Border.all(color: Colors.yellowAccent[700], width: 4.0);
   } else {
     if((player["teamIdentifier"]) == "red") {
-      return Border.all(color: Colors.orange, width: 4.0);
+      return Border.all(color: Colors.yellowAccent[700], width: 4.0);
     }
-    else return Border.all(color: Colors.blue, width: 4.0);
+    else return Border.all(color: Colors.yellowAccent[700], width: 4.0);
   }
 }
 

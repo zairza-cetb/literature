@@ -192,6 +192,36 @@ io.on("connection", (socket) => {
       action: "make_move" })
     );
   })
+
+  // Handles a player's card asking event.
+  // We broadcast that even to the room, then if the
+  // recipient has the card he generates another event.
+  socket.on("card_asking_event", async (data: any) => {
+    const parsedData = JSON.parse(data);
+    const  { whoAsked, askingTo, roomId, cardSuit, cardType } = parsedData;
+    io.to(roomId).emit(
+      "do_you_have_this_card",
+      JSON.stringify({
+        data: { inquirer: whoAsked, recipient: askingTo, cardSuit: cardSuit, cardType: cardType },
+        action: "send_card_on_request"
+      }),
+    );
+  });
+
+  // Handles the event if a card should be transferred from a person
+  // or not. Have to send a message nevertheless to show if the guess
+  // was correct or not in the arena.
+  socket.on("card_transfer", async (payload) => {
+    const parsedData = JSON.parse(payload);
+    const { cardSuit, cardType, from, recipient, roomId, result } = parsedData;
+    io.to(roomId).emit(
+      "card_transfer_result",
+      JSON.stringify({
+        data: { inquirer: from, recipient, cardSuit, cardType, result },
+        action: "card_transfer_result"
+      })
+    );
+  });
 });
 
 
