@@ -110,7 +110,7 @@ class _WaitingPageState extends State<WaitingPage> {
       // to the game page.
       case "game_started":
         final playerProvider = Provider.of<PlayerList>(context, listen: false);
-        Navigator.push(
+        Navigator.pushReplacement(
             context,
             new MaterialPageRoute(
               builder: (BuildContext context) => new GameScreen(

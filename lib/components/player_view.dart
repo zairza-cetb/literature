@@ -1,8 +1,8 @@
-import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/components/custom_dialog.dart';
 import 'package:literature/models/playing_cards.dart';
+import 'package:badges/badges.dart';
 
 class PlayerView extends StatefulWidget {
   PlayerView({
@@ -278,8 +278,61 @@ class _PlayerViewState extends State<PlayerView> {
           child: new Container(
             height: arenaContainerHeight,
             width: arenaContainerWidth,
-            color: Colors.black,
-            child: new Text("Arena"),
+            color: Colors.white24,
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Center(
+                child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Container(
+                      width: arenaContainerWidth,
+                      child: new Text(
+                        "0-0",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontFamily: "Raleway",
+                          color: Colors.white
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: arenaContainerWidth,
+                      child: new Text(
+                        "Message",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: "Raleway",
+                          color: Colors.white
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: arenaContainerWidth,
+                      // For completed sets, most likely
+                      // iterate over which sets are complete
+                      // and update this component.
+                      child: new Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          // Ideally return a GridView.
+                          Badge(
+                            badgeColor: Colors.deepPurple,
+                            shape: BadgeShape.square,
+                            borderRadius: 20,
+                            toAnimate: false,
+                            badgeContent:
+                                Text('L-Clubs', style: TextStyle(color: Colors.white)),
+                          ),
+                        ],
+                      )
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
         askingForCard ? Positioned(
@@ -311,7 +364,7 @@ Widget _getPlayerInContainer(player, h, w, turn, turnFactor, setCardAskingProps,
           height: h*0.628,
           child: new Hero(
             tag: p,
-            child: player == null ? Image.asset("assets/no_person.png") : Image.asset("assets/person.png"),
+            child: player == null ? Image.asset("assets/person-fb.jpg") : Image.asset("assets/person-fb.jpg"),
           ),
         ),
       ),
@@ -398,12 +451,12 @@ Widget _getPlayerInContainer(player, h, w, turn, turnFactor, setCardAskingProps,
 // per a player's team
 Border _getContainerBorder(player) {
   if (player == null) {
-    return Border.all(color: Colors.black, width: 2.0);
+    return Border.all(color: Colors.yellowAccent[700], width: 4.0);
   } else {
     if((player["teamIdentifier"]) == "red") {
-      return Border.all(color: Colors.orange, width: 4.0);
+      return Border.all(color: Colors.yellowAccent[700], width: 4.0);
     }
-    else return Border.all(color: Colors.blue, width: 4.0);
+    else return Border.all(color: Colors.yellowAccent[700], width: 4.0);
   }
 }
 
