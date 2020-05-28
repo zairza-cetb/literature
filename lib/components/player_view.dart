@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/components/custom_dialog.dart';
+import 'package:literature/components/folding_dialog.dart';
 import 'package:literature/models/playing_cards.dart';
 import 'package:badges/badges.dart';
 
@@ -44,6 +45,7 @@ class _PlayerViewState extends State<PlayerView> {
   Function cb;
   List<dynamic> playersList;
   bool askingForCard = false;
+  bool _folding = false;
   Player playerBeingAskedObj;
 
   void initState() {
@@ -66,6 +68,7 @@ class _PlayerViewState extends State<PlayerView> {
   closeDialog() {
     setState(() {
       askingForCard = false;
+      _folding = false;
     });
     // cb();
   }
@@ -288,18 +291,6 @@ class _PlayerViewState extends State<PlayerView> {
                     Container(
                       width: arenaContainerWidth,
                       child: new Text(
-                        "0-0",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontFamily: "Raleway",
-                          color: Colors.white
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: arenaContainerWidth,
-                      child: new Text(
                         "Message",
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -309,25 +300,55 @@ class _PlayerViewState extends State<PlayerView> {
                         ),
                       ),
                     ),
-                    Container(
-                      width: arenaContainerWidth,
-                      // For completed sets, most likely
-                      // iterate over which sets are complete
-                      // and update this component.
-                      child: new Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          // Ideally return a GridView.
-                          Badge(
-                            badgeColor: Colors.deepPurple,
-                            shape: BadgeShape.square,
-                            borderRadius: 20,
-                            toAnimate: false,
-                            badgeContent:
-                                Text('L-Clubs', style: TextStyle(color: Colors.white)),
+                    new Text(
+                      "0-0",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontFamily: "Raleway",
+                        color: Colors.white
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        new Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            // Ideally return a GridView.
+                            Badge(
+                              badgeColor: Colors.deepPurple,
+                              shape: BadgeShape.square,
+                              borderRadius: 20,
+                              toAnimate: false,
+                              badgeContent:
+                                  Text('L-Clubs', style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                        new Align(
+                          alignment: Alignment.topRight,
+                          child: new Container(
+                            child: new OutlineButton(
+                              onPressed: () {
+                                // Set folding to true.
+                                setState(() {
+                                  _folding = true;
+                                });
+                              },
+                              borderSide: BorderSide(
+                                color: Colors.amber,
+                              ),
+                              child: new Text(
+                                "Fold",
+                                style: TextStyle(
+                                  color: Colors.amber
+                                ),
+                              ),
+                            ),
                           ),
-                        ],
-                      )
+                        ),
+                      ]
                     ),
                   ],
                 ),
@@ -344,6 +365,14 @@ class _PlayerViewState extends State<PlayerView> {
             roomId: widget.roomId,
             cards: widget.cards,
             cb: closeDialog)
+        ) : new Container(),
+        _folding ? Positioned(
+          top: 0,
+          child: FoldingDialog(
+            opponents: widget.selfOpponents,
+            playersList: widget.finalPlayersList,
+            cb: closeDialog
+          )
         ) : new Container(),
       ]
     );

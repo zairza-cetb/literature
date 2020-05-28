@@ -49,6 +49,7 @@ class _GameScreenState extends State<GameScreen> {
   // List<Player> teamBlue = new List<Player>();
   double radius = 150.0;
   Map<String, String> turnsMapper = new Map<String, String>();
+  Map<String, String> foldingState = new Map<String, String>();
   Set<String> selfOpponents = new Set();
 
   @override

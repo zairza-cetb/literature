@@ -1,36 +1,33 @@
 import 'dart:convert';
 
-import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:literature/models/playing_cards.dart';
 import 'package:literature/utils/card_previewer.dart';
 import 'package:literature/utils/game_communication.dart';
 import 'package:literature/utils/functions.dart';
 
-class CustomDialog extends StatefulWidget {
-  final String askingTo, whoAsked, buttonText, roomId;
-  final Image image;
+class FoldingDialog extends StatefulWidget {
   final Function cb;
   List<PlayingCard> cards;
+  final Set<String> opponents;
+  final List<dynamic> playersList;
 
-  CustomDialog({
-    @required this.askingTo,
-    @required this.whoAsked,
-    @required this.buttonText,
-    this.image,
-    @required this.roomId,
-    this.cards,
-    @required this.cb
+  FoldingDialog({
+    @required this.cb,
+    @required this.opponents,
+    @required this.playersList
   });
 
-  _CustomDialogState createState() => _CustomDialogState();
+  _FoldingDialogState createState() => _FoldingDialogState();
 }
 
-class _CustomDialogState extends State<CustomDialog> {
+class _FoldingDialogState extends State<FoldingDialog> {
   // Initial state variables
   // that map to card previewer.
-  String cardType = 'ace';
-  String cardSuit = 'hearts';
+  String selectedSuit = "hearts";
+  String selectedSet = "L";
+  // String cardType = 'ace';
+  // String cardSuit = 'hearts';
   @override
   void initState() {
     super.initState();
@@ -79,18 +76,9 @@ class _CustomDialogState extends State<CustomDialog> {
           new Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Expanded(
-                child: Text(
-                  "You are asking a card to " + widget.askingTo + ".",
-                  style: TextStyle(
-                    fontSize: containerWidth*0.058,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
               Container(
                 width: 40,
-                child: RaisedButton(
+                child: OutlineButton(
                   onPressed: () {
                     widget.cb();
                   },
@@ -102,40 +90,13 @@ class _CustomDialogState extends State<CustomDialog> {
           SizedBox(height: containerHeight*0.0188),
           new Row(
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               DropdownButton<String>(
-                value: cardType,
+                value: selectedSuit,
                 onChanged: (String newValue) {
                   setState(() {
-                    cardType = newValue;
-                  });
-                },
-                items: <String>[
-                  "ace",
-                  "two",
-                  "three",
-                  "four",
-                  "five",
-                  "six",
-                  "eight",
-                  "nine",
-                  "ten",
-                  "jack",
-                  "queen",
-                  "king"
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              DropdownButton<String>(
-                value: cardSuit,
-                onChanged: (String newValue) {
-                  setState(() {
-                    cardSuit = newValue;
+                    selectedSuit = newValue;
                   });
                 },
                 items: <String>[
@@ -150,41 +111,33 @@ class _CustomDialogState extends State<CustomDialog> {
                   );
                 }).toList(),
               ),
-              RaisedButton(
-                onPressed: () {
-                  // Closes the dialog.
-                  widget.cb();
-                  // Checks if the player has a card
-                  // from the same set or not, also he should
-                  // not have the same card he asked in his hand.
-                  if (!hasOneFromSameSet(cardSuit, cardType, widget.cards)) {
-                    // Spit out in the arena.
-                    print("You probably don't have a card from the same set or you might have that card yourself, move on.");
-                  } else {
-                    // Ask for the particular card,
-                    // send message on socket to server.
-                    Map cardAskingDetails = { 
-                      "cardSuit": cardSuit,
-                      "cardType": cardType,
-                      "askingTo": widget.askingTo,
-                      "whoAsked": widget.whoAsked,
-                      "roomId": widget.roomId
-                    };
-                    game.send("card_asking_event", json.encode(cardAskingDetails));
-                  }
+              DropdownButton<String>(
+                value: selectedSet,
+                onChanged: (String newValue) {
+                  setState(() {
+                    selectedSet = newValue;
+                  });
                 },
-                child: Text(widget.buttonText),
+                items: <String>[
+                  "L",
+                  "H",
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
             ]
           ),
           SizedBox(height: 24.0),
           Align(
             alignment: Alignment.bottomCenter,
-            child: new CardPreviewer(
-              cardSuit: cardSuit,
-              cardType: cardType,
-              height: containerHeight*0.587,
-              width: containerWidth*0.821,),
+            // child: new CardPreviewer(
+            //   cardSuit: selectedSuit,
+            //   cardType: cardType,
+            //   height: containerHeight*0.587,
+            //   width: containerWidth*0.821,),
           ),
         ],
       ),
