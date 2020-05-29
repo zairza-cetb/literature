@@ -84,7 +84,6 @@ class _PlayerViewState extends State<PlayerView> {
   _playerViewListener(message) {
     switch(message["action"]) {
       case "verify_for_folding_authenticity":
-        // print(message["data"]);
         var teamMateRescueLists = message["data"];
         if (takesPartInTransaction(widget.currPlayer, teamMateRescueLists) == "false") {
           break;
@@ -105,7 +104,7 @@ class _PlayerViewState extends State<PlayerView> {
               })
             ) 
             {
-              print("I have: " + cardType + " of " + suit);
+              print("");
             } else {
               // If I do not have a card of
               // particular type then guess is wrong.
@@ -116,9 +115,51 @@ class _PlayerViewState extends State<PlayerView> {
           Map foldingConfirmation = { 
             "name": widget.currPlayer.name,
             "confirmation": hasAllCards,
-            "foldingDetails": teamMateRescueLists
+            "forWhichCards": toCheckSpecificCards,
+            "roomId": widget.roomId,
+            "whoAsked": message["data"][0]["whoAsked"],
           };
           game.send("folding_confirmation", json.encode(foldingConfirmation));
+        }
+        break;
+      case "update_foldState":
+        // return early.
+        if (widget.currPlayer.name != message["data"]["whoAsked"]) {
+          break;
+        } else {
+          var nameToBeUpdated = message["data"]["name"];
+          if (message["data"]["confirmation"] == true) {
+            foldState[nameToBeUpdated] = "hasAllCards";
+          } else foldState[nameToBeUpdated] = "notHaveAllCards";
+          // Check if all the states have completed occuring.
+          var count = 0;
+          var correctValues = 0;
+          foldState.forEach((key, value) {
+            if (value != "awaitingConfirmation") {
+              if (value == "hasAllCards") {
+                correctValues = correctValues + 1;
+              }
+              count = count + 1;
+            }
+          });
+          // All states have completed.
+          if (count == foldState.length) {
+            if (count == correctValues) {
+              // Add one point to the team.
+              print("Must add one point to the team");
+              // revoke foldState for newer values.
+              foldState.clear();
+              foldGuesses.clear();
+            } else {
+              // Change the turn.
+              widget.callback();
+              foldState.clear();
+              foldGuesses.clear();
+            }
+          } else {
+            // Waiting for more responses.
+            print("");
+          }
         }
         break;
       default:
@@ -150,8 +191,6 @@ class _PlayerViewState extends State<PlayerView> {
   preFoldMessageSendingAction(String name, var selections) {
     foldState.putIfAbsent(name, () => "awaitingConfirmation");
     foldGuesses.putIfAbsent(name, () => selections);
-    // print(foldState);
-    // print(foldGuesses);
   }
 
   @override
@@ -413,9 +452,11 @@ class _PlayerViewState extends State<PlayerView> {
                             child: new OutlineButton(
                               onPressed: () {
                                 // Set folding to true.
-                                setState(() {
-                                  _folding = true;
-                                });
+                                if (widget.turnsMapper[widget.currPlayer.name] == "hasTurn") {
+                                  setState(() {
+                                    _folding = true;
+                                  });
+                                }
                               },
                               borderSide: BorderSide(
                                 color: Colors.amber,

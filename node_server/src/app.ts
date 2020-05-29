@@ -238,6 +238,20 @@ io.on("connection", (socket) => {
       }),
     );
   });
+
+  // When a user sends a confirmation result, broadcast to change
+  // the foldState for a user emitting this message.
+  socket.on("folding_confirmation", async (data) => {
+    const parsedData = JSON.parse(data);
+    const { roomId, name, confirmation, forWhichCards, whoAsked } = parsedData;
+    io.to(roomId).emit(
+      "folding_confirmation_recieved",
+      JSON.stringify({
+        data : { whoAsked, name, confirmation, forWhichCards },
+        action: "update_foldState",
+      }),
+    );
+  });
 });
 
 

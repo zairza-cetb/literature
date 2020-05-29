@@ -148,7 +148,7 @@ class _WaitingPageState extends State<WaitingPage> {
 
   _getPlayButton(playerInfo) {
     final players = Provider.of<PlayerList>(context, listen: false);
-    if (players.players.length == 2) {
+    if (players.players.length == 3) {
       return new RaisedButton(
         onPressed: () {
           _onPlayGame(context);

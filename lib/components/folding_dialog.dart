@@ -112,7 +112,7 @@ class _FoldingDialogState extends State<FoldingDialog> {
                     // General format of messages.
                     // { "name" ,"selections", "suit" }
                     List message = new List();
-                    final currPlayer = Provider.of<PlayerList>(context).currPlayer;
+                    final currPlayer = Provider.of<PlayerList>(context, listen: false).currPlayer;
                     if (playerOneFoldSelections != null && teamMates.length > 0) {
                       message.add(
                         {
