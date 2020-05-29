@@ -191,5 +191,26 @@ class WebSocket {
         callback(message);
       });
     });
+    // Validate authenticity for fold result.
+    socket.on("folding_result_verification", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+    // Update foldState and final validity of the
+    // folding result.
+    socket.on("folding_confirmation_recieved", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
   }
 }

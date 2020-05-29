@@ -76,12 +76,28 @@ class _CustomDialogState extends State<CustomDialog> {
       child: Column(
         mainAxisSize: MainAxisSize.min, // To make the card compact
         children: <Widget>[
-          Text(
-            "You are asking a card to " + widget.askingTo + ".",
-            style: TextStyle(
-              fontSize: containerWidth*0.058,
-              fontWeight: FontWeight.w700,
-            ),
+          new Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  "You are asking a card to " + widget.askingTo + ".",
+                  style: TextStyle(
+                    fontSize: containerWidth*0.058,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Container(
+                width: 40,
+                child: RaisedButton(
+                  onPressed: () {
+                    widget.cb();
+                  },
+                  child: Text("X"),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: containerHeight*0.0188),
           new Row(

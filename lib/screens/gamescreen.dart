@@ -49,7 +49,9 @@ class _GameScreenState extends State<GameScreen> {
   // List<Player> teamBlue = new List<Player>();
   double radius = 150.0;
   Map<String, String> turnsMapper = new Map<String, String>();
+  Map<String, String> foldingState = new Map<String, String>();
   Set<String> selfOpponents = new Set();
+  Set<String> teamMates = new Set();
 
   @override
   void initState() {
@@ -129,6 +131,8 @@ class _GameScreenState extends State<GameScreen> {
         finalPlayersList.forEach((player) {
           if (player["teamIdentifier"] != widget.player.teamIdentifier) {
             selfOpponents.add(player["name"]);
+          } else {
+            teamMates.add(player["name"]);
           }
         });
         // Force rebuild
@@ -288,6 +292,7 @@ class _GameScreenState extends State<GameScreen> {
                     finalPlayersList: finalPlayersList,
                     turnsMapper: turnsMapper,
                     selfOpponents: selfOpponents,
+                    teamMates: teamMates,
                     roomId: widget.roomId,
                     cards: _cards,
                     callback: this.callback

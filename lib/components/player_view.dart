@@ -1,8 +1,14 @@
+import 'dart:convert';
+
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/components/custom_dialog.dart';
+import 'package:literature/components/folding_dialog.dart';
 import 'package:literature/models/playing_cards.dart';
 import 'package:badges/badges.dart';
+import 'package:literature/utils/functions.dart';
+import 'package:literature/utils/game_communication.dart';
 
 class PlayerView extends StatefulWidget {
   PlayerView({
@@ -12,6 +18,7 @@ class PlayerView extends StatefulWidget {
     this.finalPlayersList,
     this.turnsMapper,
     this.selfOpponents,
+    this.teamMates,
     this.roomId,
     this.cards,
     this.callback,
@@ -29,6 +36,8 @@ class PlayerView extends StatefulWidget {
 
   Set<String> selfOpponents;
 
+  Set<String> teamMates;
+
   final String roomId;
 
   List<PlayingCard> cards;
@@ -44,13 +53,118 @@ class _PlayerViewState extends State<PlayerView> {
   Function cb;
   List<dynamic> playersList;
   bool askingForCard = false;
+  bool _folding = false;
   Player playerBeingAskedObj;
+  // The idea is having a foldState of
+  // the form {"name" -> "awaitingResponse" or "hasCard" or "hasNoCard"}
+  // So we gotta verify those against the name when we get responses
+  // from each user and we update the score after each one has been
+  // validated.
+  Map foldState = new Map();
+  // We need to keep track
+  // of what the current user has guessed for
+  // each player, who contains what.
+  // We need to keep track because we need to validate against
+  // it.
+  Map foldGuesses = new Map();
 
   void initState() {
     super.initState();
     // Initialise variable to the state.
+    game.addListener(_playerViewListener);
     playersList = widget.finalPlayersList;
     cb = widget.callback;
+  }
+
+  void dispose() {
+    super.dispose();
+    game.removeListener(_playerViewListener);
+  }
+
+  _playerViewListener(message) {
+    switch(message["action"]) {
+      case "verify_for_folding_authenticity":
+        var teamMateRescueLists = message["data"];
+        if (takesPartInTransaction(widget.currPlayer, teamMateRescueLists) == "false") {
+          break;
+        } else {
+          // This player takes part in the transaction.
+          // Check if he has the cards specified or not,
+          // then send a message to the server, regarding
+          // a success or failure.
+          List toCheckSpecificCards = getSelections(widget.currPlayer, teamMateRescueLists);
+          String suit = message["data"][0]["suit"];
+          bool hasAllCards = true;
+          toCheckSpecificCards.forEach((cardType) {
+            if (widget.cards.any((card) {
+              return (EnumToString.parse(card.cardSuit) == suit
+                &&
+                EnumToString.parse(card.cardType) == cardType
+              );
+              })
+            ) 
+            {
+              print("");
+            } else {
+              // If I do not have a card of
+              // particular type then guess is wrong.
+              hasAllCards = false;
+            }
+          });
+          // Send the respective message to the server.
+          Map foldingConfirmation = { 
+            "name": widget.currPlayer.name,
+            "confirmation": hasAllCards,
+            "forWhichCards": toCheckSpecificCards,
+            "roomId": widget.roomId,
+            "whoAsked": message["data"][0]["whoAsked"],
+          };
+          game.send("folding_confirmation", json.encode(foldingConfirmation));
+        }
+        break;
+      case "update_foldState":
+        // return early.
+        if (widget.currPlayer.name != message["data"]["whoAsked"]) {
+          break;
+        } else {
+          var nameToBeUpdated = message["data"]["name"];
+          if (message["data"]["confirmation"] == true) {
+            foldState[nameToBeUpdated] = "hasAllCards";
+          } else foldState[nameToBeUpdated] = "notHaveAllCards";
+          // Check if all the states have completed occuring.
+          var count = 0;
+          var correctValues = 0;
+          foldState.forEach((key, value) {
+            if (value != "awaitingConfirmation") {
+              if (value == "hasAllCards") {
+                correctValues = correctValues + 1;
+              }
+              count = count + 1;
+            }
+          });
+          // All states have completed.
+          if (count == foldState.length) {
+            if (count == correctValues) {
+              // Add one point to the team.
+              print("Must add one point to the team");
+              // revoke foldState for newer values.
+              foldState.clear();
+              foldGuesses.clear();
+            } else {
+              // Change the turn.
+              widget.callback();
+              foldState.clear();
+              foldGuesses.clear();
+            }
+          } else {
+            // Waiting for more responses.
+            print("");
+          }
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   // This function rebuilds the state
@@ -66,8 +180,17 @@ class _PlayerViewState extends State<PlayerView> {
   closeDialog() {
     setState(() {
       askingForCard = false;
+      _folding = false;
     });
     // cb();
+  }
+
+  // This function as a whole updates
+  // the foldState and player selections
+  // in the current state.
+  preFoldMessageSendingAction(String name, var selections) {
+    foldState.putIfAbsent(name, () => "awaitingConfirmation");
+    foldGuesses.putIfAbsent(name, () => selections);
   }
 
   @override
@@ -288,18 +411,6 @@ class _PlayerViewState extends State<PlayerView> {
                     Container(
                       width: arenaContainerWidth,
                       child: new Text(
-                        "0-0",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontFamily: "Raleway",
-                          color: Colors.white
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: arenaContainerWidth,
-                      child: new Text(
                         "Message",
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -309,25 +420,57 @@ class _PlayerViewState extends State<PlayerView> {
                         ),
                       ),
                     ),
-                    Container(
-                      width: arenaContainerWidth,
-                      // For completed sets, most likely
-                      // iterate over which sets are complete
-                      // and update this component.
-                      child: new Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          // Ideally return a GridView.
-                          Badge(
-                            badgeColor: Colors.deepPurple,
-                            shape: BadgeShape.square,
-                            borderRadius: 20,
-                            toAnimate: false,
-                            badgeContent:
-                                Text('L-Clubs', style: TextStyle(color: Colors.white)),
+                    new Text(
+                      "0-0",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontFamily: "Raleway",
+                        color: Colors.white
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        new Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            // Ideally return a GridView.
+                            Badge(
+                              badgeColor: Colors.deepPurple,
+                              shape: BadgeShape.square,
+                              borderRadius: 20,
+                              toAnimate: false,
+                              badgeContent:
+                                  Text('L-Clubs', style: TextStyle(color: Colors.white)),
+                            ),
+                          ],
+                        ),
+                        new Align(
+                          alignment: Alignment.topRight,
+                          child: new Container(
+                            child: new OutlineButton(
+                              onPressed: () {
+                                // Set folding to true.
+                                if (widget.turnsMapper[widget.currPlayer.name] == "hasTurn") {
+                                  setState(() {
+                                    _folding = true;
+                                  });
+                                }
+                              },
+                              borderSide: BorderSide(
+                                color: Colors.amber,
+                              ),
+                              child: new Text(
+                                "Fold",
+                                style: TextStyle(
+                                  color: Colors.amber
+                                ),
+                              ),
+                            ),
                           ),
-                        ],
-                      )
+                        ),
+                      ]
                     ),
                   ],
                 ),
@@ -344,6 +487,17 @@ class _PlayerViewState extends State<PlayerView> {
             roomId: widget.roomId,
             cards: widget.cards,
             cb: closeDialog)
+        ) : new Container(),
+        _folding ? Positioned(
+          top: 0,
+          child: FoldingDialog(
+            opponents: widget.selfOpponents,
+            playersList: widget.finalPlayersList,
+            teamMates: widget.teamMates,
+            roomId: widget.roomId,
+            updateFoldStats: preFoldMessageSendingAction,
+            cb: closeDialog
+          )
         ) : new Container(),
       ]
     );
