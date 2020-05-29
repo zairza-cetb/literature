@@ -13,6 +13,7 @@ class PlayerView extends StatefulWidget {
     this.finalPlayersList,
     this.turnsMapper,
     this.selfOpponents,
+    this.teamMates,
     this.roomId,
     this.cards,
     this.callback,
@@ -29,6 +30,8 @@ class PlayerView extends StatefulWidget {
   Map<String, String> turnsMapper;
 
   Set<String> selfOpponents;
+
+  Set<String> teamMates;
 
   final String roomId;
 
@@ -371,6 +374,7 @@ class _PlayerViewState extends State<PlayerView> {
           child: FoldingDialog(
             opponents: widget.selfOpponents,
             playersList: widget.finalPlayersList,
+            teamMates: widget.teamMates,
             cb: closeDialog
           )
         ) : new Container(),
