@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:literature/models/playing_cards.dart';
 import 'package:literature/components/card_deck.dart';
+import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/utils/card_previewer.dart';
 import 'package:literature/utils/game_communication.dart';
 import 'package:literature/utils/functions.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
+import 'package:provider/provider.dart';
 
 class FoldingDialog extends StatefulWidget {
   final Function cb;
@@ -15,6 +17,7 @@ class FoldingDialog extends StatefulWidget {
   final Set<String> teamMates;
   final List<dynamic> playersList;
   final Function updateFoldStats;
+  final String roomId;
 
   FoldingDialog({
     @required this.cb,
@@ -22,6 +25,7 @@ class FoldingDialog extends StatefulWidget {
     @required this.playersList,
     @required this.teamMates,
     @required this.updateFoldStats,
+    @required this.roomId,
   });
 
   _FoldingDialogState createState() => _FoldingDialogState();
@@ -106,22 +110,49 @@ class _FoldingDialogState extends State<FoldingDialog> {
                     // server about folding.
                     // validate the form here.
                     // General format of messages.
-                    // { "name" : ["selections", "suit"] }
+                    // { "name" ,"selections", "suit" }
                     List message = new List();
+                    final currPlayer = Provider.of<PlayerList>(context).currPlayer;
                     if (playerOneFoldSelections != null && teamMates.length > 0) {
-                      message.add({teamMates[0]["name"] : [{ "selections": playerOneFoldSelections }, { "suit" : selectedSuit }]});
+                      message.add(
+                        {
+                          // teamMates[0]["name"] : [{ "selections": playerOneFoldSelections }, { "suit" : selectedSuit }],
+                          "name": teamMates[0]["name"],
+                          "selections": playerOneFoldSelections,
+                          "suit": selectedSuit,
+                          "whoAsked": currPlayer.name
+                        }
+                      );
+                      // Update the parent component.
                       widget.updateFoldStats(teamMates[0]["name"], playerOneFoldSelections);
                     }
                     if (playerTwoFoldSelections != null && teamMates.length > 1) {
-                      message.add({teamMates[1]["name"] : [{ "selections": playerTwoFoldSelections }, { "suit" : selectedSuit }]});
+                      message.add(
+                        {
+                          // teamMates[1]["name"] : [{ "selections": playerTwoFoldSelections }, { "suit" : selectedSuit }],
+                          "name": teamMates[1]["name"],
+                          "selections": playerTwoFoldSelections,
+                          "suit": selectedSuit,
+                          "whoAsked": currPlayer.name
+                        }
+                      );
                       widget.updateFoldStats(teamMates[1]["name"], playerTwoFoldSelections);
                     }
                     if (playerThreeFoldSelections != null && teamMates.length > 2) {
-                      message.add({teamMates[2]["name"] : [{ "selections": playerThreeFoldSelections }, { "suit" : selectedSuit }]});
+                      message.add(
+                        {
+                          // teamMates[2]["name"] : [{ "selections": playerThreeFoldSelections }, { "suit" : selectedSuit }],
+                          "name": teamMates[2]["name"],
+                          "selections": playerThreeFoldSelections,
+                          "suit": selectedSuit,
+                          "whoAsked": currPlayer.name
+                        }
+                      );
                       widget.updateFoldStats(teamMates[2]["name"], playerThreeFoldSelections);
                     }
+                    Map foldingResult = {"roomId": widget.roomId, "foldedResults": message};
                     // Sends a message of the form [ name -> foldSelections, name -> foldSelections, name -> foldSelections ].
-                    game.send("folding_result_initial", json.encode(message));
+                    game.send("folding_result_initial", json.encode(foldingResult));
                     widget.cb();
                     // Also clear out variables for next group of requests.
                     playerOneFoldSelections = null;
@@ -358,78 +389,3 @@ class Consts {
   static const double padding = 16.0;
   static const double avatarRadius = 66.0;
 }
-
-// child: Form(
-//               key: Key("playerSelect"),
-//               child: Column(
-//                 mainAxisAlignment: MainAxisAlignment.start,
-//                 children: <Widget>[
-//                   Container(
-//                     padding: EdgeInsets.all(16),
-//                     child: MultiSelectFormField(
-//                       autovalidate: false,
-//                       titleText: 'My Form',
-//                       validator: (value) {
-//                         if (value == null || value.length == 0) {
-//                           return 'Please select one or more options';
-//                         }
-//                         return null;
-//                       },
-//                       dataSource: [
-//                         {
-//                           "display": "Running",
-//                           "value": "Running",
-//                         },
-//                         {
-//                           "display": "Climbing",
-//                           "value": "Climbing",
-//                         },
-//                         {
-//                           "display": "Walking",
-//                           "value": "Walking",
-//                         },
-//                         {
-//                           "display": "Swimming",
-//                           "value": "Swimming",
-//                         },
-//                         {
-//                           "display": "Soccer Practice",
-//                           "value": "Soccer Practice",
-//                         },
-//                         {
-//                           "display": "Baseball Practice",
-//                           "value": "Baseball Practice",
-//                         },
-//                         {
-//                           "display": "Football Practice",
-//                           "value": "Football Practice",
-//                         },
-//                       ],
-//                       textField: 'display',
-//                       valueField: 'value',
-//                       okButtonLabel: 'OK',
-//                       cancelButtonLabel: 'CANCEL',
-//                       hintText: 'Select cards this player has',
-//                       initialValue: null,
-//                       onSaved: (value) {
-//                         if (value == null) return;
-//                         print(value);
-//                       },
-//                     ),
-//                   ),
-//                   Container(
-//                     padding: EdgeInsets.all(8),                
-//                     child: RaisedButton(
-//                       child: Text('Save'),
-//                       onPressed: () {
-//                         print("Saving");
-//                       },
-//                     ),
-//                   ),
-//                   Container(
-//                     padding: EdgeInsets.all(16),
-//                     child: Text("H"),
-//                   )
-//                 ],
-//               ),
-//             ),

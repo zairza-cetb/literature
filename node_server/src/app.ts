@@ -222,6 +222,22 @@ io.on("connection", (socket) => {
       })
     );
   });
+
+  // So, the user can submitted a fold request. We would first use
+  // server to check against all the users.
+  socket.on("folding_result_initial", async(payload) => {
+    const parsedData = JSON.parse(payload);
+    const { roomId, foldedResults } = parsedData;
+    // console.log(parsedData);
+    io.to(roomId).emit(
+      "folding_result_verification",
+      JSON.stringify({
+        // Array of selections.
+        data: foldedResults,
+        action: "verify_for_folding_authenticity"
+      }),
+    );
+  });
 });
 
 

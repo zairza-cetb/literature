@@ -1,4 +1,5 @@
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:literature/models/player.dart';
 
 // Returns true if the person has a card of same set
 // so that he can ask for it to the opponent.
@@ -106,3 +107,26 @@ hasSameCard(suit, type, cardsList) {
     return tempList;
   }
   
+  // Whether a player has been asked to validate against
+  // a folding transaction.
+  takesPartInTransaction(Player player, List list) {
+    String result = "false";
+    list.forEach((element) {
+      if (element["name"] == player.name) {
+        result = "true";
+      }
+    });
+    return result;
+  }
+
+  // Get selections of a player
+  // in folded results.
+  getSelections(Player player, List list) {
+    var selections;
+    list.forEach((element) {
+      if (element["name"] == player.name) {
+        selections = element["selections"];
+      }
+    });
+    return selections;
+  }

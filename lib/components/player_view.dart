@@ -1,9 +1,14 @@
+import 'dart:convert';
+
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/components/custom_dialog.dart';
 import 'package:literature/components/folding_dialog.dart';
 import 'package:literature/models/playing_cards.dart';
 import 'package:badges/badges.dart';
+import 'package:literature/utils/functions.dart';
+import 'package:literature/utils/game_communication.dart';
 
 class PlayerView extends StatefulWidget {
   PlayerView({
@@ -66,8 +71,59 @@ class _PlayerViewState extends State<PlayerView> {
   void initState() {
     super.initState();
     // Initialise variable to the state.
+    game.addListener(_playerViewListener);
     playersList = widget.finalPlayersList;
     cb = widget.callback;
+  }
+
+  void dispose() {
+    super.dispose();
+    game.removeListener(_playerViewListener);
+  }
+
+  _playerViewListener(message) {
+    switch(message["action"]) {
+      case "verify_for_folding_authenticity":
+        // print(message["data"]);
+        var teamMateRescueLists = message["data"];
+        if (takesPartInTransaction(widget.currPlayer, teamMateRescueLists) == "false") {
+          break;
+        } else {
+          // This player takes part in the transaction.
+          // Check if he has the cards specified or not,
+          // then send a message to the server, regarding
+          // a success or failure.
+          List toCheckSpecificCards = getSelections(widget.currPlayer, teamMateRescueLists);
+          String suit = message["data"][0]["suit"];
+          bool hasAllCards = true;
+          toCheckSpecificCards.forEach((cardType) {
+            if (widget.cards.any((card) {
+              return (EnumToString.parse(card.cardSuit) == suit
+                &&
+                EnumToString.parse(card.cardType) == cardType
+              );
+              })
+            ) 
+            {
+              print("I have: " + cardType + " of " + suit);
+            } else {
+              // If I do not have a card of
+              // particular type then guess is wrong.
+              hasAllCards = false;
+            }
+          });
+          // Send the respective message to the server.
+          Map foldingConfirmation = { 
+            "name": widget.currPlayer.name,
+            "confirmation": hasAllCards,
+            "foldingDetails": teamMateRescueLists
+          };
+          game.send("folding_confirmation", json.encode(foldingConfirmation));
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   // This function rebuilds the state
@@ -94,8 +150,8 @@ class _PlayerViewState extends State<PlayerView> {
   preFoldMessageSendingAction(String name, var selections) {
     foldState.putIfAbsent(name, () => "awaitingConfirmation");
     foldGuesses.putIfAbsent(name, () => selections);
-    print(foldState);
-    print(foldGuesses);
+    // print(foldState);
+    // print(foldGuesses);
   }
 
   @override
@@ -397,6 +453,7 @@ class _PlayerViewState extends State<PlayerView> {
             opponents: widget.selfOpponents,
             playersList: widget.finalPlayersList,
             teamMates: widget.teamMates,
+            roomId: widget.roomId,
             updateFoldStats: preFoldMessageSendingAction,
             cb: closeDialog
           )
