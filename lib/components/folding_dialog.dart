@@ -163,7 +163,7 @@ class _FoldingDialogState extends State<FoldingDialog> {
                 ),
               ),
               Container(
-                width: 40,
+                width: MediaQuery.of(context).size.width*0.0966,
                 child: OutlineButton(
                   onPressed: () {
                     widget.cb();
@@ -246,7 +246,7 @@ class _FoldingDialogState extends State<FoldingDialog> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           new Container(
-            width: 100,
+            width: MediaQuery.of(context).size.width*0.2415,
             color: Colors.red,
             child: new Column(
               children: <Widget>[
@@ -283,7 +283,7 @@ class _FoldingDialogState extends State<FoldingDialog> {
             ),
           ),
           new Container(
-            width: 100,
+            width: MediaQuery.of(context).size.width*0.2415,
             color: Colors.blue,
             child: new Column(
               children: <Widget>[
@@ -320,7 +320,7 @@ class _FoldingDialogState extends State<FoldingDialog> {
             ),
           ),
           new Container(
-            width: 100,
+            width: MediaQuery.of(context).size.width*0.2415,
             color: Colors.green,
             child: new Column(
               children: <Widget>[
