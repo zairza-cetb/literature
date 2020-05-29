@@ -50,6 +50,18 @@ class _PlayerViewState extends State<PlayerView> {
   bool askingForCard = false;
   bool _folding = false;
   Player playerBeingAskedObj;
+  // The idea is having a foldState of
+  // the form {"name" -> "awaitingResponse" or "hasCard" or "hasNoCard"}
+  // So we gotta verify those against the name when we get responses
+  // from each user and we update the score after each one has been
+  // validated.
+  Map foldState = new Map();
+  // We need to keep track
+  // of what the current user has guessed for
+  // each player, who contains what.
+  // We need to keep track because we need to validate against
+  // it.
+  Map foldGuesses = new Map();
 
   void initState() {
     super.initState();
@@ -74,6 +86,16 @@ class _PlayerViewState extends State<PlayerView> {
       _folding = false;
     });
     // cb();
+  }
+
+  // This function as a whole updates
+  // the foldState and player selections
+  // in the current state.
+  preFoldMessageSendingAction(String name, var selections) {
+    foldState.putIfAbsent(name, () => "awaitingConfirmation");
+    foldGuesses.putIfAbsent(name, () => selections);
+    print(foldState);
+    print(foldGuesses);
   }
 
   @override
@@ -375,6 +397,7 @@ class _PlayerViewState extends State<PlayerView> {
             opponents: widget.selfOpponents,
             playersList: widget.finalPlayersList,
             teamMates: widget.teamMates,
+            updateFoldStats: preFoldMessageSendingAction,
             cb: closeDialog
           )
         ) : new Container(),

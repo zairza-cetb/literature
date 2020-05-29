@@ -14,12 +14,14 @@ class FoldingDialog extends StatefulWidget {
   final Set<String> opponents;
   final Set<String> teamMates;
   final List<dynamic> playersList;
+  final Function updateFoldStats;
 
   FoldingDialog({
     @required this.cb,
     @required this.opponents,
     @required this.playersList,
     @required this.teamMates,
+    @required this.updateFoldStats,
   });
 
   _FoldingDialogState createState() => _FoldingDialogState();
@@ -103,7 +105,28 @@ class _FoldingDialogState extends State<FoldingDialog> {
                     // send details to the
                     // server about folding.
                     // validate the form here.
+                    // General format of messages.
+                    // { "name" : ["selections", "suit"] }
+                    List message = new List();
+                    if (playerOneFoldSelections != null && teamMates.length > 0) {
+                      message.add({teamMates[0]["name"] : [{ "selections": playerOneFoldSelections }, { "suit" : selectedSuit }]});
+                      widget.updateFoldStats(teamMates[0]["name"], playerOneFoldSelections);
+                    }
+                    if (playerTwoFoldSelections != null && teamMates.length > 1) {
+                      message.add({teamMates[1]["name"] : [{ "selections": playerTwoFoldSelections }, { "suit" : selectedSuit }]});
+                      widget.updateFoldStats(teamMates[1]["name"], playerTwoFoldSelections);
+                    }
+                    if (playerThreeFoldSelections != null && teamMates.length > 2) {
+                      message.add({teamMates[2]["name"] : [{ "selections": playerThreeFoldSelections }, { "suit" : selectedSuit }]});
+                      widget.updateFoldStats(teamMates[2]["name"], playerThreeFoldSelections);
+                    }
+                    // Sends a message of the form [ name -> foldSelections, name -> foldSelections, name -> foldSelections ].
+                    game.send("folding_result_initial", json.encode(message));
                     widget.cb();
+                    // Also clear out variables for next group of requests.
+                    playerOneFoldSelections = null;
+                    playerTwoFoldSelections = null;
+                    playerThreeFoldSelections = null;
                   },
                   child: Text("Submit"),
                 ),
