@@ -38,7 +38,6 @@ lib/generated_plugin_registrant.dart
 
 # Node js app
 node_server/node_modules
-node_server/report.20200510.102359.3840.0.001.json
 
 #vscode launch config
 .vscode

@@ -14,18 +14,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<PlayerList>(
-<<<<<<< HEAD
           create: (context) => PlayerList()),
         ChangeNotifierProvider<PlayerFirebase>(
           create: (context) => PlayerFirebase()),
-=======
-          create: (context) => PlayerList(),
-        ),
-        ChangeNotifierProvider<ConnectionStatus>(
-          create: (context) => ConnectionStatus(),
-          lazy: false,
-        ),
->>>>>>> bug fixes for connectivity snackbar
       ],
       child: MaterialApp(
         title: 'Literature',
