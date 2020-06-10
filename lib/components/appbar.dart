@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:literature/screens/store.dart';
 import 'package:literature/utils/audio.dart';
 import 'package:literature/utils/game_communication.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -77,6 +78,16 @@ class _GlobalAppBarState extends State<GlobalAppBar> {
             },
             color: Color(0xFF303f9f),
           ),
+          IconButton(
+            icon: Icon(Icons.shopping_cart), onPressed: () {
+              Navigator.push(
+              context,
+              new MaterialPageRoute(
+                builder: (BuildContext context) => Store()
+              ));
+            },
+            color: Color(0xFF303f9f),
+          )
         ],
       ),
     );
