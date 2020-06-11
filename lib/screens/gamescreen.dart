@@ -266,46 +266,51 @@ class _GameScreenState extends State<GameScreen> {
         appBar: AppBar(
           title: new Text("Literature"),
           leading: new Container(),
-          backgroundColor: Colors.lightBlue[800],
+          backgroundColor: Color(0xff0f0426),
         ),
         body:  _ready ? SlidingUpPanel(
           body: new Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget> [
-              new Container(
-                height: MediaQuery.of(context).size.height*0.95,
-                padding: EdgeInsets.all(0),
-                decoration: BoxDecoration(
-                  image: new DecorationImage(
-                    // We can add random game mats
-                    // as per store purchases of the user.
-                    image: new ExactAssetImage("assets/game_mat_royale.jpg"),
-                    fit: BoxFit.cover,
+              Align(
+                alignment: Alignment.center,
+                child: new Container(
+                  height: MediaQuery.of(context).size.height*0.95,
+                  padding: EdgeInsets.all(0),
+                  decoration: BoxDecoration(
+                    image: new DecorationImage(
+                      // We can add random game mats
+                      // as per store purchases of the user.
+                      image: new ExactAssetImage("assets/game_mat_basic.png"),
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
-                  child: new PlayerView(
-                    containerHeight: MediaQuery.of(context).size.height*0.95,
-                    containerWidth: MediaQuery.of(context).size.width,
-                    currPlayer: widget.player,
-                    finalPlayersList: finalPlayersList,
-                    turnsMapper: turnsMapper,
-                    selfOpponents: selfOpponents,
-                    teamMates: teamMates,
-                    roomId: widget.roomId,
-                    cards: _cards,
-                    callback: this.callback
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 0.0, left: 5.0, right: 5.0),
+                    child: new PlayerView(
+                      containerHeight: MediaQuery.of(context).size.height*0.95,
+                      containerWidth: MediaQuery.of(context).size.width,
+                      currPlayer: widget.player,
+                      finalPlayersList: finalPlayersList,
+                      turnsMapper: turnsMapper,
+                      selfOpponents: selfOpponents,
+                      teamMates: teamMates,
+                      roomId: widget.roomId,
+                      cards: _cards,
+                      callback: this.callback
+                    ),
                   ),
                 ),
               ),
-              // Allocate bottom with a few spaces.
+              // Allocate bottom with a few spaces
             ]
           ),
           panel: new Container(
             alignment: Alignment.bottomCenter,
             child: CardDeck(cards: _cards, containerHeight: MediaQuery.of(context).size.height-467)
           ),
+          borderRadius: BorderRadius.circular(30),
+          color: Color(0xffd6d2de),
         ) :
         Container(
           width: double.infinity,

@@ -72,6 +72,9 @@ flutter:
     - assets/no_person.png
     - assets/person-fb.jpg
     - assets/game_mat_royale.jpg
+    - assets/frame_blue.png
+    - assets/frame_purple.png
+    - assets/game_mat_basic.png
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
