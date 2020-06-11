@@ -114,10 +114,9 @@ class _WaitingPageState extends State<WaitingPage> {
             context,
             new MaterialPageRoute(
               builder: (BuildContext context) => new GameScreen(
-                player: playerProvider.currPlayer,
-                playersList: playerProvider.players,
-                roomId: widget.roomId
-              ),
+                  player: playerProvider.currPlayer,
+                  playersList: playerProvider.players,
+                  roomId: widget.roomId),
             ));
         break;
     }
@@ -138,10 +137,9 @@ class _WaitingPageState extends State<WaitingPage> {
       context,
       new MaterialPageRoute(
         builder: (BuildContext context) => new GameScreen(
-          player: playerProvider.currPlayer,
-          playersList: playerProvider.players,
-          roomId: widget.roomId
-        ),
+            player: playerProvider.currPlayer,
+            playersList: playerProvider.players,
+            roomId: widget.roomId),
       ),
     );
   }
@@ -158,6 +156,49 @@ class _WaitingPageState extends State<WaitingPage> {
     } else {
       return new Text("...");
     }
+  }
+
+//  adds a trailing icon for removing player in all list of players
+//  if the player is lobby leader
+  _getRemoveButton(currentPlayer,playerInfo,context) {
+    if (currentPlayer.lobbyLeader) {
+      return new GestureDetector(
+        onTap: () => _showDialogToRemovePlayer(playerInfo,context),
+        child: Icon(Icons.cancel, color: Colors.red),
+      );
+    } else {
+      return null;
+    }
+  }
+
+// Dialog to confirm removal
+_showDialogToRemovePlayer(playerInfo,context){
+  showDialog(context: context,
+  builder: (BuildContext context){
+    return AlertDialog(
+      title: Text('Remove Player'),
+      content: Text('Do You want to remove ${playerInfo.name}'),
+      actions: <Widget>[
+        FlatButton(
+          onPressed: ()=>{
+              Navigator.of(context).pop()
+          },
+           child: Text("Close")),
+        FlatButton(
+          onPressed: ()=>{
+            _removePlayerFromList(playerInfo)
+          },
+          child: Text("Remove",style:TextStyle(color:Colors.red)))
+      ],
+    );
+  });
+}
+
+
+// function to execute to initiate removal
+
+  _removePlayerFromList(playerInfo) {
+    print("initiate removal sequence ${playerInfo.id}");
   }
 
   // ------------------------------------------------------
@@ -186,7 +227,7 @@ class _WaitingPageState extends State<WaitingPage> {
         // print(widget.currPlayer.name + " " + playerInfo["name"]);
         String name =
             (playerInfo.id == currPlayer.id) ? "You" : playerInfo.name;
-        
+
         if (playerInfo.lobbyLeader) {
           // print(playerInfo.id);
           bool isLeader = (playerInfo.id == currPlayer.id);
@@ -214,13 +255,12 @@ class _WaitingPageState extends State<WaitingPage> {
                 ),
                 title: new Text(
                   name,
-                  style: TextStyle(fontFamily: 'Montserrat', color: Colors.white),
+                  style:
+                      TextStyle(fontFamily: 'Montserrat', color: Colors.white),
                 ),
                 subtitle: new Text("[Lobby Leader]"),
-                trailing: (isLeader)
-                    ? _getPlayButton(playerInfo)
-                    : null,
-              ),  
+                trailing: (isLeader) ? _getPlayButton(playerInfo) : null,
+              ),
             ),
           );
         } else {
@@ -249,9 +289,11 @@ class _WaitingPageState extends State<WaitingPage> {
                 ),
                 title: new Text(
                   name,
-                  style: TextStyle(fontFamily: 'Montserrat', color: Colors.white),
+                  style:
+                      TextStyle(fontFamily: 'Montserrat', color: Colors.white),
                 ),
                 subtitle: new Text(" "),
+                trailing: _getRemoveButton(currPlayer,playerInfo,context),
               ),
             ),
           );
