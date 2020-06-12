@@ -39,7 +39,7 @@ class _CustomDialogState extends State<CustomDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Consts.padding),
+        borderRadius: BorderRadius.circular(MediaQuery.of(context).size.height*0.017),
       ),
       elevation: 0.0,
       backgroundColor: Colors.transparent,
@@ -53,10 +53,10 @@ class _CustomDialogState extends State<CustomDialog> {
 
     return Container(
       padding: EdgeInsets.only(
-        top: Consts.padding,
-        bottom: Consts.padding,
-        left: Consts.padding,
-        right: Consts.padding,
+        top: containerHeight*0.017,
+        bottom: containerHeight*0.017,
+        left: containerWidth*0.038,
+        right: containerWidth*0.038,
       ),
       height: containerHeight*0.507,
       width: containerWidth*0.921,
@@ -68,15 +68,15 @@ class _CustomDialogState extends State<CustomDialog> {
           BoxShadow(
             // Blurs the background
             color: Colors.white38,
-            blurRadius: 10.0,
-            spreadRadius: 130
+            blurRadius: containerHeight*0.0111,
+            spreadRadius: containerHeight*0.145
           ),
         ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween, // To make the card compact
         children: <Widget>[
-          Center(child: Text("ASK", style: TextStyle(color: Colors.white, fontSize: 30))),
+          // Center(child: Text("ASK", style: TextStyle(color: Colors.white, fontSize: containerHeight*0.0334))),
           // Container(
           //   width: 40,
           //   child: RaisedButton(
@@ -86,17 +86,17 @@ class _CustomDialogState extends State<CustomDialog> {
           //     child: Text("X"),
           //   ),
           // ),
-          Container(child: Text("You are asking a card to", style: TextStyle(color: Colors.white, fontSize: 14))),
+          Container(child: Text("You are asking a card to " + widget.askingTo, style: TextStyle(color: Colors.white, fontSize: containerWidth*0.043))),
           Padding(
-            padding: EdgeInsets.fromLTRB(40, 0, 40, 0),
+            padding: EdgeInsets.fromLTRB(40, 20, 40, 0),
             child: new Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(40),
                   child: Container(
-                    height: 80,
-                    width: 80,
+                    height: containerHeight*0.089,
+                    width: containerWidth*0.1932,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage('assets/person-fb.jpg'),
@@ -108,16 +108,16 @@ class _CustomDialogState extends State<CustomDialog> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
+                    // Container(
+                    //   child: Text(widget.askingTo, style: TextStyle(color: Colors.white, fontSize: 20)),
+                    // ),
                     Container(
-                      child: Text(widget.askingTo, style: TextStyle(color: Colors.white, fontSize: 20)),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(2),
-                      height: 30,
-                      width: 75,
+                      margin: EdgeInsets.fromLTRB(0, containerHeight*0.00559, 0, containerHeight*0.011),
+                      height: containerHeight*0.0335,
+                      width: containerWidth*0.1811,
                       decoration: BoxDecoration(
                         color: Color(0xfff0673c),
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(containerHeight*0.00559),
                       ),
                       child: Center(
                         child: DropdownButton<String>(
@@ -158,11 +158,11 @@ class _CustomDialogState extends State<CustomDialog> {
                     Container(
                       padding: EdgeInsets.all(2),
                       margin: EdgeInsets.fromLTRB(0, 2, 0, 0),
-                      height: 30,
-                      width: 75,
+                      height: containerHeight*0.0334,
+                      width: containerWidth*0.1811,
                       decoration: BoxDecoration(
                         color: Color(0xfff0673c),
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(containerHeight*0.00559),
                       ),
                       child: DropdownButton<String>(
                         dropdownColor: Color(0xfff0673c),
@@ -202,16 +202,16 @@ class _CustomDialogState extends State<CustomDialog> {
               cardSuit: cardSuit,
               cardType: cardType,
               height: containerHeight*0.380,
-              width: containerWidth*0.581,),
+              width: containerWidth*0.581),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
+            padding: EdgeInsets.fromLTRB(containerWidth*0.0966, containerHeight*0.0111, containerWidth*0.0966, containerHeight*0.0111),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 RaisedButton(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
+                    borderRadius: BorderRadius.circular(containerHeight*0.02),
                   ),
                   color: Color(0xff0AA4EB),
                   onPressed: () {
@@ -240,7 +240,7 @@ class _CustomDialogState extends State<CustomDialog> {
                 ),
                 RaisedButton(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
+                    borderRadius: BorderRadius.circular(containerHeight*0.02),
                   ),
                   color: Color(0xff0AA4EB),
                   onPressed: () {
@@ -258,9 +258,3 @@ class _CustomDialogState extends State<CustomDialog> {
   }
 }
 
-class Consts {
-  Consts._();
-
-  static const double padding = 16.0;
-  static const double avatarRadius = 66.0;
-}

@@ -246,7 +246,7 @@ class _PlayerViewState extends State<PlayerView> {
                     fit: BoxFit.contain,
                   ),
                 ),
-                child: Center(child: Text("0-0", style: TextStyle(color: Colors.white, fontSize: 40))),
+                child: Center(child: Text("0-0", style: TextStyle(color: Colors.white, fontSize: widget.containerWidth*0.097))),
               ),
               // Your team.
               _getFriendlyTeam(
@@ -369,15 +369,15 @@ Widget _getPlayer(player, h, w, turnsMapper, side, setCardAskingProps, context, 
           height: h*1,
           width: w*1.2,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(h*0.2),
             color: Color(0xffd6d2de)
           ),
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.fromLTRB(0, 15, 0, 10),
+                padding: EdgeInsets.fromLTRB(0, h*0.1, 0, h*0.067),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(40),
+                  borderRadius: BorderRadius.circular(0.40),
                   child: Container(
                     height: h*0.458,
                     decoration: BoxDecoration(
@@ -394,26 +394,24 @@ Widget _getPlayer(player, h, w, turnsMapper, side, setCardAskingProps, context, 
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Container(
-                    height: 28,
+                    height: h*0.187,
                     width: w*0.55,
                     decoration: BoxDecoration(
                       color: Colors.blue[400],
-                      borderRadius: BorderRadius.circular(12.0)
+                      borderRadius: BorderRadius.circular(h*0.08)
                     ),
                     child: Center(child: Text("5")),
                   ),
                   GestureDetector(
                     child: Container(
                       width: w*0.55,
-                      height: 28,
+                      height: h*0.187,
                       decoration: BoxDecoration(
                         color: Colors.orange,
-                        borderRadius: BorderRadius.circular(12.0)
+                        borderRadius: BorderRadius.circular(h*0.08)
                       ),
                     ),
-                    onTap: () {
-                      print("Tapped");
-                    },
+                    onTap: () {},
                   ),
                 ],
               ),
@@ -434,15 +432,15 @@ Widget _getPlayer(player, h, w, turnsMapper, side, setCardAskingProps, context, 
           height: h*1,
           width: w*1.2,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(h*0.2),
             color: Color(0xffd6d2de)
           ),
           child: Column(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.fromLTRB(0, 15, 0, 10),
+                padding: EdgeInsets.fromLTRB(0, h*0.1, 0, h*0.067),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(40),
+                  borderRadius: BorderRadius.circular(h*0.08),
                   child: Container(
                     height: h*0.458,
                     child: Hero(
@@ -457,28 +455,28 @@ Widget _getPlayer(player, h, w, turnsMapper, side, setCardAskingProps, context, 
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Container(
-                    height: 28,
+                    height: h*0.187,
                     width: w*0.55,
                     decoration: BoxDecoration(
                       color: Colors.blue[400],
-                      borderRadius: BorderRadius.circular(12.0)
+                      borderRadius: BorderRadius.circular(h*0.08)
                     ),
                     child: Center(child: Text("5")),
                   ),
                   Container(
                     width: w*0.55,
-                    height: 28,
+                    height: h*0.187,
                     decoration: BoxDecoration(
                       color: Colors.orange,
-                      borderRadius: BorderRadius.circular(12.0)
+                      borderRadius: BorderRadius.circular(h*0.08)
                     ),
                     child: Center(
                       child: Container(
                         width: w*0.55,
-                        height: 28,
+                        height: h*0.187,
                         decoration: BoxDecoration(
                           color: Colors.orange,
-                          borderRadius: BorderRadius.circular(12.0)
+                          borderRadius: BorderRadius.circular(h*0.08)
                         ),
                         child: (side == "opp") && turnsMapper[playerProvider.currPlayer.name] == "hasTurn" ?
                         Center(
@@ -499,7 +497,7 @@ Widget _getPlayer(player, h, w, turnsMapper, side, setCardAskingProps, context, 
                               ), true
                             );
                           },
-                          child: Text("ASK", style: TextStyle(fontSize: 14), softWrap: false, overflow: TextOverflow.visible)
+                          child: Text("ASK", style: TextStyle(fontSize: h*0.09), softWrap: false, overflow: TextOverflow.visible)
                           ),
                         ):
                         (turnsMapper[playerProvider.currPlayer.name] == "hasTurn" && side == "team") ? Center(
@@ -508,7 +506,7 @@ Widget _getPlayer(player, h, w, turnsMapper, side, setCardAskingProps, context, 
                               // Fold.
                               setFoldingProps();
                             },
-                            child: Text("FOLD", style: TextStyle(fontSize: 14), softWrap: false, overflow: TextOverflow.visible),
+                            child: Text("FOLD", style: TextStyle(fontSize: h*0.09), softWrap: false, overflow: TextOverflow.visible),
                           ),
                         ):Container(),
                       ),
