@@ -49,9 +49,9 @@ class _CardDeckState extends State<CardDeck> {
   // cards in a single view.
   Widget _miniCardsDeck() {
     return Padding(
-      padding: EdgeInsets.all(10.0),
+      padding: EdgeInsets.all(12.0),
       child: GridView.count(
-        crossAxisCount: 6,
+        crossAxisCount:5,
         children: widget.cards.map((card) {
           return Center(
             child: _buildMiniCard(EnumToString.parse(card.cardType), EnumToString.parse(card.cardSuit)),
@@ -153,9 +153,99 @@ class _CardDeckState extends State<CardDeck> {
     }
   }
 
+   Widget _buildMiniCard(type, suit) {
+    return Padding(
+      padding: EdgeInsets.all(2),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(width: 0.2),
+          color: Colors.white
+        ),
+        height: widget.containerHeight-10,
+        width: 55,
+        child: Padding(
+          padding: EdgeInsets.all(1.6),
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                left: 0,
+                child: Column(
+                  children: <Widget>[
+                    Align(
+                      child: Text(
+                      _cardTypeToString(type),
+                      style: TextStyle(
+                          fontFamily: font,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 10.0,
+                          color: (
+                            suit == "clubs" || 
+                            suit == "spades" ? Colors.black : Colors.red
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 6,
+                      child: _cardSuitToImage(suit),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                left: 20,
+                top: 10,
+                child: Container(
+                  height: 12,
+                  child: _cardSuitToImage(suit),
+                ),
+              ),
+              Positioned(
+                bottom: 1,
+                right: 1,
+                child: Column(
+                  children: <Widget>[
+                    Align(
+                      child: Text(
+                      _cardTypeToString(type),
+                      style: TextStyle(
+                          fontFamily: font,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 10.0,
+                          color: (
+                            suit == "clubs" || 
+                            suit == "spades" ? Colors.black : Colors.red
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 6,
+                      child: _cardSuitToImage(suit),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                bottom: 10,
+                right: 20,
+                child: Container(
+                  height: 12,
+                  child: _cardSuitToImage(suit),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+// height: widget.containerHeight-43.4,
+//         width: 90,
   // A mini card in an
   // all cards view.
-  Widget _buildMiniCard(type, suit) {
+  Widget _buildMiniCards(type, suit) {
     return new Material(
       color: Colors.white,
       child: Container(

@@ -7,8 +7,10 @@ import 'package:literature/components/custom_dialog.dart';
 import 'package:literature/components/folding_dialog.dart';
 import 'package:literature/models/playing_cards.dart';
 import 'package:badges/badges.dart';
+import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/utils/functions.dart';
 import 'package:literature/utils/game_communication.dart';
+import 'package:provider/provider.dart';
 
 class PlayerView extends StatefulWidget {
   PlayerView({
@@ -177,6 +179,13 @@ class _PlayerViewState extends State<PlayerView> {
     });
   }
 
+  // Sets folding == true.
+  setFoldingProps() {
+    setState(() {
+      _folding = true;
+    });
+  }
+
   closeDialog() {
     setState(() {
       askingForCard = false;
@@ -206,348 +215,83 @@ class _PlayerViewState extends State<PlayerView> {
     return Padding(
       // Important.
       padding: EdgeInsets.fromLTRB(0, 0, 0, 180),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          // Opponent team.
-          _getOpponentTeam(
-            widget.selfOpponents,
-            widget.finalPlayersList,
-            pContainerHeight,
-            pContainerWidth,
-            widget.turnsMapper,
-            widget.currPlayer
-          ),
-          // Arena.
-          Container(
-            height: arenaContainerHeight,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              image: new DecorationImage(
-                // We can add random game mats
-                // as per store purchases of the user.
-                image: new ExactAssetImage("assets/frame_purple.png"),
-                fit: BoxFit.contain,
+      child: Stack(
+        children: [
+          // Body of the game.
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              // Opponent team.
+              _getOpponentTeam(
+                widget.selfOpponents,
+                widget.finalPlayersList,
+                pContainerHeight,
+                pContainerWidth,
+                widget.turnsMapper,
+                widget.currPlayer,
+                setCardAskingProps,
+                context,
+                setFoldingProps
               ),
-            ),
-            child: Center(child: Text("0-0", style: TextStyle(color: Colors.white, fontSize: 40))),
+              // Arena.
+              Container(
+                height: arenaContainerHeight,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  image: new DecorationImage(
+                    // We can add random game mats
+                    // as per store purchases of the user.
+                    image: new ExactAssetImage("assets/frame_purple.png"),
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                child: Center(child: Text("0-0", style: TextStyle(color: Colors.white, fontSize: 40))),
+              ),
+              // Your team.
+              _getFriendlyTeam(
+                widget.selfOpponents,
+                widget.finalPlayersList,
+                pContainerHeight,
+                pContainerWidth,
+                widget.turnsMapper,
+                widget.currPlayer,
+                setCardAskingProps,
+                context,
+                setFoldingProps
+              ),
+            ],
           ),
-          // Your team.
-          _getOpponentTeam(
-            widget.selfOpponents,
-            widget.finalPlayersList,
-            pContainerHeight,
-            pContainerWidth,
-            widget.turnsMapper,
-            widget.currPlayer
-          ),
+          // Card asking dialog of click.
+          askingForCard ? Positioned(
+            top: 0,
+            child: CustomDialog(
+              askingTo: playerBeingAskedObj.name,
+              whoAsked: widget.currPlayer.name,
+              buttonText: "Ask",
+              roomId: widget.roomId,
+              cards: widget.cards,
+              cb: closeDialog)
+          ) : new Container(),
+          // Folding dialog on click.
+          _folding ? Positioned(
+            top: 0,
+            child: FoldingDialog(
+              opponents: widget.selfOpponents,
+              playersList: widget.finalPlayersList,
+              teamMates: widget.teamMates,
+              roomId: widget.roomId,
+              updateFoldStats: preFoldMessageSendingAction,
+              cb: closeDialog
+            )
+          ) : new Container(),
         ],
       ),
     );
-
-    // return Stack(
-    //   children: [
-    //     Column(
-    //       children: <Widget>[
-    //         // Player 1.
-    //         Padding(
-    //           padding: const EdgeInsets.only(bottom: 10.0),
-    //           child: Stack(
-    //             children: <Widget>[
-    //               new Align(
-    //                 alignment: Alignment.topCenter,
-    //                 child: new Container(
-    //                   height: pContainerHeight,
-    //                   width: pContainerWidth,
-    //                   decoration: BoxDecoration(
-    //                     border: _getContainerBorder(playersList.length > 0 ? playersList[0] : null),
-    //                   ),
-    //                   // The props to this function
-    //                   // might get confusing so bear with it.
-    //                   child: _getPlayerInContainer(
-    //                     playersList.length > 0 ? playersList[0] : null,
-    //                     // Height and width of each
-    //                     // player's area on the screen.
-    //                     pContainerHeight,
-    //                     pContainerWidth,
-    //                     // This is to find if current player has his turn,
-    //                     // change his portfolio color to green.
-    //                     playersList.length > 0 ? widget.turnsMapper[playersList[0]["name"]] : null,
-    //                     // If current player has turn
-    //                     // and if this player is an opponent,
-    //                     // then only he can ask for the cards. (turnFactor)
-    //                     playersList.length > 0 ? 
-    //                       widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
-    //                         && widget.selfOpponents.contains(playersList[0]["name"]) 
-    //                       : null,
-    //                     // This is a function to set State when
-    //                     // a user is asking for a card.
-    //                     setCardAskingProps,
-    //                     // Default hero tag.
-    //                     "P1",
-    //                     // Updates the parent component
-    //                     // so that it clears the timer.
-    //                     cb
-    //                   )
-    //                 ),
-    //               ),
-    //             ],
-    //           ),
-    //         ),
-    //         // Second row contains P2, P3
-    //         Padding(
-    //           padding: const EdgeInsets.only(bottom: 10.0),
-    //           child: Stack(
-    //             children: <Widget>[
-    //               new Align(
-    //                 alignment: Alignment.topLeft,
-    //                 child: new Container(
-    //                   height: pContainerHeight,
-    //                   width: pContainerWidth,
-    //                   decoration: BoxDecoration(
-    //                     border: _getContainerBorder(playersList.length > 1 ? playersList[1] : null),
-    //                   ),
-    //                   child: _getPlayerInContainer(
-    //                     playersList.length > 0 ? playersList[1] : null,
-    //                     pContainerHeight,
-    //                     pContainerWidth,
-    //                     playersList.length > 1 ? widget.turnsMapper[playersList[1]["name"]] : null,
-    //                     playersList.length > 1 ? 
-    //                       widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
-    //                         && widget.selfOpponents.contains(playersList[1]["name"]) 
-    //                       : null,
-    //                     setCardAskingProps,
-    //                     "P2",
-    //                     cb
-    //                   ),
-    //                 ),
-    //               ),
-    //               new Align(
-    //                 alignment: Alignment.topRight,
-    //                 child: new Container(
-    //                   height: pContainerHeight,
-    //                   width: pContainerWidth,
-    //                   decoration: BoxDecoration(
-    //                     border: _getContainerBorder(playersList.length > 2 ? playersList[2] : null),
-    //                   ),
-    //                   child: _getPlayerInContainer(
-    //                     playersList.length > 2 ? playersList[2] : null,
-    //                     pContainerHeight,
-    //                     pContainerWidth,
-    //                     playersList.length > 2 ? widget.turnsMapper[playersList[2]["name"]] : null,
-    //                     playersList.length > 2 ? 
-    //                       widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
-    //                         && widget.selfOpponents.contains(playersList[2]["name"]) 
-    //                       : null,
-    //                     setCardAskingProps,
-    //                     "P3",
-    //                     cb
-    //                   ),
-    //                 ),
-    //               ),
-    //             ],
-    //           ),
-    //         ),
-    //         // Third row contains P4, P5.
-    //         Padding(
-    //           padding: const EdgeInsets.only(bottom: 10.0),
-    //           child: Stack(
-    //             children: <Widget>[
-    //               new Align(
-    //                 alignment: Alignment.topLeft,
-    //                 child: new Container(
-    //                   height: pContainerHeight,
-    //                   width: pContainerWidth,
-    //                   decoration: BoxDecoration(
-    //                     border: _getContainerBorder(playersList.length > 3 ? playersList[3] : null),
-    //                   ),
-    //                   child: _getPlayerInContainer(
-    //                     playersList.length > 3 ? playersList[3] : null,
-    //                     pContainerHeight,
-    //                     pContainerWidth,
-    //                     playersList.length > 3 ? widget.turnsMapper[playersList[3]["name"]] : null,
-    //                     playersList.length > 3 ? 
-    //                       widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
-    //                         && widget.selfOpponents.contains(playersList[3]["name"]) 
-    //                       : null,
-    //                     setCardAskingProps,
-    //                     "P4",
-    //                     cb
-    //                   ),
-    //                 ),
-    //               ),
-    //               new Align(
-    //                 alignment: Alignment.topRight,
-    //                 child: new Container(
-    //                   height: pContainerHeight,
-    //                   width: pContainerWidth,
-    //                   decoration: BoxDecoration(
-    //                     border: _getContainerBorder(playersList.length > 4 ? playersList[4] : null),
-    //                   ),
-    //                   child: _getPlayerInContainer(
-    //                     playersList.length > 4 ? playersList[4] : null,
-    //                     pContainerHeight,
-    //                     pContainerWidth,
-    //                     playersList.length > 4 ? widget.turnsMapper[playersList[4]["name"]] : null,
-    //                     playersList.length > 4 ? 
-    //                       widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
-    //                         && widget.selfOpponents.contains(playersList[4]["name"]) 
-    //                       : null,
-    //                     setCardAskingProps,
-    //                     "P5",
-    //                     cb
-    //                   ),
-    //                 ),
-    //               ),
-    //             ],
-    //           ),
-    //         ),
-    //         // Fourth row contains P6
-    //         Padding(
-    //           padding: const EdgeInsets.only(bottom: 10.0),
-    //           child: Stack(
-    //             children: <Widget>[
-    //               new Align(
-    //                 alignment: Alignment.topCenter,
-    //                 child: new Container(
-    //                   height: pContainerHeight,
-    //                   width: pContainerWidth,
-    //                   decoration: BoxDecoration(
-    //                     border: _getContainerBorder(playersList.length > 5 ? playersList[5] : null),
-    //                   ),
-    //                   child: _getPlayerInContainer(
-    //                     playersList.length > 5 ? playersList[5] : null,
-    //                     pContainerHeight,
-    //                     pContainerWidth,
-    //                     playersList.length > 5 ? widget.turnsMapper[playersList[5]["name"]] : null,
-    //                     playersList.length > 5 ? 
-    //                       widget.turnsMapper[widget.currPlayer.name] == "hasTurn" 
-    //                         && widget.selfOpponents.contains(playersList[5]["name"]) 
-    //                       : null,
-    //                     setCardAskingProps,
-    //                     "P6",
-    //                     cb
-    //                   ),
-    //                 ),
-    //               ),
-    //             ],
-    //           ),
-    //         ),
-    //       ],
-    //     ),
-    //     // Should be in the middle of the stack.
-    //     // This is the arena.
-    //     Positioned(
-    //       top: arenaPaddingTop,
-    //       left: arenaPaddingLeft,
-    //       child: new Container(
-    //         height: arenaContainerHeight,
-    //         width: arenaContainerWidth,
-    //         color: Colors.white24,
-    //         child: Padding(
-    //           padding: const EdgeInsets.all(2.0),
-    //           child: Center(
-    //             child: new Column(
-    //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //               children: <Widget>[
-    //                 Container(
-    //                   width: arenaContainerWidth,
-    //                   child: new Text(
-    //                     "Message",
-    //                     textAlign: TextAlign.center,
-    //                     style: TextStyle(
-    //                       fontSize: 14,
-    //                       fontFamily: "Raleway",
-    //                       color: Colors.white
-    //                     ),
-    //                   ),
-    //                 ),
-    //                 new Text(
-    //                   "0-0",
-    //                   textAlign: TextAlign.center,
-    //                   style: TextStyle(
-    //                     fontSize: 40,
-    //                     fontFamily: "Raleway",
-    //                     color: Colors.white
-    //                   ),
-    //                 ),
-    //                 Row(
-    //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                   children: <Widget>[
-    //                     new Row(
-    //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                       children: <Widget>[
-    //                         // Ideally return a GridView.
-    //                         Badge(
-    //                           badgeColor: Colors.deepPurple,
-    //                           shape: BadgeShape.square,
-    //                           borderRadius: 20,
-    //                           toAnimate: false,
-    //                           badgeContent:
-    //                               Text('L-Clubs', style: TextStyle(color: Colors.white)),
-    //                         ),
-    //                       ],
-    //                     ),
-    //                     new Align(
-    //                       alignment: Alignment.topRight,
-    //                       child: new Container(
-    //                         child: new OutlineButton(
-    //                           onPressed: () {
-    //                             // Set folding to true.
-    //                             if (widget.turnsMapper[widget.currPlayer.name] == "hasTurn") {
-    //                               setState(() {
-    //                                 _folding = true;
-    //                               });
-    //                             }
-    //                           },
-    //                           borderSide: BorderSide(
-    //                             color: Colors.amber,
-    //                           ),
-    //                           child: new Text(
-    //                             "Fold",
-    //                             style: TextStyle(
-    //                               color: Colors.amber
-    //                             ),
-    //                           ),
-    //                         ),
-    //                       ),
-    //                     ),
-    //                   ]
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //     askingForCard ? Positioned(
-    //       top: 0,
-    //       child: CustomDialog(
-    //         askingTo: playerBeingAskedObj.name,
-    //         whoAsked: widget.currPlayer.name,
-    //         buttonText: "Ask",
-    //         roomId: widget.roomId,
-    //         cards: widget.cards,
-    //         cb: closeDialog)
-    //     ) : new Container(),
-    //     _folding ? Positioned(
-    //       top: 0,
-    //       child: FoldingDialog(
-    //         opponents: widget.selfOpponents,
-    //         playersList: widget.finalPlayersList,
-    //         teamMates: widget.teamMates,
-    //         roomId: widget.roomId,
-    //         updateFoldStats: preFoldMessageSendingAction,
-    //         cb: closeDialog
-    //       )
-    //     ) : new Container(),
-    //   ]
-    // );
   }
 }
 
 // Gets the opponent team.
-Widget _getOpponentTeam(Set<String> opponents, List<dynamic> players, h, w, turnsMapper, Player cplayer) {
+Widget _getOpponentTeam(Set<String> opponents, List<dynamic> players, h, w, turnsMapper, Player cplayer, setCardAskingProps, context, setFoldingProps) {
   // Ideal case.
   // players.map((player) {
   //   if (!opponents.contains(player["name"])) {
@@ -563,7 +307,7 @@ Widget _getOpponentTeam(Set<String> opponents, List<dynamic> players, h, w, turn
       // if player is opponent.
       if (players[i]["teamIdentifier"] != cplayer.teamIdentifier) {
         children.add(
-          _getPlayer(players[i], h, w, turnsMapper)
+          _getPlayer(players[i], h, w, turnsMapper, "opp", setCardAskingProps, context, setFoldingProps, cplayer)
         );
       }
       // player exists but same team, render nothing.
@@ -572,7 +316,41 @@ Widget _getOpponentTeam(Set<String> opponents, List<dynamic> players, h, w, turn
   }
   // Fills in the remaining gaps
   while(children.length < 3) {
-    children.add(_getPlayer(null, h, w, turnsMapper));
+    children.add(_getPlayer(null, h, w, turnsMapper, "opp", setCardAskingProps, context, setFoldingProps, cplayer));
+  }
+  return Row(
+    children: children.toList(),
+    mainAxisAlignment: MainAxisAlignment.spaceBetween
+  );
+}
+
+// Friendly team
+Widget _getFriendlyTeam(Set<String> opponents, List<dynamic> players, h, w, turnsMapper, Player cplayer, setCardAskingProps, context, setFoldingProps) {
+  // Ideal case.
+  // players.map((player) {
+  //   if (opponents.contains(player["name"])) {
+  //     return new Container();
+  //   } else return new Container(
+  //     child: _getPlayer(player, h, w, turnsMapper),
+  //   );
+  // } ).toList();
+  List<Widget> children = new List();
+  for (var i=0; i<6; i++) {
+    // If player exists
+    if (players.length > i) {
+      // if player is opponent.
+      if (players[i]["teamIdentifier"] == cplayer.teamIdentifier) {
+        children.add(
+          _getPlayer(players[i], h, w, turnsMapper, "team", setCardAskingProps, context, setFoldingProps, cplayer)
+        );
+      }
+      // player exists but same team, render nothing.
+    }
+    // player doesn't exist.
+  }
+  // Fills in the remaining gaps
+  while(children.length < 3) {
+    children.add(_getPlayer(null, h, w, turnsMapper, "team", setCardAskingProps, context, setFoldingProps, cplayer));
   }
   return Row(
     children: children.toList(),
@@ -581,7 +359,8 @@ Widget _getOpponentTeam(Set<String> opponents, List<dynamic> players, h, w, turn
 }
 
 // Gets a specific player in the game.
-Widget _getPlayer(player, h, w, turnsMapper) {
+Widget _getPlayer(player, h, w, turnsMapper, side, setCardAskingProps, context, setFoldingProps, cplayer) {
+  final playerProvider = Provider.of<PlayerList>(context, listen: false);
   if (player == null) {
     return Column(
       children: <Widget>[
@@ -633,9 +412,6 @@ Widget _getPlayer(player, h, w, turnsMapper) {
                       decoration: BoxDecoration(
                         color: Colors.orange,
                         borderRadius: BorderRadius.circular(12.0)
-                      ),
-                      child: Center(
-                        child: Text("ASK", style: TextStyle(fontSize: 14), softWrap: false, overflow: TextOverflow.visible),
                       ),
                     ),
                     onTap: () {
@@ -700,22 +476,45 @@ Widget _getPlayer(player, h, w, turnsMapper) {
                       borderRadius: BorderRadius.circular(12.0)
                     ),
                     child: Center(
-                      child: InkWell(
-                        onTap: () {
-                          // This method
-                      //     // opens up the modal for
-                      //     // asking for a card.
-                      //     // Also binds the widget
-                      //     // to the current player you are
-                      //     // asking the card to.
-                      //     // setCardAskingProps(
-                      //     //   new Player(
-                      //     //     name: player["name"],
-                      //     //     teamIdentifier: player["teamIdentifier"],
-                      //     //     id: player["id"],
-                      //     //   ), true);
-                        },
-                        child: Text("ASK", style: TextStyle(fontSize: 14), softWrap: false, overflow: TextOverflow.visible)
+                      child: Container(
+                        width: w*0.55,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.circular(12.0)
+                        ),
+                        child: (side == "opp") && turnsMapper[playerProvider.currPlayer.name] == cplayer.name ?
+                        Center(
+                          child: GestureDetector(
+                          onTap: () {
+                            // Ask for the card.
+                            // This method
+                            // opens up the modal for
+                            // asking for a card.
+                            // Also binds the widget
+                            // to the current player you are
+                            // asking the card to.
+                            setCardAskingProps(
+                              new Player(
+                                name: player["name"],
+                                teamIdentifier: player["teamIdentifier"],
+                                id: player["id"],
+                              ), true
+                            );
+                            print("Tapped");
+                          },
+                          child: Text("ASK", style: TextStyle(fontSize: 14), softWrap: false, overflow: TextOverflow.visible)
+                          ),
+                        ):
+                        (turnsMapper[playerProvider.currPlayer.name] == cplayer.name && side == "team") ? Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              // Fold.
+                              print("Tapped");
+                            },
+                            child: Text("FOLD", style: TextStyle(fontSize: 14), softWrap: false, overflow: TextOverflow.visible),
+                          ),
+                        ):Container(),
                       ),
                     ),
                   ),
@@ -728,114 +527,3 @@ Widget _getPlayer(player, h, w, turnsMapper) {
     );
   }
 }
-
-// Gets a specific player at a specific position.
-Widget _getPlayerInContainer(player, h, w, turn, turnFactor, setCardAskingProps, p, cb) {
-  var teamColor =  player != null ? 
-    turn == "hasTurn" ? Colors.green : player["teamIdentifier"] == "red" ?
-      Colors.orange : Colors.blue:
-      Colors.transparent;
-  return new Stack(
-    children: [
-      new Align(
-        alignment: Alignment.topCenter,
-        child: Container(
-          height: h*0.628,
-          child: new Hero(
-            tag: p,
-            child: player == null ? Image.asset("assets/person-fb.jpg") : Image.asset("assets/person-fb.jpg"),
-          ),
-        ),
-      ),
-      // This container keeps
-      // track of how many cards
-      // a user has.
-      new Align(
-        alignment: Alignment.bottomCenter,
-        child: Container(
-          height: h*0.359,
-          color: Colors.white,
-          // Number of cards
-          // and ask button.
-          child: new Stack(
-            children: <Widget>[
-              new Align(
-                alignment: Alignment.topLeft,
-                child: new Container(
-                  width: w*0.221,
-                  height: h*0.359,
-                  decoration: new BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 1.0),
-                  ),
-                  // Gives the number of cards.
-                  child: new Center(child: new Text("6")),
-                ),
-              ),
-              new Align(
-                alignment: Alignment.topRight,
-                child: new Container(
-                  // Player name container
-                  // color is as per his team.
-                  color: teamColor,
-                  width: w*0.689, // 106 - 44
-                  height: h*0.179,
-                  child: (player != null ?
-                    new Text(
-                      player["name"],
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ):
-                    new Text("")
-                  ),
-                ),
-              ),
-              new Align(
-                alignment: Alignment.bottomRight,
-                child: new Container(
-                  width: w*0.689, // 106 - 44
-                  height: h*0.185,
-                  child: new RaisedButton(
-                    onPressed: (){
-                      // This method
-                      // opens up the modal for
-                      // asking for a card.
-                      // Also binds the widget
-                      // to the current player you are
-                      // asking the card to.
-                      setCardAskingProps(
-                        new Player(
-                          name: player["name"],
-                          teamIdentifier: player["teamIdentifier"],
-                          id: player["id"],
-                        ), true);
-                    },
-                    color: Colors.white,
-                    child: ( turnFactor == true  ? new Container(
-                      child: new Text("Ask"),
-                    ):new Container())
-                  ),
-                ),
-              ),
-            ]
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-// Gets container border as
-// per a player's team
-Border _getContainerBorder(player) {
-  if (player == null) {
-    return Border.all(color: Colors.yellowAccent[700], width: 4.0);
-  } else {
-    if((player["teamIdentifier"]) == "red") {
-      return Border.all(color: Colors.yellowAccent[700], width: 4.0);
-    }
-    else return Border.all(color: Colors.yellowAccent[700], width: 4.0);
-  }
-}
-

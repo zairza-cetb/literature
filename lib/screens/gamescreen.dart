@@ -56,7 +56,6 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
-
     game.addListener(_gameScreenListener);
   }
 
@@ -97,26 +96,6 @@ class _GameScreenState extends State<GameScreen> {
             opened: false)
           );
         });
-        // Assign red and blue teams
-        // players.forEach((player) {
-        //   if (player["teamIdentifier"] == "red") {
-        //     // team_red.add(p);
-        //     teamRed.add(
-        //       new Player(
-        //         name: player["name"],
-        //         id: player["id"],
-        //         teamIdentifier: player["teamIdentifier"]
-        //       )
-        //     );
-        //   } 
-        //   else teamBlue.add(
-        //     new Player(
-        //       name: player["name"],
-        //       id: player["id"],
-        //       teamIdentifier: player["teamIdentifier"]
-        //     )
-        //   );
-        // });
         // Override playersList.
         finalPlayersList = players;
         // build a map of players and turns.
@@ -226,6 +205,7 @@ class _GameScreenState extends State<GameScreen> {
           } else {
             // result is false, just update that wrong guess,
             // end turn here. (important).
+            print("No such card found");
             Map turnDetails = {"name": widget.player.name, "roomId": widget.roomId};
             game.send("finished_turn", json.encode(turnDetails));
             setState(() {});
