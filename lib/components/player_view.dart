@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
+import 'package:literature/components/arena.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/components/custom_dialog.dart';
 import 'package:literature/components/folding_dialog.dart';
@@ -246,7 +247,7 @@ class _PlayerViewState extends State<PlayerView> {
                     fit: BoxFit.contain,
                   ),
                 ),
-                child: Center(child: Text("0-0", style: TextStyle(color: Colors.white, fontSize: widget.containerWidth*0.097))),
+                child: Arena(widget.turnsMapper, arenaContainerHeight)
               ),
               // Your team.
               _getFriendlyTeam(
