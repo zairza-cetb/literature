@@ -25,6 +25,8 @@ class _CardPreviewerState extends State<CardPreviewer> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: widget.height*0.494,
+      width: widget.width*0.471,
       child: _buildLargeCard(widget.cardType, widget.cardSuit, widget.height, widget.width)
     );
   }
@@ -34,15 +36,8 @@ class _CardPreviewerState extends State<CardPreviewer> {
       color: Colors.white,
       // The card number
       // in the center.
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(w*0.012*2),
-          color: Colors.white,
-          border: Border.all(color: Colors.black),
-        ),
+      child: ClipRRect(
         // See: height of each card.
-        height: h*0.494,
-        width: w*0.471,
         child: Stack(
           children: <Widget>[
             Center(

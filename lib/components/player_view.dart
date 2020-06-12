@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
@@ -262,20 +263,16 @@ class _PlayerViewState extends State<PlayerView> {
             ],
           ),
           // Card asking dialog of click.
-          askingForCard ? Positioned(
-            top: 0,
-            child: CustomDialog(
+          askingForCard ? CustomDialog(
               askingTo: playerBeingAskedObj.name,
               whoAsked: widget.currPlayer.name,
               buttonText: "Ask",
               roomId: widget.roomId,
               cards: widget.cards,
               cb: closeDialog)
-          ) : new Container(),
+           : new Container(),
           // Folding dialog on click.
-          _folding ? Positioned(
-            top: 0,
-            child: FoldingDialog(
+          _folding ? FoldingDialog(
               opponents: widget.selfOpponents,
               playersList: widget.finalPlayersList,
               teamMates: widget.teamMates,
@@ -283,7 +280,7 @@ class _PlayerViewState extends State<PlayerView> {
               updateFoldStats: preFoldMessageSendingAction,
               cb: closeDialog
             )
-          ) : new Container(),
+          : new Container(),
         ],
       ),
     );
@@ -483,7 +480,7 @@ Widget _getPlayer(player, h, w, turnsMapper, side, setCardAskingProps, context, 
                           color: Colors.orange,
                           borderRadius: BorderRadius.circular(12.0)
                         ),
-                        child: (side == "opp") && turnsMapper[playerProvider.currPlayer.name] == cplayer.name ?
+                        child: (side == "opp") && turnsMapper[playerProvider.currPlayer.name] == "hasTurn" ?
                         Center(
                           child: GestureDetector(
                           onTap: () {
@@ -501,16 +498,15 @@ Widget _getPlayer(player, h, w, turnsMapper, side, setCardAskingProps, context, 
                                 id: player["id"],
                               ), true
                             );
-                            print("Tapped");
                           },
                           child: Text("ASK", style: TextStyle(fontSize: 14), softWrap: false, overflow: TextOverflow.visible)
                           ),
                         ):
-                        (turnsMapper[playerProvider.currPlayer.name] == cplayer.name && side == "team") ? Center(
+                        (turnsMapper[playerProvider.currPlayer.name] == "hasTurn" && side == "team") ? Center(
                           child: GestureDetector(
                             onTap: () {
                               // Fold.
-                              print("Tapped");
+                              setFoldingProps();
                             },
                             child: Text("FOLD", style: TextStyle(fontSize: 14), softWrap: false, overflow: TextOverflow.visible),
                           ),

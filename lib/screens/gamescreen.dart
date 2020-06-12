@@ -246,7 +246,7 @@ class _GameScreenState extends State<GameScreen> {
         appBar: AppBar(
           title: new Text("Literature"),
           leading: new Container(),
-          backgroundColor: Color(0xff0f0426),
+          backgroundColor: Color(0xff0D0D1F),
         ),
         body:  _ready ? SlidingUpPanel(
           body: new Column(
