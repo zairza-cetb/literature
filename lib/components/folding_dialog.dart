@@ -79,17 +79,18 @@ class _FoldingDialogState extends State<FoldingDialog> {
         left: Consts.padding,
         right: Consts.padding,
       ),
-      height: containerHeight*0.587,
-      width: containerWidth*0.821,
+      height: containerHeight*0.507,
+      width: containerWidth*0.921,
       decoration: new BoxDecoration(
         color: Colors.white,
         shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.circular(Consts.padding),
+        borderRadius: BorderRadius.circular(40),
+        image: DecorationImage(image: ExactAssetImage("assets/game_mat_basic.png"), fit: BoxFit.cover),
         boxShadow: [
           BoxShadow(
-            color: Colors.black26,
+            color: Colors.white38,
             blurRadius: 10.0,
-            offset: const Offset(0.0, 10.0),
+            spreadRadius: 130,
           ),
         ],
       ),
@@ -100,76 +101,12 @@ class _FoldingDialogState extends State<FoldingDialog> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                ),
                 height: 40.0,
                 child: _cardSuitToImage(selectedSuit),
-              ),
-              Container(
-                child: OutlineButton(
-                  onPressed: () {
-                    // send details to the
-                    // server about folding.
-                    // validate the form here.
-                    // General format of messages.
-                    // { "name" ,"selections", "suit" }
-                    List message = new List();
-                    final currPlayer = Provider.of<PlayerList>(context, listen: false).currPlayer;
-                    if (playerOneFoldSelections != null && teamMates.length > 0) {
-                      message.add(
-                        {
-                          // teamMates[0]["name"] : [{ "selections": playerOneFoldSelections }, { "suit" : selectedSuit }],
-                          "name": teamMates[0]["name"],
-                          "selections": playerOneFoldSelections,
-                          "suit": selectedSuit,
-                          "whoAsked": currPlayer.name
-                        }
-                      );
-                      // Update the parent component.
-                      widget.updateFoldStats(teamMates[0]["name"], playerOneFoldSelections);
-                    }
-                    if (playerTwoFoldSelections != null && teamMates.length > 1) {
-                      message.add(
-                        {
-                          // teamMates[1]["name"] : [{ "selections": playerTwoFoldSelections }, { "suit" : selectedSuit }],
-                          "name": teamMates[1]["name"],
-                          "selections": playerTwoFoldSelections,
-                          "suit": selectedSuit,
-                          "whoAsked": currPlayer.name
-                        }
-                      );
-                      widget.updateFoldStats(teamMates[1]["name"], playerTwoFoldSelections);
-                    }
-                    if (playerThreeFoldSelections != null && teamMates.length > 2) {
-                      message.add(
-                        {
-                          // teamMates[2]["name"] : [{ "selections": playerThreeFoldSelections }, { "suit" : selectedSuit }],
-                          "name": teamMates[2]["name"],
-                          "selections": playerThreeFoldSelections,
-                          "suit": selectedSuit,
-                          "whoAsked": currPlayer.name
-                        }
-                      );
-                      widget.updateFoldStats(teamMates[2]["name"], playerThreeFoldSelections);
-                    }
-                    Map foldingResult = {"roomId": widget.roomId, "foldedResults": message};
-                    // Sends a message of the form [ name -> foldSelections, name -> foldSelections, name -> foldSelections ].
-                    game.send("folding_result_initial", json.encode(foldingResult));
-                    widget.cb();
-                    // Also clear out variables for next group of requests.
-                    playerOneFoldSelections = null;
-                    playerTwoFoldSelections = null;
-                    playerThreeFoldSelections = null;
-                  },
-                  child: Text("Submit"),
-                ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width*0.0966,
-                child: OutlineButton(
-                  onPressed: () {
-                    widget.cb();
-                  },
-                  child: Text("X"),
-                ),
               ),
             ],
           ),
@@ -179,47 +116,81 @@ class _FoldingDialogState extends State<FoldingDialog> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Text(
-                "Declare a set.",
+                "CHOOSE A SET",
                 style: TextStyle(
-                  fontSize: 20
+                  fontSize: 20,
+                  color: Colors.white
                 ),
               ),
-              DropdownButton<String>(
-                value: selectedSuit,
-                onChanged: (String newValue) {
-                  setState(() {
-                    selectedSuit = newValue;
-                  });
-                },
-                items: <String>[
-                  "spades",
-                  "hearts",
-                  "diamonds",
-                  "clubs",
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+              Container(
+                padding: EdgeInsets.all(2),
+                height: 30,
+                decoration: BoxDecoration(
+                  color: Color(0xfff0673c),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Center(
+                  child: DropdownButton<String>(
+                    iconSize: 0,
+                    dropdownColor: Color(0xfff0673c),
+                    underline: Container(),
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                    value: selectedSuit,
+                    onChanged: (String newValue) {
+                      setState(() {
+                        selectedSuit = newValue;
+                      });
+                    },
+                    items: <String>[
+                      "spades",
+                      "hearts",
+                      "diamonds",
+                      "clubs",
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
-              DropdownButton<String>(
-                value: selectedSet,
-                onChanged: (String newValue) {
-                  setState(() {
-                    selectedSet = newValue;
-                    selectedSetList = buildSetWithSelectedValues(selectedSuit, selectedSet);
-                  });
-                },
-                items: <String>[
-                  "L",
-                  "H",
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+              Container(
+                padding: EdgeInsets.all(2),
+                height: 30,
+                width: 30,
+                decoration: BoxDecoration(
+                  color: Color(0xfff0673c),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Center(
+                  child: DropdownButton<String>(
+                    iconSize: 0,
+                    dropdownColor: Color(0xfff0673c),
+                    underline: Container(),
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                    value: selectedSet,
+                    onChanged: (String newValue) {
+                      setState(() {
+                        selectedSet = newValue;
+                        selectedSetList = buildSetWithSelectedValues(selectedSuit, selectedSet);
+                      });
+                    },
+                    items: <String>[
+                      "L",
+                      "H",
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
             ]
           ),
@@ -230,6 +201,93 @@ class _FoldingDialogState extends State<FoldingDialog> {
             alignment: Alignment.bottomCenter,
             child: getTeamMatesForm(
               teamMates
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(40, 30, 40, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                  height: 30,
+                  color: Colors.transparent,
+                  child: RaisedButton(
+                    color: Color(0xff0AA4EB),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5)
+                    ),
+                    onPressed: () {
+                      // send details to the
+                      // server about folding.
+                      // validate the form here.
+                      // General format of messages.
+                      // { "name" ,"selections", "suit" }
+                      List message = new List();
+                      final currPlayer = Provider.of<PlayerList>(context, listen: false).currPlayer;
+                      if (playerOneFoldSelections != null && teamMates.length > 0) {
+                        message.add(
+                          {
+                            // teamMates[0]["name"] : [{ "selections": playerOneFoldSelections }, { "suit" : selectedSuit }],
+                            "name": teamMates[0]["name"],
+                            "selections": playerOneFoldSelections,
+                            "suit": selectedSuit,
+                            "whoAsked": currPlayer.name
+                          }
+                        );
+                        // Update the parent component.
+                        widget.updateFoldStats(teamMates[0]["name"], playerOneFoldSelections);
+                      }
+                      if (playerTwoFoldSelections != null && teamMates.length > 1) {
+                        message.add(
+                          {
+                            // teamMates[1]["name"] : [{ "selections": playerTwoFoldSelections }, { "suit" : selectedSuit }],
+                            "name": teamMates[1]["name"],
+                            "selections": playerTwoFoldSelections,
+                            "suit": selectedSuit,
+                            "whoAsked": currPlayer.name
+                          }
+                        );
+                        widget.updateFoldStats(teamMates[1]["name"], playerTwoFoldSelections);
+                      }
+                      if (playerThreeFoldSelections != null && teamMates.length > 2) {
+                        message.add(
+                          {
+                            // teamMates[2]["name"] : [{ "selections": playerThreeFoldSelections }, { "suit" : selectedSuit }],
+                            "name": teamMates[2]["name"],
+                            "selections": playerThreeFoldSelections,
+                            "suit": selectedSuit,
+                            "whoAsked": currPlayer.name
+                          }
+                        );
+                        widget.updateFoldStats(teamMates[2]["name"], playerThreeFoldSelections);
+                      }
+                      Map foldingResult = {"roomId": widget.roomId, "foldedResults": message};
+                      // Sends a message of the form [ name -> foldSelections, name -> foldSelections, name -> foldSelections ].
+                      game.send("folding_result_initial", json.encode(foldingResult));
+                      widget.cb();
+                      // Also clear out variables for next group of requests.
+                      playerOneFoldSelections = null;
+                      playerTwoFoldSelections = null;
+                      playerThreeFoldSelections = null;
+                    },
+                    child: Text("FOLD", style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                Container(
+                  height: 30,
+                  width: 100,
+                  child: RaisedButton(
+                    color: Color(0xff0AA4EB),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5)
+                    ),
+                    onPressed: () {
+                      widget.cb();
+                    },
+                    child: Text("CANCEL", style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -243,10 +301,10 @@ class _FoldingDialogState extends State<FoldingDialog> {
       // width: 120,
       child: new Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           new Container(
-            width: MediaQuery.of(context).size.width*0.2415,
+            width: MediaQuery.of(context).size.width*0.2015,
             color: Colors.red,
             child: new Column(
               children: <Widget>[
@@ -283,7 +341,7 @@ class _FoldingDialogState extends State<FoldingDialog> {
             ),
           ),
           new Container(
-            width: MediaQuery.of(context).size.width*0.2415,
+            width: MediaQuery.of(context).size.width*0.2015,
             color: Colors.blue,
             child: new Column(
               children: <Widget>[
@@ -320,7 +378,7 @@ class _FoldingDialogState extends State<FoldingDialog> {
             ),
           ),
           new Container(
-            width: MediaQuery.of(context).size.width*0.2415,
+            width: MediaQuery.of(context).size.width*0.2015,
             color: Colors.green,
             child: new Column(
               children: <Widget>[
