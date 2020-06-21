@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
   // session with this ID.
   io.to(socket.id).emit(
     "get_id",
-    JSON.stringify({ data: { playerId: socket.id }, action:"set_id" })
+    JSON.stringify({ data: { playerId: socket.id }, action: "set_id" })
   );
 
   /**
@@ -63,8 +63,8 @@ io.on("connection", (socket) => {
       roomId: roomId
     });
     GAME_STATUS = "CREATED";
-    try{
-    await newRoom.save();
+    try {
+      await newRoom.save();
     } catch (e) {
       console.log(e);
     }
@@ -94,29 +94,29 @@ io.on("connection", (socket) => {
     const playerId = parsedData.playerId;
     const room = await Room.findOne({ roomId });
     // The value is not null
-    if(room != null){
+    if (room != null) {
       if (room.status === GameStatus.CREATED) {
-        if(room.players.length < 6){
+        if (room.players.length < 6) {
           const newPlayerId = playerId;
-        await Room.update(
-          { roomId },
-          { $push: { players: { name, id: newPlayerId, teamIdentifier: null } } }
-        );
-        //Join the room
-        socket.join(room.roomId);
-        // Send the new room's details, not the old one's
-        const updatedRoom = await Room.findOne({ roomId });
-        // Send data to the room after it has joined.
-        io.to(room.roomId)
-          .emit("joined", JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId, lobbyLeader: room.lobbyLeader }, action: "joined" }));
+          await Room.update(
+            { roomId },
+            { $push: { players: { name, id: newPlayerId, teamIdentifier: null } } }
+          );
+          //Join the room
+          socket.join(room.roomId);
+          // Send the new room's details, not the old one's
+          const updatedRoom = await Room.findOne({ roomId });
+          // Send data to the room after it has joined.
+          io.to(room.roomId)
+            .emit("joined", JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId, lobbyLeader: room.lobbyLeader }, action: "joined" }));
         } else {
-          io.emit("roomisfull", JSON.stringify({ data: { roomId:roomId }, action: "roomisfull" }));
+          io.emit("roomisfull", JSON.stringify({ data: { roomId: roomId }, action: "roomisfull" }));
         }
       } else {
-        socket.emit("invalid room",JSON.stringify({data : { roomId: roomId }, action : "invalid room"}));
-      } 
+        socket.emit("invalid room", JSON.stringify({ data: { roomId: roomId }, action: "invalid room" }));
+      }
     } else {
-      socket.emit("invalid room",JSON.stringify({data : { roomId: roomId }, action : "invalid room"}));
+      socket.emit("invalid room", JSON.stringify({ data: { roomId: roomId }, action: "invalid room" }));
     }
   });
 
@@ -143,12 +143,14 @@ io.on("connection", (socket) => {
           io.to(socketId).emit(
             "pre_game_data",
             JSON.stringify(
-              { 
-                data: { cards: cards.slice(cardIndex * 8, cardIndex * 8 + 8),
-                  playersWithTeamIds: playersWithTeamIds },
-                action: "pre_game_data" 
+              {
+                data: {
+                  cards: cards.slice(cardIndex * 8, cardIndex * 8 + 8),
+                  playersWithTeamIds: playersWithTeamIds
+                },
+                action: "pre_game_data"
               })
-            );
+          );
           cardIndex += 1;
         });
       }
@@ -166,8 +168,10 @@ io.on("connection", (socket) => {
     // Initiator -> send to player 1 immediately.
     io.to(roomId.toString()).emit(
       "whose_turn",
-      JSON.stringify({ data: { playerName: handleTurns.get(0) },
-      action: "make_move" })
+      JSON.stringify({
+        data: { playerName: handleTurns.get(0) },
+        action: "make_move"
+      })
     );
   });
 
@@ -183,13 +187,15 @@ io.on("connection", (socket) => {
         playerIndex = index;
       }
     });
-    if (playerIndex === handleTurns.size-1) {
+    if (playerIndex === handleTurns.size - 1) {
       playerIndex = -1;
     }
     io.to(roomId).emit(
       "whose_turn",
-      JSON.stringify({ data: { playerName: handleTurns.get(++playerIndex) },
-      action: "make_move" })
+      JSON.stringify({
+        data: { playerName: handleTurns.get(++playerIndex) },
+        action: "make_move"
+      })
     );
   })
 
@@ -198,7 +204,7 @@ io.on("connection", (socket) => {
   // recipient has the card he generates another event.
   socket.on("card_asking_event", async (data: any) => {
     const parsedData = JSON.parse(data);
-    const  { whoAsked, askingTo, roomId, cardSuit, cardType } = parsedData;
+    const { whoAsked, askingTo, roomId, cardSuit, cardType } = parsedData;
     io.to(roomId).emit(
       "do_you_have_this_card",
       JSON.stringify({
@@ -225,7 +231,7 @@ io.on("connection", (socket) => {
 
   // So, the user can submitted a fold request. We would first use
   // server to check against all the users.
-  socket.on("folding_result_initial", async(payload) => {
+  socket.on("folding_result_initial", async (payload) => {
     const parsedData = JSON.parse(payload);
     const { roomId, foldedResults } = parsedData;
     // console.log(parsedData);
@@ -247,10 +253,38 @@ io.on("connection", (socket) => {
     io.to(roomId).emit(
       "folding_confirmation_recieved",
       JSON.stringify({
-        data : { whoAsked, name, confirmation, forWhichCards },
+        data: { whoAsked, name, confirmation, forWhichCards },
         action: "update_foldState",
       }),
     );
+  });
+
+  socket.on("player_remove_clicked", async (data) => {
+    // Map playerDetails =  {"roomId": widget.roomId, "name": playerInfo.name, "playerId": playerInfo.id};
+    const parsedData = JSON.parse(data);
+    const roomId = parsedData.roomId;
+    const playerName = parsedData.name;
+    const playerId = parsedData.playerId;
+    const room = await Room.findOne({ roomId });
+
+    if (room != null) {
+      if (room.status === GameStatus.CREATED) {
+        await Room.update(
+          { roomId },
+          { $pull: { players: { name: playerName, id: playerId } } }
+        );
+      }
+    }
+    //Join the room
+    socket.join(room.roomId);
+    // Send the new rooom's details 
+    const updatedRoom = await Room.findOne({ roomId });
+
+    io.to(room.roomId)
+      .emit("joined", JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId, lobbyLeader: room.lobbyLeader }, action: "player_removed" }));
+
+
+
   });
 });
 

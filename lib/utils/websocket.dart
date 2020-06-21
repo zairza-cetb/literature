@@ -59,6 +59,7 @@ class WebSocket {
   reset() {
     if (_isOn == true) {
       _channel.close();
+      _channel.clearListeners();
       _isOn = false;
     }
   }

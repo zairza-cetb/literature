@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:literature/models/player.dart';
@@ -41,7 +43,7 @@ class _WaitingPageState extends State<WaitingPage> {
   @override
   void initState() {
     super.initState();
-
+    print('init() of waitingPage');
     ///
     /// Ask to be notified when messages related to the game
     /// are sent by the server
@@ -63,6 +65,8 @@ class _WaitingPageState extends State<WaitingPage> {
 
   @override
   void dispose() {
+    print('dispose() called in waiting page');
+    game.disconnect();
     game.removeListener(_waitingPageListener);
     super.dispose();
   }
@@ -119,6 +123,37 @@ class _WaitingPageState extends State<WaitingPage> {
                   roomId: widget.roomId),
             ));
         break;
+
+
+      case "player_removed":
+        // going to pop the screen for removed player
+
+        final playerProvider = Provider.of<PlayerList>(context, listen: false);
+        playerProvider.removeAll();
+        List<Player> lp = [];
+        for (var player in (message["data"])["players"]) {
+          Player p;
+          if ((message["data"])["lobbyLeader"]["id"] == player["id"])
+            p = new Player(
+                name: player["name"], id: player["id"], lobbyLeader: true);
+          else
+            p = new Player(name: player["name"], id: player["id"]);
+            print(widget.currPlayer);
+            if(lp.indexOf(widget.currPlayer)==-1){
+              Navigator.pop(context);
+            }
+          lp.add(p);
+        }
+        playerProvider.addPlayers(lp);
+
+        // Push Notification Check
+        if (playerProvider.players.length == 6) {
+          showOngoingNotification(notifications,
+              title: 'Start The Game',
+              body: 'The Room is full. You can start the Game.');
+        }
+
+        break;
     }
   }
 
@@ -160,10 +195,10 @@ class _WaitingPageState extends State<WaitingPage> {
 
 //  adds a trailing icon for removing player in all list of players
 //  if the player is lobby leader
-  _getRemoveButton(currentPlayer,playerInfo,context) {
+  _getRemoveButton(currentPlayer, playerInfo, context) {
     if (currentPlayer.lobbyLeader) {
       return new GestureDetector(
-        onTap: () => _showDialogToRemovePlayer(playerInfo,context),
+        onTap: () => _showDialogToRemovePlayer(playerInfo, context),
         child: Icon(Icons.cancel, color: Colors.red),
       );
     } else {
@@ -172,33 +207,40 @@ class _WaitingPageState extends State<WaitingPage> {
   }
 
 // Dialog to confirm removal
-_showDialogToRemovePlayer(playerInfo,context){
-  showDialog(context: context,
-  builder: (BuildContext context){
-    return AlertDialog(
-      title: Text('Remove Player'),
-      content: Text('Do You want to remove ${playerInfo.name}'),
-      actions: <Widget>[
-        FlatButton(
-          onPressed: ()=>{
-              Navigator.of(context).pop()
-          },
-           child: Text("Close")),
-        FlatButton(
-          onPressed: ()=>{
-            _removePlayerFromList(playerInfo)
-          },
-          child: Text("Remove",style:TextStyle(color:Colors.red)))
-      ],
-    );
-  });
-}
-
+  _showDialogToRemovePlayer(playerInfo, context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Remove Player'),
+            content: Text('Do You want to remove ${playerInfo.name}'),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () => {
+                    Navigator.of(context).pop()
+                  },
+                  child: Text("Close")),
+              FlatButton(
+                  onPressed: () {
+                    _removePlayerFromList(playerInfo);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Remove", style: TextStyle(color: Colors.red)))
+            ],
+          );
+        });
+  }
 
 // function to execute to initiate removal
 
   _removePlayerFromList(playerInfo) {
     print("initiate removal sequence ${playerInfo.id}");
+    Map playerDetails = {
+      "roomId": widget.roomId,
+      "name": playerInfo.name,
+      "playerId": playerInfo.id
+    };
+    game.send("player_remove_clicked", json.encode(playerDetails));
   }
 
   // ------------------------------------------------------
