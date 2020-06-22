@@ -281,10 +281,19 @@ io.on("connection", (socket) => {
     const updatedRoom = await Room.findOne({ roomId });
 
     io.to(room.roomId)
-      .emit("joined", JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId, lobbyLeader: room.lobbyLeader }, action: "player_removed" }));
+      .emit("joined",
+        JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId, lobbyLeader: room.lobbyLeader }, action: "player_removed" }));
+  });
 
-
-
+  socket.on('remove_room', async (data) => {
+    const parsedData = JSON.parse(data);
+    const roomId = parsedData.roomId;
+    const room = await Room.findOne({ roomId });
+    if (room != null) {
+      if (room.status === GameStatus.CREATED) {
+        await Room.update({ roomId }, { $set: { status: GameStatus.COMPLETED } });
+      }
+    }
   });
 });
 

@@ -43,6 +43,7 @@ class _WaitingPageState extends State<WaitingPage> {
   @override
   void initState() {
     super.initState();
+
     ///
     /// Ask to be notified when messages related to the game
     /// are sent by the server
@@ -222,7 +223,7 @@ class _WaitingPageState extends State<WaitingPage> {
                   child: Text("Close")),
               FlatButton(
                   onPressed: () {
-                    _removePlayerFromList(playerInfo,'remove_dialog');
+                    _removePlayerFromList(playerInfo, 'remove_dialog');
                     Navigator.of(context).pop();
                   },
                   child: Text("Remove", style: TextStyle(color: Colors.red)))
@@ -233,15 +234,27 @@ class _WaitingPageState extends State<WaitingPage> {
 
 // function to execute to initiate removal
 
-  _removePlayerFromList(playerInfo,where) {
-    print("initiate removal sequence ${playerInfo.name}");
-    Map playerDetails = {
-      "roomId": widget.roomId,
-      "name": playerInfo.name,
-      "playerId": playerInfo.id
-    };
-    game.send("player_remove_clicked", json.encode(playerDetails));
-    if(where=='leave_dialog'){
+  _removePlayerFromList(playerInfo, where) {
+    print(playerInfo.lobbyLeader);
+    if (playerInfo.lobbyLeader) {
+      final players  = Provider.of<PlayerList>(context,listen: false).players;
+      players.forEach((element) {
+        if (!element.lobbyLeader) {
+          _removePlayerFromList(element, 'leader_leaving');
+        }
+      });
+      game.send('remove_room', json.encode({"roomId":widget.roomId}));
+      return Navigator.of(context).pop(true);
+    } else {
+      print("initiate removal sequence ${playerInfo.name}");
+      Map playerDetails = {
+        "roomId": widget.roomId,
+        "name": playerInfo.name,
+        "playerId": playerInfo.id
+      };
+      game.send("player_remove_clicked", json.encode(playerDetails));
+    }
+      if (where == 'leave_dialog') {
       return Navigator.of(context).pop(false);
     }
   }
@@ -432,7 +445,8 @@ class _WaitingPageState extends State<WaitingPage> {
               onPressed: () => Navigator.pop(context, false),
               child: Text('Close')),
           FlatButton(
-              onPressed: () => _removePlayerFromList(widget.currPlayer,'leave_dialog'),
+              onPressed: () =>
+                  _removePlayerFromList(widget.currPlayer, 'leave_dialog'),
               child: Text(
                 'Leave',
                 style: TextStyle(color: Colors.red),
