@@ -43,7 +43,6 @@ class _JoinRoomState extends State<JoinRoom> {
 
   @override
   void dispose() {
-    print("Disposing");
     game.removeListener(_joinRoomListener);
     super.dispose();
   }
@@ -99,21 +98,24 @@ class _JoinRoomState extends State<JoinRoom> {
         players.addPlayers(lp);
         // force rebuild
         // game.removeListener(_joinRoomListener);
-
-        Navigator.pushReplacementNamed(
-          context,
-          '/waitingPage',
-          arguments: message["data"]["roomId"],
-        );
+        Navigator.pushReplacement(
+            context,
+            new MaterialPageRoute(
+              builder: (BuildContext context) => WaitingPage(
+                roomId: message["data"]["roomId"],
+              ),
+            ));
         break;
       case "roomisfull":
         showCustomDialogWithImage(context, "full");
+        game.disconnect();
         setState(() {
           isLoading = false;
         });
         break;
       case "invalid room":
         showCustomDialogWithImage(context, "invalid");
+        game.disconnect();
         setState(() {
           isLoading = false;
         });

@@ -84,8 +84,8 @@ class _CreateRoomState extends State<CreateRoom> {
         setState(() {
           isLoading = false;
         });
-        game.removeListener(_createRoomListener);
-        Navigator.push(
+        // game.removeListener(_createRoomListener);
+        Navigator.pushReplacement(
             context,
             new MaterialPageRoute(
               builder: (BuildContext context) => WaitingPage(
