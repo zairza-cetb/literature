@@ -84,7 +84,8 @@ class _CreateRoomState extends State<CreateRoom> {
         setState(() {
           isLoading = false;
         });
-        Navigator.push(
+        // game.removeListener(_createRoomListener);
+        Navigator.pushReplacement(
             context,
             new MaterialPageRoute(
               builder: (BuildContext context) => WaitingPage(
@@ -157,10 +158,10 @@ class _CreateRoomState extends State<CreateRoom> {
         appBar: appBar,
         body: isLoading
             ? Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: Loader(),
-            )
+                width: double.infinity,
+                height: double.infinity,
+                child: Loader(),
+              )
             : SingleChildScrollView(
                 child: new Column(
                   mainAxisAlignment: MainAxisAlignment.start,

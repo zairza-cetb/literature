@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:literature/models/player.dart';
@@ -63,6 +65,7 @@ class _WaitingPageState extends State<WaitingPage> {
 
   @override
   void dispose() {
+    game.disconnect();
     game.removeListener(_waitingPageListener);
     super.dispose();
   }
@@ -114,11 +117,45 @@ class _WaitingPageState extends State<WaitingPage> {
             context,
             new MaterialPageRoute(
               builder: (BuildContext context) => new GameScreen(
-                player: playerProvider.currPlayer,
-                playersList: playerProvider.players,
-                roomId: widget.roomId
-              ),
+                  player: playerProvider.currPlayer,
+                  playersList: playerProvider.players,
+                  roomId: widget.roomId),
             ));
+        break;
+
+      case "player_removed":
+        // going to pop the screen for removed player
+
+        final playerProvider = Provider.of<PlayerList>(context, listen: false);
+        playerProvider.removeAll();
+
+        List<Player> lp = [];
+        for (var player in (message["data"])["players"]) {
+          Player p;
+          if ((message["data"])["lobbyLeader"]["id"] == player["id"])
+            p = new Player(
+                name: player["name"], id: player["id"], lobbyLeader: true);
+          else
+            p = new Player(name: player["name"], id: player["id"]);
+          lp.add(p);
+        }
+        if (lp.firstWhere(
+              (element) => element.name == playerProvider.currPlayer.name,
+              orElse: () => null,
+            ) ==
+            null) {
+          Navigator.of(context).pop();
+        }
+
+        playerProvider.addPlayers(lp);
+
+        // Push Notification Check
+        if (playerProvider.players.length == 6) {
+          showOngoingNotification(notifications,
+              title: 'Start The Game',
+              body: 'The Room is full. You can start the Game.');
+        }
+
         break;
     }
   }
@@ -138,10 +175,9 @@ class _WaitingPageState extends State<WaitingPage> {
       context,
       new MaterialPageRoute(
         builder: (BuildContext context) => new GameScreen(
-          player: playerProvider.currPlayer,
-          playersList: playerProvider.players,
-          roomId: widget.roomId
-        ),
+            player: playerProvider.currPlayer,
+            playersList: playerProvider.players,
+            roomId: widget.roomId),
       ),
     );
   }
@@ -157,6 +193,69 @@ class _WaitingPageState extends State<WaitingPage> {
       );
     } else {
       return new Text("...");
+    }
+  }
+
+//  adds a trailing icon for removing player in all list of players
+//  if the player is lobby leader
+  _getRemoveButton(currentPlayer, playerInfo, context) {
+    if (currentPlayer.lobbyLeader) {
+      return new GestureDetector(
+        onTap: () => _showDialogToRemovePlayer(playerInfo, context),
+        child: Icon(Icons.cancel, color: Colors.red),
+      );
+    } else {
+      return null;
+    }
+  }
+
+// Dialog to confirm removal
+  _showDialogToRemovePlayer(playerInfo, context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Remove Player'),
+            content: Text('Do You want to remove ${playerInfo.name}'),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text("Close")),
+              FlatButton(
+                  onPressed: () {
+                    _removePlayerFromList(playerInfo, 'remove_dialog');
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Remove", style: TextStyle(color: Colors.red)))
+            ],
+          );
+        });
+  }
+
+// function to execute to initiate removal
+
+  _removePlayerFromList(playerInfo, where) {
+    print(playerInfo.lobbyLeader);
+    if (playerInfo.lobbyLeader) {
+      final players  = Provider.of<PlayerList>(context,listen: false).players;
+      players.forEach((element) {
+        if (!element.lobbyLeader) {
+          _removePlayerFromList(element, 'leader_leaving');
+        }
+      });
+      game.send('remove_room', json.encode({"roomId":widget.roomId}));
+      return Navigator.of(context).pop(true);
+    } else {
+      print("initiate removal sequence ${playerInfo.name}");
+      Map playerDetails = {
+        "roomId": widget.roomId,
+        "name": playerInfo.name,
+        "playerId": playerInfo.id
+      };
+      game.send("player_remove_clicked", json.encode(playerDetails));
+    }
+      if (where == 'leave_dialog') {
+      return Navigator.of(context).pop(false);
     }
   }
 
@@ -180,13 +279,14 @@ class _WaitingPageState extends State<WaitingPage> {
     ///
 
     final currPlayer = Provider.of<PlayerList>(context).currPlayer;
+    widget.currPlayer = currPlayer;
     return Consumer<PlayerList>(
         builder: (BuildContext context, PlayerList value, Widget child) {
       List<Widget> children = value.players?.map((playerInfo) {
         // print(widget.currPlayer.name + " " + playerInfo["name"]);
         String name =
             (playerInfo.id == currPlayer.id) ? "You" : playerInfo.name;
-        
+
         if (playerInfo.lobbyLeader) {
           // print(playerInfo.id);
           bool isLeader = (playerInfo.id == currPlayer.id);
@@ -214,13 +314,12 @@ class _WaitingPageState extends State<WaitingPage> {
                 ),
                 title: new Text(
                   name,
-                  style: TextStyle(fontFamily: 'Montserrat', color: Colors.white),
+                  style:
+                      TextStyle(fontFamily: 'Montserrat', color: Colors.white),
                 ),
                 subtitle: new Text("[Lobby Leader]"),
-                trailing: (isLeader)
-                    ? _getPlayButton(playerInfo)
-                    : null,
-              ),  
+                trailing: (isLeader) ? _getPlayButton(playerInfo) : null,
+              ),
             ),
           );
         } else {
@@ -249,9 +348,11 @@ class _WaitingPageState extends State<WaitingPage> {
                 ),
                 title: new Text(
                   name,
-                  style: TextStyle(fontFamily: 'Montserrat', color: Colors.white),
+                  style:
+                      TextStyle(fontFamily: 'Montserrat', color: Colors.white),
                 ),
                 subtitle: new Text(" "),
+                trailing: _getRemoveButton(currPlayer, playerInfo, context),
               ),
             ),
           );
@@ -311,24 +412,46 @@ class _WaitingPageState extends State<WaitingPage> {
   @override
   Widget build(BuildContext context) {
     // Roles: player.name or null
-
-    return new SafeArea(
-      bottom: false,
-      top: false,
-      child: Scaffold(
-        appBar: new AppBar(
-          title: new Text('Literature'),
-        ),
-        body: SingleChildScrollView(
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              // _buildJoin(),
-              roomInformation(),
-              _playersList(),
-            ],
+    return new WillPopScope(
+        child: new SafeArea(
+          bottom: false,
+          top: false,
+          child: Scaffold(
+            appBar: new AppBar(
+              title: new Text('Literature'),
+            ),
+            body: SingleChildScrollView(
+              child: new Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  // _buildJoin(),
+                  roomInformation(),
+                  _playersList(),
+                ],
+              ),
+            ),
           ),
         ),
+        onWillPop: _onLeavingRoom);
+  }
+
+  Future<bool> _onLeavingRoom() {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Do you want to leave this room'),
+        actions: <Widget>[
+          FlatButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('Close')),
+          FlatButton(
+              onPressed: () =>
+                  _removePlayerFromList(widget.currPlayer, 'leave_dialog'),
+              child: Text(
+                'Leave',
+                style: TextStyle(color: Colors.red),
+              )),
+        ],
       ),
     );
   }

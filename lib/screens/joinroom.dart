@@ -43,7 +43,6 @@ class _JoinRoomState extends State<JoinRoom> {
 
   @override
   void dispose() {
-    print("Disposing");
     game.removeListener(_joinRoomListener);
     super.dispose();
   }
@@ -59,7 +58,11 @@ class _JoinRoomState extends State<JoinRoom> {
       case "set_id":
         // Set the player ID.
         playerId = message["data"]["playerId"];
-        Map joinDetails = {"roomId": _roomId.text, "name": _name.text, "playerId": playerId};
+        Map joinDetails = {
+          "roomId": _roomId.text,
+          "name": _name.text,
+          "playerId": playerId
+        };
         game.send("join_game", json.encode(joinDetails));
         break;
 
@@ -79,37 +82,40 @@ class _JoinRoomState extends State<JoinRoom> {
           // Assign the ID of the player
           currPlayer.id = playerId;
         }
-        final players = Provider.of<PlayerList>(context,listen: false);
+        final players = Provider.of<PlayerList>(context, listen: false);
         players.addCurrPlayer(currPlayer);
         players.removeAll();
-        List<Player> lp=[];
+        List<Player> lp = [];
         for (var player in (message["data"])["players"]) {
           Player p;
-          if((message["data"])["lobbyLeader"]["id"] == player["id"])
-            p = new Player(name: player["name"],id: player["id"],lobbyLeader: true);
+          if ((message["data"])["lobbyLeader"]["id"] == player["id"])
+            p = new Player(
+                name: player["name"], id: player["id"], lobbyLeader: true);
           else
-            p = new Player(name: player["name"],id: player["id"]);
+            p = new Player(name: player["name"], id: player["id"]);
           lp.add(p);
         }
         players.addPlayers(lp);
         // force rebuild
-        Navigator.push(
-          context,
-          new MaterialPageRoute(
-            builder: (BuildContext context) => WaitingPage(
-              roomId: message["data"]["roomId"],
-            ),
-          ),
-        );
+        // game.removeListener(_joinRoomListener);
+        Navigator.pushReplacement(
+            context,
+            new MaterialPageRoute(
+              builder: (BuildContext context) => WaitingPage(
+                roomId: message["data"]["roomId"],
+              ),
+            ));
         break;
       case "roomisfull":
         showCustomDialogWithImage(context, "full");
+        game.disconnect();
         setState(() {
           isLoading = false;
         });
         break;
       case "invalid room":
         showCustomDialogWithImage(context, "invalid");
+        game.disconnect();
         setState(() {
           isLoading = false;
         });
@@ -172,7 +178,6 @@ class _JoinRoomState extends State<JoinRoom> {
 
   @override
   Widget build(BuildContext context) {
-
     var appBar = GlobalAppBar(audioController);
     return new SafeArea(
       bottom: false,
