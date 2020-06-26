@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class Arena extends StatefulWidget {
-  Arena(this.turnsMapper, this.height);
+  Arena(this.turnsMapper, this.height, this.messages);
   final turnsMapper;
   double height;
+  final List messages;
   _ArenaState createState() => _ArenaState();
 }
 
 class _ArenaState extends State<Arena> {
   // Score is of the format, red vs blue.
   String score = "0-0";
-  String message = "Welcome to Literature";
   String whoseTurn = "";
   List setsComplete;
   @override
@@ -31,6 +31,13 @@ class _ArenaState extends State<Arena> {
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+    var width= MediaQuery.of(context).size.width;
+    List<Widget> arenaMessages = widget.messages.map((m) {
+      return Container(
+        child: Text(m, style: TextStyle(color: Colors.white, fontFamily: 'VT323', fontSize: height*0.0223)),
+      );
+    }).toList();
     whoseTurn = _getCurrentTurn(widget.turnsMapper);
     List<Widget> completeSets = setsComplete.map((e) {
       return Container(
@@ -38,16 +45,18 @@ class _ArenaState extends State<Arena> {
       );
     }).toList();
     return Container(
-      padding: EdgeInsets.all(45),
+      padding: EdgeInsets.fromLTRB(width*0.1087, height*0.0522, width*0.1087, height*0.0522),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-            child: Text(score, style: TextStyle(color: Colors.white, fontSize: 30)),
+            margin: EdgeInsets.fromLTRB(0, 0, 0, height*0.01116),
+            child: Text(score, style: TextStyle(color: Colors.white, fontSize: height*0.0335, fontFamily: 'Montserrat')),
           ),
           Expanded(
-            child: Text(message, style: TextStyle(color: Colors.white)),
+            child: Column(
+              children: arenaMessages,
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -25,6 +25,7 @@ class PlayerView extends StatefulWidget {
     this.teamMates,
     this.roomId,
     this.cards,
+    this.arenaMessages,
     this.callback,
   });
 
@@ -43,6 +44,8 @@ class PlayerView extends StatefulWidget {
   Set<String> teamMates;
 
   final String roomId;
+
+  List arenaMessages;
 
   List<PlayingCard> cards;
 
@@ -116,7 +119,7 @@ class _PlayerViewState extends State<PlayerView> {
             }
           });
           // Send the respective message to the server.
-          Map foldingConfirmation = { 
+          Map foldingConfirmation = {
             "name": widget.currPlayer.name,
             "confirmation": hasAllCards,
             "forWhichCards": toCheckSpecificCards,
@@ -247,7 +250,7 @@ class _PlayerViewState extends State<PlayerView> {
                     fit: BoxFit.contain,
                   ),
                 ),
-                child: Arena(widget.turnsMapper, arenaContainerHeight)
+                child: Arena(widget.turnsMapper, arenaContainerHeight, widget.arenaMessages)
               ),
               // Your team.
               _getFriendlyTeam(

@@ -52,11 +52,13 @@ class _GameScreenState extends State<GameScreen> {
   Map<String, String> foldingState = new Map<String, String>();
   Set<String> selfOpponents = new Set();
   Set<String> teamMates = new Set();
+  List arenaMessages = new List();
 
   @override
   void initState() {
     super.initState();
     game.addListener(_gameScreenListener);
+    _addMessage(arenaMessages, "Welcome to Literature");
   }
 
   @override
@@ -142,6 +144,7 @@ class _GameScreenState extends State<GameScreen> {
           print("YOU ARE THE RECIPIENT");
           var cardSuit = message["data"]["cardSuit"],
             cardType = message["data"]["cardType"];
+          _addMessage(arenaMessages, message["data"]["inquirer"] + " asked you for " + cardType + " of " + cardSuit);
           bool haveCard = _cards.any((card) {
             return (EnumToString.parse(card.cardSuit) == cardSuit
               &&
@@ -165,6 +168,10 @@ class _GameScreenState extends State<GameScreen> {
             "result": haveCard == false ? "false" : "true"
           };
           game.send("card_transfer", json.encode(cardTransferDetails));
+        } else {
+          _addMessage(arenaMessages, message["data"]["inquirer"]
+          + " asked " + message["data"]["recipient"] +
+          " for " + message["data"]["cardType"] + " of " + message["data"]["cardSuit"]);
         }
         break;
       case "card_transfer_result":
@@ -175,6 +182,7 @@ class _GameScreenState extends State<GameScreen> {
         var cardType = message["data"]["cardType"];
         if (recipient == widget.player.name || transferFrom == widget.player.name) {
           if (result == "true" && transferFrom == widget.player.name) {
+            _addMessage(arenaMessages, "Correct guess");
             // remove the card from the current person.
             for (var i=0; i < _cards.length; i++) {
               if (EnumToString.parse(_cards[i].cardSuit) == cardSuit && EnumToString.parse(_cards[i].cardType) == cardType) {
@@ -190,6 +198,7 @@ class _GameScreenState extends State<GameScreen> {
               _cards = _cards;           
             });
           } else if (result == "true" && recipient == widget.player.name) {
+            _addMessage(arenaMessages, "Correct guess");
             // add the resulting card to this person.
             _cards.add(
               new PlayingCard(
@@ -205,6 +214,7 @@ class _GameScreenState extends State<GameScreen> {
           } else {
             // result is false, just update that wrong guess,
             // end turn here. (important).
+            _addMessage(arenaMessages, "Wrong guess, changing turn");
             print("No such card found");
             Map turnDetails = {"name": widget.player.name, "roomId": widget.roomId};
             game.send("finished_turn", json.encode(turnDetails));
@@ -220,6 +230,18 @@ class _GameScreenState extends State<GameScreen> {
         print("Default case");
         break;
     }
+  }
+
+  _addMessage(List l, String m) {
+    l.add(m);
+    if (l.length > 4) {
+      var index = 0;
+      while (l.length != 4) {
+        l.removeAt(index);
+        index+=1;
+      }
+    }
+    return l;
   }
 
 
@@ -277,6 +299,7 @@ class _GameScreenState extends State<GameScreen> {
                       teamMates: teamMates,
                       roomId: widget.roomId,
                       cards: _cards,
+                      arenaMessages: arenaMessages,
                       callback: this.callback
                     ),
                   ),
