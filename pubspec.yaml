@@ -94,6 +94,9 @@ flutter:
         - asset: assets/fonts/Montserrat-Regular.ttf
         - asset: assets/fonts/Montserrat-Bold.ttf
           weight: 700
+    - family: VT323
+      fonts:
+        - asset: assets/fonts/VT323-Regular.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
+import 'package:literature/components/arena.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/components/custom_dialog.dart';
 import 'package:literature/components/folding_dialog.dart';
@@ -24,6 +25,7 @@ class PlayerView extends StatefulWidget {
     this.teamMates,
     this.roomId,
     this.cards,
+    this.arenaMessages,
     this.callback,
   });
 
@@ -42,6 +44,8 @@ class PlayerView extends StatefulWidget {
   Set<String> teamMates;
 
   final String roomId;
+
+  List arenaMessages;
 
   List<PlayingCard> cards;
 
@@ -115,7 +119,7 @@ class _PlayerViewState extends State<PlayerView> {
             }
           });
           // Send the respective message to the server.
-          Map foldingConfirmation = { 
+          Map foldingConfirmation = {
             "name": widget.currPlayer.name,
             "confirmation": hasAllCards,
             "forWhichCards": toCheckSpecificCards,
@@ -246,7 +250,7 @@ class _PlayerViewState extends State<PlayerView> {
                     fit: BoxFit.contain,
                   ),
                 ),
-                child: Center(child: Text("0-0", style: TextStyle(color: Colors.white, fontSize: widget.containerWidth*0.097))),
+                child: Arena(widget.turnsMapper, arenaContainerHeight, widget.arenaMessages)
               ),
               // Your team.
               _getFriendlyTeam(
