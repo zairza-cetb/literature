@@ -120,7 +120,6 @@ class _GameScreenState extends State<GameScreen> {
         setState(() { _ready = true; });
         break;
       case "make_move":
-        print("Listening");
         var name = message["data"]["playerName"];
         // set turnsMapper value as true.
         // and force rebuild.
@@ -141,7 +140,6 @@ class _GameScreenState extends State<GameScreen> {
         // return early.
         if (name == widget.player.name) {
           // You're the recipient.
-          print("YOU ARE THE RECIPIENT");
           var cardSuit = message["data"]["cardSuit"],
             cardType = message["data"]["cardType"];
           _addMessage(arenaMessages, message["data"]["inquirer"] + " asked you for " + cardType + " of " + cardSuit);
@@ -190,9 +188,6 @@ class _GameScreenState extends State<GameScreen> {
                 break;
               }
             }
-            _cards.forEach((card) {
-              print(card.cardType);
-            });
             // Force rebuild
             setState(() {
               _cards = _cards;           
@@ -216,8 +211,11 @@ class _GameScreenState extends State<GameScreen> {
             // end turn here. (important).
             _addMessage(arenaMessages, "Wrong guess, changing turn");
             print("No such card found");
-            Map turnDetails = {"name": widget.player.name, "roomId": widget.roomId};
-            game.send("finished_turn", json.encode(turnDetails));
+            // End turn of the player who asked, not everyone.
+            if (recipient == widget.player.name) {
+              Map turnDetails = {"name": widget.player.name, "roomId": widget.roomId};
+              game.send("finished_turn", json.encode(turnDetails));
+            }
             setState(() {});
           }
         } else {
