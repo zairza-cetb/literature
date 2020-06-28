@@ -65,7 +65,6 @@ class _WaitingPageState extends State<WaitingPage> {
 
   @override
   void dispose() {
-    game.disconnect();
     game.removeListener(_waitingPageListener);
     super.dispose();
   }
