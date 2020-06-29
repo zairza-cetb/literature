@@ -74,6 +74,10 @@ class _PlayerViewState extends State<PlayerView> {
   // We need to keep track because we need to validate against
   // it.
   Map foldGuesses = new Map();
+  // Current team score.
+  int currTeamScore = 0;
+  // Opponent team score.
+  int opponentTeamScore = 0;
 
   void initState() {
     super.initState();
@@ -154,11 +158,13 @@ class _PlayerViewState extends State<PlayerView> {
             if (count == correctValues) {
               // Add one point to the team.
               print("Must add one point to the team");
+              currTeamScore += 1;
               // revoke foldState for newer values.
               foldState.clear();
               foldGuesses.clear();
             } else {
               // Change the turn.
+              opponentTeamScore += 1;
               widget.callback();
               foldState.clear();
               foldGuesses.clear();
@@ -250,7 +256,7 @@ class _PlayerViewState extends State<PlayerView> {
                     fit: BoxFit.contain,
                   ),
                 ),
-                child: Arena(widget.turnsMapper, arenaContainerHeight, widget.arenaMessages)
+                child: Arena(widget.turnsMapper, arenaContainerHeight, widget.arenaMessages, currTeamScore, opponentTeamScore)
               ),
               // Your team.
               _getFriendlyTeam(
