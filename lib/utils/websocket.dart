@@ -48,6 +48,9 @@ class WebSocket {
       print('connected');
       _channel.emit('msg', 'test');
     });
+    _channel.on('connect_error', (err){
+      print(err);
+    });
     _channel.on('disconnect', (_) {
       print('disconnected');
     });
@@ -204,6 +207,16 @@ class WebSocket {
     // Update foldState and final validity of the
     // folding result.
     socket.on("folding_confirmation_recieved", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+    // When a user force closes the application
+    socket.on("force_close_app", (data) {
       Map messageRecieved = json.decode(data);
       Map message = new Map();
       message["data"] = messageRecieved["data"];

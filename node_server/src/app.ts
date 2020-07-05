@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import { MONGODB_URI, PORT } from "./util/secrets";
 import { divideAndShuffleCards, divideIntoTeams } from "./util/helper";
 import { Move } from "./types";
+import { parse } from "path";
 
 const shortid = require('shortid');
 
@@ -69,7 +70,6 @@ io.on("connection", (socket) => {
       console.log(e);
     }
     // Create and join the socket room
-    console.log(newRoom.roomId);
     socket.join(newRoom.roomId);
     const players = newRoom.players;
     io.to(newRoom.roomId)
@@ -181,7 +181,6 @@ io.on("connection", (socket) => {
     const roomId = parsedData.roomId;
     const name = parsedData.name;
     let playerIndex;
-    console.log(name + " has finished turn...");
     handleTurns.forEach((n, index) => {
       if (n === name) {
         playerIndex = index;
@@ -234,7 +233,6 @@ io.on("connection", (socket) => {
   socket.on("folding_result_initial", async (payload) => {
     const parsedData = JSON.parse(payload);
     const { roomId, foldedResults } = parsedData;
-    // console.log(parsedData);
     io.to(roomId).emit(
       "folding_result_verification",
       JSON.stringify({
@@ -294,6 +292,17 @@ io.on("connection", (socket) => {
         await Room.update({ roomId }, { $set: { status: GameStatus.COMPLETED } });
       }
     }
+  });
+
+  socket.on('force_close', async (data) => {
+    const parsedData = JSON.parse(data);
+    const { name, roomId } = parsedData;
+    await Room.deleteOne({roomId});
+    io.to(roomId).emit(
+      "force_close_app",
+      JSON.stringify({ data: { whoClosed: name }, action: "force_close_app" })
+    )
+    socket.leave(roomId);
   });
 });
 
