@@ -7,7 +7,7 @@ import 'package:literature/utils/audio.dart';
 
 class CreateGame extends StatefulWidget {
   // Initialise AudioPlayer instance
-  final AudioController audioController;
+  AudioController audioController;
   // Passed from "homepage.dart"
   CreateGame(this.audioController);
 

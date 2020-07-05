@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/models/playing_cards.dart';
+import 'package:literature/screens/homepage.dart';
 import 'package:literature/utils/game_communication.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:literature/components/card_deck.dart';
@@ -41,7 +42,7 @@ class GameScreen extends StatefulWidget {
   _GameScreenState createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   List<PlayingCard> _cards = new List<PlayingCard>();
   List<dynamic> finalPlayersList = new List();
   bool _ready = false;
@@ -57,14 +58,27 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     game.addListener(_gameScreenListener);
     _addMessage(arenaMessages, "Welcome to Literature");
   }
 
   @override
   dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
     game.removeListener(_gameScreenListener);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      // disconnect, let everyone leave the room and clean
+      // the room from the db.
+      Map closeMessage = { "name": widget.player.name, "roomId": widget.roomId };
+      game.send("force_close", json.encode(closeMessage));
+      game.disconnect();
+    }
   }
 
   // Starts the timer and resets it
@@ -223,6 +237,30 @@ class _GameScreenState extends State<GameScreen> {
           // transaction. Just update the arena that x asked y about z card.
           // and the result is r.
         }
+        break;
+      case "force_close_app":
+        var name = message["data"]["whoClosed"];
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Player disconnected'),
+              content: Text('$name has disconnected. The game will be closed now.'),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: ()  {
+                    game.disconnect();
+                    Navigator.pushReplacement(context,MaterialPageRoute(
+                      builder: (context) =>
+                      LiteratureHomePage()
+                    ));
+                  },
+                  child: Text("Okay")
+                ),
+              ],
+            );
+          }
+        );
         break;
       default:
         print("Default case");
