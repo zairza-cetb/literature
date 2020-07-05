@@ -12,6 +12,10 @@ class Player extends ChangeNotifier {
   bool teamLeader;
   // Team identifier
   String teamIdentifier;
+  //name from firebase
+  String loginName;
+  //photo url
+  String photoUrl;
 
   // Constructor
   Player({
@@ -19,7 +23,9 @@ class Player extends ChangeNotifier {
     @required this.name,
     this.id,
     this.teamIdentifier,
-    this.teamLeader = false
+    this.teamLeader = false,
+    this.loginName,
+    this.photoUrl
   });
 
 }

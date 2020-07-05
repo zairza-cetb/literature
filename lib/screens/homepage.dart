@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:literature/screens/creategame.dart';
 import 'package:literature/utils/audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,7 +19,12 @@ class LiteratureHomePage extends StatefulWidget {
 class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingObserver {
 
   AppLifecycleState _lastLifecycleState;
-  
+  //firebase instance
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  //google signin
+  final GoogleSignIn _googleSignIn = new GoogleSignIn();
+  //facebook login
+  final FacebookLogin facebookSignIn = new FacebookLogin();
 
   @override
   void initState() {
@@ -56,26 +64,46 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
     }
   }
 
-  
+  //Google Login
+  Future<FirebaseUser> _handleGoogleSignIn() async {
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    final FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
+    print("signed in " + user.displayName);
+    print(user.email+' '+user.photoUrl);
+    return user;
+  }
+
+  //Facebook Login
+  Future<FirebaseUser> _handleFacebookLogin() async {
+    final FacebookLoginResult facebookLoginResult = await facebookSignIn.logIn(['email', 'public_profile']);
+    FacebookAccessToken facebookAccessToken = facebookLoginResult.accessToken;
+
+    final AuthCredential authCredential = FacebookAuthProvider.getCredential(
+      accessToken: facebookAccessToken.token
+      );
+    FirebaseUser fbUser = (await _auth.signInWithCredential(authCredential)).user;
+    print("signed in "+ fbUser.displayName);
+    print(fbUser.email+' '+fbUser.photoUrl);
+    return fbUser;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: GestureDetector(
-        onTap: () {
-          setState(() {});
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreateGame(audioController)),
-          );
-        },
-
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            InkWell(
+                child: Container(
                 width: 200,
                 height: 200,
                 decoration: BoxDecoration(
@@ -98,15 +126,24 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
                   ]
                 ),
               ),
-              SizedBox(
-                height: 100.0,
-                width: 100.0,
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
+              onTap: () {
+                setState(() {});
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CreateGame(audioController)),
+                );
+              },
+            ),
+            SizedBox(
+              height: 100.0,
+              width: 100.0,
+            ),
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  InkWell(
+                      child: Container(
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
@@ -132,10 +169,17 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
                         )
                       )
                     ),
-                    SizedBox(
-                      width: 30.0,
-                    ),
-                    Container(
+                    onTap: () {
+                      _handleFacebookLogin()
+                        .then((FirebaseUser fbUser) => print(fbUser))
+                        .catchError((e) => print(e));
+                    },
+                  ),
+                  SizedBox(
+                    width: 30.0,
+                  ),
+                  InkWell(
+                      child: Container(
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
@@ -161,11 +205,16 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
                           )
                       )
                     ),
-                  ],
-                ),
+                    onTap: () {
+                      _handleGoogleSignIn()
+                        .then((FirebaseUser user) => print(user))
+                        .catchError((e) => print(e));
+                    },
+                  ),
+                ],
               ),
-            ]
-          ),
+            ),
+          ]
         ),
       ),
     );
