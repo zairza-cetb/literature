@@ -2,21 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:literature/components/appbar.dart';
 import 'package:literature/screens/joinroom.dart';
 import 'package:literature/screens/createroom.dart';
-import 'package:literature/utils/audio.dart';
 
 
 class CreateGame extends StatefulWidget {
-  // Initialise AudioPlayer instance
-  AudioController audioController;
-  // Passed from "homepage.dart"
-  CreateGame(this.audioController);
-
   _CreateGame createState() => _CreateGame();
 }
 
 class _CreateGame extends State<CreateGame> {
-  String playerId;
-
   @override
   void initState() {
     super.initState();
@@ -28,7 +20,7 @@ class _CreateGame extends State<CreateGame> {
 
   @override
   Widget build(BuildContext context) {
-    var appBar = GlobalAppBar(audioController);
+    var appBar = GlobalAppBar();
     return Scaffold(
       backgroundColor: Color(0xFFb3e5fc),
       appBar: appBar,
@@ -84,7 +76,7 @@ class _CreateGame extends State<CreateGame> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                  CreateRoom(audioController)
+                                  CreateRoom()
                                 ),
                               );
                             },
@@ -115,7 +107,7 @@ class _CreateGame extends State<CreateGame> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                  JoinRoom(audioController)
+                                  JoinRoom()
                                 ),
                               );
                             },
@@ -146,7 +138,7 @@ class _CreateGame extends State<CreateGame> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                  JoinRoom(audioController)
+                                  JoinRoom()
                                 ),
                               );
                             },

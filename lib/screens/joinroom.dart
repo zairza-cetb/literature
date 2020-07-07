@@ -5,7 +5,6 @@ import 'package:literature/components/appbar.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/screens/waitingpage.dart';
-import 'package:literature/utils/audio.dart';
 
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
@@ -13,12 +12,6 @@ import 'package:literature/utils/loader.dart';
 import 'package:provider/provider.dart';
 
 class JoinRoom extends StatefulWidget {
-  // Initialise AudioPlayer instance
-  final AudioController audioController;
-
-  // Passed -> "creategame.dart"
-  JoinRoom(this.audioController);
-
   @override
   _JoinRoomState createState() => _JoinRoomState();
 }
@@ -178,7 +171,7 @@ class _JoinRoomState extends State<JoinRoom> {
 
   @override
   Widget build(BuildContext context) {
-    var appBar = GlobalAppBar(audioController);
+    var appBar = GlobalAppBar();
     return new SafeArea(
       bottom: false,
       top: false,
