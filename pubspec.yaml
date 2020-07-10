@@ -30,6 +30,9 @@ dependencies:
   provider: ^4.0.1
   badges: ^1.1.1
   multiselect_formfield: ^0.1.3
+  firebase_auth: ^0.16.1
+  google_sign_in: ^4.5.1
+  flutter_facebook_login: ^3.0.0
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
