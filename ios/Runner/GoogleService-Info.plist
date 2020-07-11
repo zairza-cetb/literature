@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>66659738838-7mqfunje5v8pd3tgu8b7ko0os95rq9pn.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.66659738838-7mqfunje5v8pd3tgu8b7ko0os95rq9pn</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDPr0JzIMqhT2WiKjRbTQ6SB6zLZcUGcAE</string>
+	<key>GCM_SENDER_ID</key>
+	<string>66659738838</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.literature</string>
+	<key>PROJECT_ID</key>
+	<string>literature-zairza</string>
+	<key>STORAGE_BUCKET</key>
+	<string>literature-zairza.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:66659738838:ios:a0fe39ee1391442a091577</string>
+	<key>DATABASE_URL</key>
+	<string>https://literature-zairza.firebaseio.com</string>
+</dict>
+</plist>

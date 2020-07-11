@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "66659738838",
+    "firebase_url": "https://literature-zairza.firebaseio.com",
+    "project_id": "literature-zairza",
+    "storage_bucket": "literature-zairza.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66659738838:android:117c2ac07e9f0e23091577",
+        "android_client_info": {
+          "package_name": "com.example.literature"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "66659738838-24tu693t7e163s7q03jie6kjnl51mdnr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.literature",
+            "certificate_hash": "4491859beba15b25a081062e869783a5e534612b"
+          }
+        },
+        {
+          "client_id": "66659738838-srpq4te29cj8jerl934vvc47l93ldcp9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCh2-nZYKVJBXwZ6nXbWaMdnaTzV_klvhg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "66659738838-srpq4te29cj8jerl934vvc47l93ldcp9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "66659738838-7mqfunje5v8pd3tgu8b7ko0os95rq9pn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.literature"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

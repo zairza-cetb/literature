@@ -1,4 +1,5 @@
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:literature/models/player.dart';
 
 // Returns true if the person has a card of same set
 // so that he can ask for it to the opponent.
@@ -48,3 +49,84 @@ hasSameCard(suit, type, cardsList) {
   }
   return hasSameCard;
 }
+
+// Holds a list containing currently selected set values.
+  List<dynamic> buildSetWithSelectedValues (suit, selectedSet) {
+    List<dynamic> tempList = new List<dynamic>();
+    if (selectedSet == "L") {
+      for (var i=1; i<=6; i++) {
+        switch(i) {
+          case 1:
+            tempList.add({ "suit": suit, "type": "ace", "value": "ace", "display": "A" });
+            break;
+          case 2:
+            tempList.add({ "suit": suit, "type": "two", "value": "two", "display": "2" });
+            break;
+          case 3:
+            tempList.add({ "suit": suit, "type": "three", "value": "three", "display": "3" });
+            break;
+          case 4:
+            tempList.add({ "suit": suit, "type": "four", "value": "four", "display": "4" });
+            break;
+          case 5:
+            tempList.add({ "suit": suit, "type": "five", "value": "five", "display": "5" });
+            break;
+          case 6:
+            tempList.add({ "suit": suit, "type": "six", "value": "six", "display": "6" });
+            break;
+          default:
+            break;
+        }
+      }
+    } else {
+      for (var i=1; i<=6; i++) {
+        switch(i) {
+          case 1:
+            tempList.add({ "suit": suit, "type": "eight", "value": "eight", "display": "8" });
+            break;
+          case 2:
+            tempList.add({ "suit": suit, "type": "nine", "value": "nine", "display": "9" });
+            break;
+          case 3:
+            tempList.add({ "suit": suit, "type": "ten", "value": "ten", "display": "10" });
+            break;
+          case 4:
+            tempList.add({ "suit": suit, "type": "jack", "value": "jack", "display": "J" });
+            break;
+          case 5:
+            tempList.add({ "suit": suit, "type": "king", "value": "king", "display": "K" });
+            break;
+          case 6:
+            tempList.add({ "suit": suit, "type": "queen", "value": "queen", "display": "Q" });
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    return tempList;
+  }
+  
+  // Whether a player has been asked to validate against
+  // a folding transaction.
+  takesPartInTransaction(Player player, List list) {
+    String result = "false";
+    list.forEach((element) {
+      if (element["name"] == player.name) {
+        result = "true";
+      }
+    });
+    return result;
+  }
+
+  // Get selections of a player
+  // in folded results.
+  getSelections(Player player, List list) {
+    var selections;
+    list.forEach((element) {
+      if (element["name"] == player.name) {
+        selections = element["selections"];
+      }
+    });
+    return selections;
+  }

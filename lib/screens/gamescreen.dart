@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/models/playing_cards.dart';
+import 'package:literature/screens/homepage.dart';
 import 'package:literature/utils/game_communication.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:literature/components/card_deck.dart';
@@ -41,7 +42,7 @@ class GameScreen extends StatefulWidget {
   _GameScreenState createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   List<PlayingCard> _cards = new List<PlayingCard>();
   List<dynamic> finalPlayersList = new List();
   bool _ready = false;
@@ -49,19 +50,35 @@ class _GameScreenState extends State<GameScreen> {
   // List<Player> teamBlue = new List<Player>();
   double radius = 150.0;
   Map<String, String> turnsMapper = new Map<String, String>();
+  Map<String, String> foldingState = new Map<String, String>();
   Set<String> selfOpponents = new Set();
+  Set<String> teamMates = new Set();
+  List arenaMessages = new List();
 
   @override
   void initState() {
     super.initState();
-
+    WidgetsBinding.instance.addObserver(this);
     game.addListener(_gameScreenListener);
+    _addMessage(arenaMessages, "Welcome to Literature");
   }
 
   @override
   dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
     game.removeListener(_gameScreenListener);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      // disconnect, let everyone leave the room and clean
+      // the room from the db.
+      Map closeMessage = { "name": widget.player.name, "roomId": widget.roomId };
+      game.send("force_close", json.encode(closeMessage));
+      game.disconnect();
+    }
   }
 
   // Starts the timer and resets it
@@ -95,26 +112,6 @@ class _GameScreenState extends State<GameScreen> {
             opened: false)
           );
         });
-        // Assign red and blue teams
-        // players.forEach((player) {
-        //   if (player["teamIdentifier"] == "red") {
-        //     // team_red.add(p);
-        //     teamRed.add(
-        //       new Player(
-        //         name: player["name"],
-        //         id: player["id"],
-        //         teamIdentifier: player["teamIdentifier"]
-        //       )
-        //     );
-        //   } 
-        //   else teamBlue.add(
-        //     new Player(
-        //       name: player["name"],
-        //       id: player["id"],
-        //       teamIdentifier: player["teamIdentifier"]
-        //     )
-        //   );
-        // });
         // Override playersList.
         finalPlayersList = players;
         // build a map of players and turns.
@@ -129,13 +126,14 @@ class _GameScreenState extends State<GameScreen> {
         finalPlayersList.forEach((player) {
           if (player["teamIdentifier"] != widget.player.teamIdentifier) {
             selfOpponents.add(player["name"]);
+          } else {
+            teamMates.add(player["name"]);
           }
         });
         // Force rebuild
         setState(() { _ready = true; });
         break;
       case "make_move":
-        print("Listening");
         var name = message["data"]["playerName"];
         // set turnsMapper value as true.
         // and force rebuild.
@@ -156,9 +154,9 @@ class _GameScreenState extends State<GameScreen> {
         // return early.
         if (name == widget.player.name) {
           // You're the recipient.
-          print("YOU ARE THE RECIPIENT");
           var cardSuit = message["data"]["cardSuit"],
             cardType = message["data"]["cardType"];
+          _addMessage(arenaMessages, message["data"]["inquirer"] + " asked you for " + cardType + " of " + cardSuit);
           bool haveCard = _cards.any((card) {
             return (EnumToString.parse(card.cardSuit) == cardSuit
               &&
@@ -182,6 +180,10 @@ class _GameScreenState extends State<GameScreen> {
             "result": haveCard == false ? "false" : "true"
           };
           game.send("card_transfer", json.encode(cardTransferDetails));
+        } else {
+          _addMessage(arenaMessages, message["data"]["inquirer"]
+          + " asked " + message["data"]["recipient"] +
+          " for " + message["data"]["cardType"] + " of " + message["data"]["cardSuit"]);
         }
         break;
       case "card_transfer_result":
@@ -192,6 +194,7 @@ class _GameScreenState extends State<GameScreen> {
         var cardType = message["data"]["cardType"];
         if (recipient == widget.player.name || transferFrom == widget.player.name) {
           if (result == "true" && transferFrom == widget.player.name) {
+            _addMessage(arenaMessages, "Correct guess");
             // remove the card from the current person.
             for (var i=0; i < _cards.length; i++) {
               if (EnumToString.parse(_cards[i].cardSuit) == cardSuit && EnumToString.parse(_cards[i].cardType) == cardType) {
@@ -199,14 +202,12 @@ class _GameScreenState extends State<GameScreen> {
                 break;
               }
             }
-            _cards.forEach((card) {
-              print(card.cardType);
-            });
             // Force rebuild
             setState(() {
               _cards = _cards;           
             });
           } else if (result == "true" && recipient == widget.player.name) {
+            _addMessage(arenaMessages, "Correct guess");
             // add the resulting card to this person.
             _cards.add(
               new PlayingCard(
@@ -222,8 +223,13 @@ class _GameScreenState extends State<GameScreen> {
           } else {
             // result is false, just update that wrong guess,
             // end turn here. (important).
-            Map turnDetails = {"name": widget.player.name, "roomId": widget.roomId};
-            game.send("finished_turn", json.encode(turnDetails));
+            _addMessage(arenaMessages, "Wrong guess, changing turn");
+            print("No such card found");
+            // End turn of the player who asked, not everyone.
+            if (recipient == widget.player.name) {
+              Map turnDetails = {"name": widget.player.name, "roomId": widget.roomId};
+              game.send("finished_turn", json.encode(turnDetails));
+            }
             setState(() {});
           }
         } else {
@@ -232,10 +238,46 @@ class _GameScreenState extends State<GameScreen> {
           // and the result is r.
         }
         break;
+      case "force_close_app":
+        var name = message["data"]["whoClosed"];
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Player disconnected'),
+              content: Text('$name has disconnected. The game will be closed now.'),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: ()  {
+                    game.disconnect();
+                    Navigator.pushReplacement(context,MaterialPageRoute(
+                      builder: (context) =>
+                      LiteratureHomePage()
+                    ));
+                  },
+                  child: Text("Okay")
+                ),
+              ],
+            );
+          }
+        );
+        break;
       default:
         print("Default case");
         break;
     }
+  }
+
+  _addMessage(List l, String m) {
+    l.add(m);
+    if (l.length > 4) {
+      var index = 0;
+      while (l.length != 4) {
+        l.removeAt(index);
+        index+=1;
+      }
+    }
+    return l;
   }
 
 
@@ -262,45 +304,52 @@ class _GameScreenState extends State<GameScreen> {
         appBar: AppBar(
           title: new Text("Literature"),
           leading: new Container(),
-          backgroundColor: Colors.lightBlue[800],
+          backgroundColor: Color(0xff0D0D1F),
         ),
         body:  _ready ? SlidingUpPanel(
           body: new Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget> [
-              new Container(
-                height: MediaQuery.of(context).size.height*0.95,
-                padding: EdgeInsets.all(0),
-                decoration: BoxDecoration(
-                  image: new DecorationImage(
-                    // We can add random game mats
-                    // as per store purchases of the user.
-                    image: new ExactAssetImage("assets/game_mat_royale.jpg"),
-                    fit: BoxFit.cover,
+              Align(
+                alignment: Alignment.center,
+                child: new Container(
+                  height: MediaQuery.of(context).size.height*0.95,
+                  padding: EdgeInsets.all(0),
+                  decoration: BoxDecoration(
+                    image: new DecorationImage(
+                      // We can add random game mats
+                      // as per store purchases of the user.
+                      image: new ExactAssetImage("assets/game_mat_basic.png"),
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0, left: 5.0, right: 5.0),
-                  child: new PlayerView(
-                    containerHeight: MediaQuery.of(context).size.height*0.95,
-                    containerWidth: MediaQuery.of(context).size.width,
-                    currPlayer: widget.player,
-                    finalPlayersList: finalPlayersList,
-                    turnsMapper: turnsMapper,
-                    selfOpponents: selfOpponents,
-                    roomId: widget.roomId,
-                    cards: _cards,
-                    callback: this.callback
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 0.0, left: 5.0, right: 5.0),
+                    child: new PlayerView(
+                      containerHeight: MediaQuery.of(context).size.height*0.95,
+                      containerWidth: MediaQuery.of(context).size.width,
+                      currPlayer: widget.player,
+                      finalPlayersList: finalPlayersList,
+                      turnsMapper: turnsMapper,
+                      selfOpponents: selfOpponents,
+                      teamMates: teamMates,
+                      roomId: widget.roomId,
+                      cards: _cards,
+                      arenaMessages: arenaMessages,
+                      callback: this.callback
+                    ),
                   ),
                 ),
               ),
-              // Allocate bottom with a few spaces.
+              // Allocate bottom with a few spaces
             ]
           ),
           panel: new Container(
             alignment: Alignment.bottomCenter,
             child: CardDeck(cards: _cards, containerHeight: MediaQuery.of(context).size.height-467)
           ),
+          borderRadius: BorderRadius.circular(30),
+          color: Color(0xffd6d2de),
         ) :
         Container(
           width: double.infinity,

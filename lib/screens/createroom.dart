@@ -5,7 +5,6 @@ import 'package:literature/components/appbar.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/screens/waitingpage.dart';
-import 'package:literature/utils/audio.dart';
 
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
@@ -13,12 +12,6 @@ import 'package:literature/utils/loader.dart';
 import 'package:provider/provider.dart';
 
 class CreateRoom extends StatefulWidget {
-  // Initialise AudioPlayer instance
-  final AudioController audioController;
-
-  // Passed -> "creategame.dart"
-  CreateRoom(this.audioController);
-
   @override
   _CreateRoomState createState() => _CreateRoomState();
 }
@@ -84,7 +77,8 @@ class _CreateRoomState extends State<CreateRoom> {
         setState(() {
           isLoading = false;
         });
-        Navigator.push(
+        // game.removeListener(_createRoomListener);
+        Navigator.pushReplacement(
             context,
             new MaterialPageRoute(
               builder: (BuildContext context) => WaitingPage(
@@ -149,7 +143,7 @@ class _CreateRoomState extends State<CreateRoom> {
 
   @override
   Widget build(BuildContext context) {
-    var appBar = GlobalAppBar(audioController);
+    var appBar = GlobalAppBar();
     return new SafeArea(
       bottom: false,
       top: false,
@@ -157,10 +151,10 @@ class _CreateRoomState extends State<CreateRoom> {
         appBar: appBar,
         body: isLoading
             ? Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: Loader(),
-            )
+                width: double.infinity,
+                height: double.infinity,
+                child: Loader(),
+              )
             : SingleChildScrollView(
                 child: new Column(
                   mainAxisAlignment: MainAxisAlignment.start,

@@ -48,6 +48,9 @@ class WebSocket {
       print('connected');
       _channel.emit('msg', 'test');
     });
+    _channel.on('connect_error', (err){
+      print(err);
+    });
     _channel.on('disconnect', (_) {
       print('disconnected');
     });
@@ -59,6 +62,7 @@ class WebSocket {
   reset() {
     if (_isOn == true) {
       _channel.close();
+      _channel.clearListeners();
       _isOn = false;
     }
   }
@@ -161,7 +165,6 @@ class WebSocket {
     });
     // On event whose turn it is.
     socket.on("whose_turn", (data) {
-      print("My turn");
       Map messageRecieved = json.decode(data);
       Map message = new Map();
       message["data"] = messageRecieved["data"];
@@ -183,6 +186,37 @@ class WebSocket {
     // Card transfer result arrival.
     socket.on("card_transfer_result", (data) {
       print("Card transfer result");
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+    // Validate authenticity for fold result.
+    socket.on("folding_result_verification", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+    // Update foldState and final validity of the
+    // folding result.
+    socket.on("folding_confirmation_recieved", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
+    // When a user force closes the application
+    socket.on("force_close_app", (data) {
       Map messageRecieved = json.decode(data);
       Map message = new Map();
       message["data"] = messageRecieved["data"];

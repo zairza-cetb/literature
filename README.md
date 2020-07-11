@@ -1,6 +1,16 @@
-# literature
+## Literature
+Literature is a card game for 4 to 12 players, most commonly played with 6 or 8 players in two teams.
 
-A new Flutter project.
+![Literature-cover](https://user-images.githubusercontent.com/26324376/86165562-177bc380-bb31-11ea-916c-c3b56fb2cffb.jpg)
+
+## Features
+- Connect to up to 6 people in a single game
+- Add friends from social media
+- Play the epic game of literature
+- Get coins and get fancy items from the store.
+- Learn and enjoy!
+
+
 
 ## Getting Started
 
