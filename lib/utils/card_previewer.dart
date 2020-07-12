@@ -15,7 +15,7 @@ class CardPreviewer extends StatefulWidget {
 }
 
 class _CardPreviewerState extends State<CardPreviewer> {
-  static const font = "Courier New";
+  static const font = "B612";
   @override
   void initState() {
     print("State changing...");

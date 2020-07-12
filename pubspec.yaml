@@ -99,6 +99,13 @@ flutter:
     - family: VT323
       fonts:
         - asset: assets/fonts/VT323-Regular.ttf
+    - family: B612
+      fonts:
+        - asset: assets/fonts/B612-Bold.ttf
+        - asset: assets/fonts/B612-BoldItalic.ttf
+        - asset: assets/fonts/B612-Italic.ttf
+        - asset: assets/fonts/B612-Regular.ttf
+    
   # fonts:
   #   - family: Schyler
   #     fonts:

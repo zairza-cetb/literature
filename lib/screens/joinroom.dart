@@ -241,7 +241,7 @@ void showCustomDialogWithImage(BuildContext context, String arg) {
                 },
                 child: Text(
                   'Go To Main Screen',
-                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+                  style: TextStyle(fontFamily:'B612', fontSize: 18.0, color: Colors.white),
                 ),
               )
             ],

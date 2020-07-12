@@ -86,11 +86,11 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
                     Image(image: AssetImage('assets/logo.png'),
                     ),
                     Text('Literature',
-                    style: TextStyle(fontFamily:'Monteserrat',
+                    style: TextStyle(fontFamily:'B612',
                       fontWeight: FontWeight.bold,color:
                       Color(0xFF37474f),fontSize: 20.0),
                     ),
-                    Text('Tap to Go!',style: TextStyle(color:
+                    Text('Tap to Go!',style: TextStyle(fontFamily:'B612',color:
                       Color(0xFF37474f))
                     ),
                   ]

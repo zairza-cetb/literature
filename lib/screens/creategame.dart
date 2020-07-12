@@ -93,7 +93,7 @@ class _CreateGame extends State<CreateGame> {
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
-                                        fontFamily: 'Montserrat'),
+                                        fontFamily: 'B612'),
                                   ),
                                 ),
                               ),
@@ -124,7 +124,7 @@ class _CreateGame extends State<CreateGame> {
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
-                                        fontFamily: 'Montserrat'),
+                                        fontFamily: 'B612'),
                                   ),
                                 ),
                               ),
@@ -166,7 +166,7 @@ class _CreateGame extends State<CreateGame> {
                                       child: Text('Invite Friends with Facebook',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              fontFamily: 'Montserrat')
+                                              fontFamily: 'B612')
                                       ),
                                     )
                                   ],
