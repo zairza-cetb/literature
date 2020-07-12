@@ -293,6 +293,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size.height);
     return new SafeArea(
       bottom: false,
       top: false,
@@ -326,7 +327,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 0.0, left: 5.0, right: 5.0),
                     child: new PlayerView(
-                      containerHeight: MediaQuery.of(context).size.height*0.95,
+                      containerHeight: MediaQuery.of(context).size.height*0.85,
                       containerWidth: MediaQuery.of(context).size.width,
                       currPlayer: widget.player,
                       finalPlayersList: finalPlayersList,
@@ -344,12 +345,17 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               // Allocate bottom with a few spaces
             ]
           ),
-          panel: new Container(
-            alignment: Alignment.bottomCenter,
-            child: CardDeck(cards: _cards, containerHeight: MediaQuery.of(context).size.height-467)
+          minHeight: MediaQuery.of(context).size.height*0.2455,
+          maxHeight: MediaQuery.of(context).size.height*0.2455,
+          panel: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: new Container(
+              width:  MediaQuery.of(context).size.width*0.2536 + MediaQuery.of(context).size.width*0.0773*_cards.length.toDouble(),
+              child: CardDeck(cards: _cards, containerHeight: MediaQuery.of(context).size.height-MediaQuery.of(context).size.height*0.5212)
+            ),
           ),
-          borderRadius: BorderRadius.circular(30),
-          color: Color(0xffd6d2de),
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.transparent,
         ) :
         Container(
           width: double.infinity,

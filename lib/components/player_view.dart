@@ -8,7 +8,6 @@ import 'package:literature/models/player.dart';
 import 'package:literature/components/custom_dialog.dart';
 import 'package:literature/components/folding_dialog.dart';
 import 'package:literature/models/playing_cards.dart';
-import 'package:badges/badges.dart';
 import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/utils/functions.dart';
 import 'package:literature/utils/game_communication.dart';
@@ -225,7 +224,7 @@ class _PlayerViewState extends State<PlayerView> {
 
     return Padding(
       // Important.
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 180),
+      padding: EdgeInsets.fromLTRB(0, 0, 0, MediaQuery.of(context).size.height*0.3125),
       child: Stack(
         children: [
           // Body of the game.
