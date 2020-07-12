@@ -18,10 +18,10 @@ class CardDeck extends StatefulWidget {
 
 class _CardDeckState extends State<CardDeck> {
   static const font = "Courier New";
-
-  // Do we have to show
-  // the miniView?
-  bool _miniView = false;
+  Map selectedCard = {
+    "name": "", 
+    "suit": ""
+  };
 
   @override
   void initState() {
@@ -32,59 +32,13 @@ class _CardDeckState extends State<CardDeck> {
     super.dispose();
   }
 
-  Widget _largeCardList() {
-    return _miniCardsDeck();
-  }
-
   // Widget _rowCardsView() {
   //   return _largeCardsDeck();
   // }
   
   @override
   Widget build(BuildContext context) {
-    return _largeCardList();
-  }
-
-  // Mini representation of all
-  // cards in a single view.
-  Widget _miniCardsDeck() {
-    return Padding(
-      padding: EdgeInsets.all(12.0),
-      child: GridView.count(
-        crossAxisCount:5,
-        children: widget.cards.map((card) {
-          return Center(
-            child: _buildMiniCard(EnumToString.parse(card.cardType), EnumToString.parse(card.cardSuit)),
-          );
-        }).toList()
-      ),
-    );
-  }
-
-  // Large list of playing cards
-  // N/A right now.
-  Widget _largeCardsDeck() {
-    if (widget.cards == null) {
-      return new Text("No cards yet");
-    } else {
-      var children = widget.cards.map((card) {
-        return new Column(
-          children: <Widget>[
-            _buildLargeCard(EnumToString.parse(card.cardType), EnumToString.parse(card.cardSuit))
-          ],
-        );
-      }).toList();
-      
-      return Container(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: children
-          ),
-        ),
-      );
-    }
+    return new Center(child: _buildCardDeck());
   }
 
   // Returns a string representing
@@ -153,17 +107,59 @@ class _CardDeckState extends State<CardDeck> {
     }
   }
 
-   Widget _buildMiniCard(type, suit) {
-    return Padding(
-      padding: EdgeInsets.all(2),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(width: 0.2),
-          color: Colors.white
+  Widget _buildCardDeck() {
+    var padding = ((MediaQuery.of(context).size.width - (MediaQuery.of(context).size.width*0.07246*(widget.cards.length-1)
+      + MediaQuery.of(context).size.width*0.2536))/2 > 0) ?
+      (MediaQuery.of(context).size.width - (MediaQuery.of(context).size.width*0.07246*(widget.cards.length-1)
+      + MediaQuery.of(context).size.width*0.2536))/2 : MediaQuery.of(context).size.width*0.0121;
+    return Container(
+      height: MediaQuery.of(context).size.height*0.2232,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(padding, 0, 0, 0),
+        child: Stack(
+          children: widget.cards.asMap().entries.map((card) {
+            var isSelected = selectedCard["name"] == EnumToString.parse(card.value.cardType)
+                && selectedCard["suit"] == EnumToString.parse(card.value.cardSuit) ? true : false;
+            return Positioned(
+              bottom: isSelected ? MediaQuery.of(context).size.height*0.03116 : MediaQuery.of(context).size.height*0.02232,
+              top: isSelected ? MediaQuery.of(context).size.height*0.01116 : MediaQuery.of(context).size.height*0.02232,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(card.key.toDouble()*MediaQuery.of(context).size.width*0.0723, 0, 0, 0),
+                child: GestureDetector(
+                  onTap: () {
+                    if (isSelected) {
+                      selectedCard["name"] = "";
+                      selectedCard["suit"] = "";
+                    } else {
+                      selectedCard["name"] = EnumToString.parse(card.value.cardType);
+                      selectedCard["suit"] = EnumToString.parse(card.value.cardSuit);
+                    }
+                    // setState
+                    setState(() {});
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      // Here
+                      border: isSelected ? Border.all(width: 2.5, color: Color(0xffCCB100)) : Border.all(width: 1.0),
+                      borderRadius: BorderRadius.circular(5.0),
+                      color: Colors.white
+                    ),
+                    child: _buildCard(EnumToString.parse(card.value.cardType), EnumToString.parse(card.value.cardSuit)),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
         ),
-        height: widget.containerHeight-10,
-        width: 55,
-        child: Padding(
+      ),
+    );
+  }
+
+  Widget _buildCard(type, suit) {
+    return Container(
+      height: 170,
+      width: MediaQuery.of(context).size.width*0.2536,
+      child: Padding(
           padding: EdgeInsets.all(1.6),
           child: Stack(
             children: <Widget>[
@@ -177,7 +173,7 @@ class _CardDeckState extends State<CardDeck> {
                       style: TextStyle(
                           fontFamily: font,
                           fontWeight: FontWeight.w800,
-                          fontSize: 10.0,
+                          fontSize: MediaQuery.of(context).size.width*0.043478,
                           color: (
                             suit == "clubs" || 
                             suit == "spades" ? Colors.black : Colors.red
@@ -186,19 +182,19 @@ class _CardDeckState extends State<CardDeck> {
                       ),
                     ),
                     Container(
-                      height: 6,
+                      height: MediaQuery.of(context).size.height*0.0156,
                       child: _cardSuitToImage(suit),
                     ),
                   ],
                 ),
               ),
               Positioned(
-                left: 20,
-                top: 10,
+                top: MediaQuery.of(context).size.height*0.04464,
+                left: MediaQuery.of(context).size.width*0.036231,
                 child: Container(
-                  height: 12,
+                  height: MediaQuery.of(context).size.height*0.08929,
                   child: _cardSuitToImage(suit),
-                ),
+                )
               ),
               Positioned(
                 bottom: 1,
@@ -211,7 +207,7 @@ class _CardDeckState extends State<CardDeck> {
                       style: TextStyle(
                           fontFamily: font,
                           fontWeight: FontWeight.w800,
-                          fontSize: 10.0,
+                          fontSize: MediaQuery.of(context).size.width*0.043478,
                           color: (
                             suit == "clubs" || 
                             suit == "spades" ? Colors.black : Colors.red
@@ -220,210 +216,15 @@ class _CardDeckState extends State<CardDeck> {
                       ),
                     ),
                     Container(
-                      height: 6,
+                      height: MediaQuery.of(context).size.height*0.0156,
                       child: _cardSuitToImage(suit),
                     ),
                   ],
                 ),
               ),
-              Positioned(
-                bottom: 10,
-                right: 20,
-                child: Container(
-                  height: 12,
-                  child: _cardSuitToImage(suit),
-                ),
-              ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-// height: widget.containerHeight-43.4,
-//         width: 90,
-  // A mini card in an
-  // all cards view.
-  Widget _buildMiniCards(type, suit) {
-    return new Material(
-      color: Colors.white,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          color: Colors.white,
-          border: Border.all(color: Colors.black),
-        ),
-        // Height of each mini card.
-        height: widget.containerHeight-43.4,
-        width: 90,
-        child: Stack(
-          children: <Widget>[
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Center(child: Text(
-                    _cardTypeToString(type),
-                    style: TextStyle(
-                        fontFamily: font,
-                        fontSize: 20.0,
-                        color: (
-                          suit == "clubs" || 
-                          suit == "spades" ? Colors.black : Colors.red
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Card emblem on top
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Container(
-                // color: Colors.blue,
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Container(
-                          height: 16.0,
-                            child: _cardSuitToImage(suit),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // A particular card in row of 
-  // row card view.
-  Widget _buildLargeCard(type, suit) {
-    return new Material(
-      color: Colors.white,
-      // The card number
-      // in the center.
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          color: Colors.white,
-          border: Border.all(color: Colors.black),
-        ),
-        // See: height of each card.
-        height: 160.0,
-        width: 100,
-        child: Stack(
-          children: <Widget>[
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Center(
-                    child: Text(
-                      // put the card type here
-                      _cardTypeToString(type),
-                      style: TextStyle(
-                        fontFamily: font,
-                        fontSize: 60.0,
-                        color: (
-                          suit == "clubs" || 
-                          suit == "spades" ? Colors.black : Colors.red
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Card emblem on the top.
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Container(
-                // color: Colors.blue,
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Container(
-                            child: Text(
-                              _cardTypeToString(type),
-                              style: TextStyle(
-                                fontFamily: font,
-                                fontSize: 20.0,
-                                color: (
-                                  suit == "clubs" || 
-                                  suit == "spades" ? Colors.black : Colors.red
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                          height: 16.0,
-                            child: _cardSuitToImage(suit),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            // Card emblem on the bottom.
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 115, 4.0, 0),
-              child: Container(
-                // color: Colors.blue,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Container(
-                          height: 16.0,
-                            child: _cardSuitToImage(suit),
-                          ),
-                          Container(
-                            child: Text(
-                              _cardTypeToString(type),
-                              style: TextStyle(
-                                fontFamily: font,
-                                fontSize: 20.0,
-                                color: (
-                                  suit == "clubs" || 
-                                  suit == "spades" ? Colors.black : Colors.red
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
