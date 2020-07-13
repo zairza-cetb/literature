@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:literature/models/player.dart';
+import 'package:literature/provider/player_connectivity.dart';
 import 'package:literature/provider/playerlistprovider.dart';
+import 'package:literature/utils/enums.dart';
 // Game communication helper import
 import 'package:literature/utils/game_communication.dart';
 // Start Game page
@@ -236,13 +238,13 @@ class _WaitingPageState extends State<WaitingPage> {
   _removePlayerFromList(playerInfo, where) {
     print(playerInfo.lobbyLeader);
     if (playerInfo.lobbyLeader) {
-      final players  = Provider.of<PlayerList>(context,listen: false).players;
+      final players = Provider.of<PlayerList>(context, listen: false).players;
       players.forEach((element) {
         if (!element.lobbyLeader) {
           _removePlayerFromList(element, 'leader_leaving');
         }
       });
-      game.send('remove_room', json.encode({"roomId":widget.roomId}));
+      game.send('remove_room', json.encode({"roomId": widget.roomId}));
       return Navigator.of(context).pop(true);
     } else {
       print("initiate removal sequence ${playerInfo.name}");
@@ -253,7 +255,7 @@ class _WaitingPageState extends State<WaitingPage> {
       };
       game.send("player_remove_clicked", json.encode(playerDetails));
     }
-      if (where == 'leave_dialog') {
+    if (where == 'leave_dialog') {
       return Navigator.of(context).pop(false);
     }
   }
@@ -420,13 +422,34 @@ class _WaitingPageState extends State<WaitingPage> {
               title: new Text('Literature'),
             ),
             body: SingleChildScrollView(
-              child: new Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  // _buildJoin(),
-                  roomInformation(),
-                  _playersList(),
-                ],
+              child: Consumer<PlayerConnectivity>(
+                builder: (context, status, child) {
+                  switch (status.checkStatus()) {
+                    case PlayerConnectivityStatus.connected:
+                      return new Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          // _buildJoin(),
+                          roomInformation(),
+                          _playersList(),
+                        ],
+                      );
+                      break;
+                    case PlayerConnectivityStatus.reconnecting:
+                      print('Show reconnecting Loader');
+                      return Text('Reconnecting');
+                      break;
+
+                    case PlayerConnectivityStatus.reconnected:
+                      print("Change status to connected");
+                      status.changeStatus(PlayerConnectivityStatus.connected);
+                      break;
+
+                    default:
+                      return Text('Still some error');
+                  }
+                  return Text('Still some error');
+                },
               ),
             ),
           ),

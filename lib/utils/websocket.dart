@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:literature/provider/player_connectivity.dart';
+import 'package:literature/utils/enums.dart';
 import 'constants.dart' as Constants;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -47,6 +49,7 @@ class WebSocket {
     _isOn = true;
     _channel.on('connect', (_) {
       print('connected');
+      playerConnectivity.changeStatus(PlayerConnectivityStatus.connected);
       _channel.emit('msg', 'test');
     });
     _channel.on('connect_error', (err){
@@ -233,20 +236,22 @@ class WebSocket {
     });
     socket.on('reconnect', (data) {
       print('reconnected');
+      playerConnectivity.changeStatus(PlayerConnectivityStatus.reconnected);
     });
     socket.on('ping', (data) {
       print('a ping sent');
     });
 
     socket.on('reconnecting', (data) {
-      print('trying to reconnecting ($data)');
+      if (data==1) {
+        playerConnectivity.changeStatus(PlayerConnectivityStatus.reconnecting);
+      }
+      print('reconnection tried ($data) times');
     });
 
     socket.on('reconnect_attempt', (attemptNumber) {
-      print('currently on $attemptNumber');
       if (attemptNumber == 5) {
-        print('Initiate kickout sequence');
-        reset();
+        playerConnectivity.changeStatus(PlayerConnectivityStatus.disconnected);
       }
     });
 

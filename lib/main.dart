@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:literature/models/playerfirebase.dart';
+import 'package:literature/provider/player_connectivity.dart';
 import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/screens/splash.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,11 @@ class MyApp extends StatelessWidget {
           create: (context) => PlayerList()),
         ChangeNotifierProvider<PlayerFirebase>(
           create: (context) => PlayerFirebase()),
+
+        ChangeNotifierProvider<PlayerConnectivity>(
+          create: (context) => PlayerConnectivity(),
+          lazy: false,
+        ),
       ],
       child: MaterialApp(
         title: 'Literature',
