@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'constants.dart' as Constants;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 /// Global variable, the whole class
@@ -37,7 +39,7 @@ class WebSocket {
     // Initiate communication
     // To Connect to the Localhost in the App, Read this following
     // https://stackoverflow.com/questions/4779963/how-can-i-access-my-localhost-from-my-android-device
-    _channel = IO.io('http://192.168.43.234:3000/', <String, dynamic>{
+    _channel = IO.io(Constants.host, <String, dynamic>{
       'transports': ['websocket'],
       // 'extraHeaders': {'foo': 'bar'} // optional
     });
@@ -224,6 +226,36 @@ class WebSocket {
       _listeners.forEach((Function callback) {
         callback(message);
       });
+    });
+
+    socket.on('pong', (data) {
+      print('a pong recieved $data');
+    });
+    socket.on('reconnect', (data) {
+      print('reconnected');
+    });
+    socket.on('ping', (data) {
+      print('a ping sent');
+    });
+
+    socket.on('reconnecting', (data) {
+      print('trying to reconnecting ($data)');
+    });
+
+    socket.on('reconnect_attempt', (attemptNumber) {
+      print('currently on $attemptNumber');
+      if (attemptNumber == 5) {
+        print('Initiate kickout sequence');
+        reset();
+      }
+    });
+
+    socket.on('reconnect_error', (error) {
+      print('reconnection failed attempt  $error');
+    });
+
+    socket.on('connect_timeout', (timeout) {
+      print('In Connection timeout $timeout');
     });
   }
 }
