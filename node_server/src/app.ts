@@ -9,7 +9,7 @@ import { divideAndShuffleCards, divideIntoTeams } from "./util/helper";
 import { Move } from "./types";
 import { parse } from "path";
 
-const shortid = require('shortid');
+import shortid from "shortid";
 
 const app = express();
 app.use(cors());
@@ -34,7 +34,7 @@ app.set("port", PORT);
 // CONSTANTS
 // ================
 let GAME_STATUS = ""; // 60 seconds.
-let handleTurns = new Map<number, string>();
+const handleTurns = new Map<number, string>();
 
 io.on("connection", (socket) => {
   // On connection, send it's
@@ -162,7 +162,7 @@ io.on("connection", (socket) => {
     // of all the players and iterate through the
     // indexes on each request of player turns.
     let index = 0;
-    for (let player of room.players) {
+    for (const player of room.players) {
       handleTurns.set(index++, player["name"]);
     }
     // Initiator -> send to player 1 immediately.
@@ -196,7 +196,7 @@ io.on("connection", (socket) => {
         action: "make_move"
       })
     );
-  })
+  });
 
   // Handles a player's card asking event.
   // We broadcast that even to the room, then if the
@@ -283,7 +283,7 @@ io.on("connection", (socket) => {
         JSON.stringify({ data: { players: updatedRoom.players, roomId: room.roomId, lobbyLeader: room.lobbyLeader }, action: "player_removed" }));
   });
 
-  socket.on('remove_room', async (data) => {
+  socket.on("remove_room", async (data) => {
     const parsedData = JSON.parse(data);
     const roomId = parsedData.roomId;
     const room = await Room.findOne({ roomId });
@@ -294,14 +294,14 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on('force_close', async (data) => {
+  socket.on("force_close", async (data) => {
     const parsedData = JSON.parse(data);
     const { name, roomId } = parsedData;
     await Room.deleteOne({roomId});
     io.to(roomId).emit(
       "force_close_app",
       JSON.stringify({ data: { whoClosed: name }, action: "force_close_app" })
-    )
+    );
     socket.leave(roomId);
   });
 });
