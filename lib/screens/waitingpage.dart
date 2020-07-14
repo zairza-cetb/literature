@@ -10,6 +10,7 @@ import 'package:literature/utils/enums.dart';
 import 'package:literature/utils/game_communication.dart';
 // Start Game page
 import 'package:literature/screens/gamescreen.dart';
+import 'package:literature/utils/loader.dart';
 // Local Notification Helper
 import 'package:literature/utils/local_notification_helper.dart';
 import 'package:provider/provider.dart';
@@ -422,34 +423,18 @@ class _WaitingPageState extends State<WaitingPage> {
               title: new Text('Literature'),
             ),
             body: SingleChildScrollView(
-              child: Consumer<PlayerConnectivity>(
-                builder: (context, status, child) {
-                  switch (status.checkStatus()) {
-                    case PlayerConnectivityStatus.connected:
-                      return new Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          // _buildJoin(),
-                          roomInformation(),
-                          _playersList(),
-                        ],
-                      );
-                      break;
-                    case PlayerConnectivityStatus.reconnecting:
-                      print('Show reconnecting Loader');
-                      return Text('Reconnecting');
-                      break;
-
-                    case PlayerConnectivityStatus.reconnected:
-                      print("Change status to connected");
-                      status.changeStatus(PlayerConnectivityStatus.connected);
-                      break;
-
-                    default:
-                      return Text('Still some error');
-                  }
-                  return Text('Still some error');
-                },
+              child: Stack(
+                children: <Widget>[
+                  new Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      // _buildJoin(),
+                      roomInformation(),
+                      _playersList(),
+                    ],
+                  ),
+                  networkWidget(),
+                ],
               ),
             ),
           ),
@@ -475,6 +460,67 @@ class _WaitingPageState extends State<WaitingPage> {
               )),
         ],
       ),
+    );
+  }
+
+  Widget networkWidget() {
+    return Consumer<PlayerConnectivity>(
+      builder: (context, status, child) {
+        switch (status.checkStatus()) {
+          case PlayerConnectivityStatus.connected:
+            return Container();
+            break;
+          case PlayerConnectivityStatus.reconnecting:
+            print('Show reconnecting Loader');
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              alignment: Alignment.center,
+              child: AlertDialog(
+                title: Text(
+                  'Reconnecting',
+                  textAlign: TextAlign.center,
+                ),
+                content: Loader(),
+              ),
+            );
+            break;
+
+          case PlayerConnectivityStatus.reconnected:
+            print("Change status to connected");
+            status.changeStatus(PlayerConnectivityStatus.connected);
+            break;
+
+          case PlayerConnectivityStatus.disconnected:
+            game.disconnect();
+// cant pop while showing loader cause of multiple widgets building at the same time
+            print("Player disconnected");
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: AlertDialog(
+                title: Text(
+                  'Network Error',
+                  textAlign: TextAlign.center,
+                ),
+                content: Text(
+                    'Due to network error you have been removed from this lobby'),
+                actions: <Widget>[
+                  FlatButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text('OK')),
+                ],
+              ),
+            );
+            break;
+
+          default:
+            return Text('Still some error');
+        }
+        return Container(
+          child: Text('Some condition missed in switch block'),
+        );
+      },
     );
   }
 }

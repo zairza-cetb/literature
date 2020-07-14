@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:literature/provider/player_connectivity.dart';
 import 'package:literature/utils/enums.dart';
 import 'constants.dart' as Constants;
@@ -232,26 +231,27 @@ class WebSocket {
     });
 
     socket.on('pong', (data) {
-      print('a pong recieved $data');
+      // print('a pong recieved $data');
     });
     socket.on('reconnect', (data) {
       print('reconnected');
       playerConnectivity.changeStatus(PlayerConnectivityStatus.reconnected);
     });
     socket.on('ping', (data) {
-      print('a ping sent');
+      // print('a ping sent');
     });
 
     socket.on('reconnecting', (data) {
       if (data==1) {
         playerConnectivity.changeStatus(PlayerConnectivityStatus.reconnecting);
       }
-      print('reconnection tried ($data) times');
+      // print('reconnection tried ($data) times');
     });
 
     socket.on('reconnect_attempt', (attemptNumber) {
-      if (attemptNumber == 5) {
+      if (attemptNumber > 5) {
         playerConnectivity.changeStatus(PlayerConnectivityStatus.disconnected);
+        print('start kickout sequence');
       }
     });
 
