@@ -314,7 +314,7 @@ class _WaitingPageState extends State<WaitingPage> {
                 title: new Text(
                   name,
                   style:
-                      TextStyle(fontFamily: 'Montserrat', color: Colors.white),
+                      TextStyle(fontFamily: 'B612', color: Colors.white),
                 ),
                 subtitle: new Text("[Lobby Leader]"),
                 trailing: (isLeader) ? _getPlayButton(playerInfo) : null,
@@ -348,7 +348,7 @@ class _WaitingPageState extends State<WaitingPage> {
                 title: new Text(
                   name,
                   style:
-                      TextStyle(fontFamily: 'Montserrat', color: Colors.white),
+                      TextStyle(fontFamily: 'B612', color: Colors.white),
                 ),
                 subtitle: new Text(" "),
                 trailing: _getRemoveButton(currPlayer, playerInfo, context),
@@ -374,33 +374,33 @@ class _WaitingPageState extends State<WaitingPage> {
             text: TextSpan(
               text: 'Welcome to ',
               style: TextStyle(
-                  color: Colors.black, fontSize: 16, fontFamily: 'Montserrat'),
+                  color: Colors.black, fontSize: 16, fontFamily: 'B612'),
               children: <TextSpan>[
                 TextSpan(
                     text: leader.name,
                     style: TextStyle(
                         color: Colors.blue[300],
                         fontSize: 16,
-                        fontFamily: 'Montserrat',
+                        fontFamily: 'B612',
                         fontWeight: FontWeight.bold)),
                 TextSpan(
                   text: '\'s room',
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
-                      fontFamily: 'Montserrat'),
+                      fontFamily: 'B612'),
                 )
               ],
             ),
           ),
           new Text(
             widget.roomId,
-            style: new TextStyle(fontSize: 20.0, fontFamily: 'Montserrat'),
+            style: new TextStyle(fontSize: 20.0, fontFamily: 'B612'),
             textAlign: TextAlign.center,
           ),
           new Text(
             "Please wait for the leader to start",
-            style: TextStyle(fontSize: 14.0, fontFamily: 'Montserrat'),
+            style: TextStyle(fontSize: 14.0, fontFamily: 'B612'),
           )
         ],
       ),

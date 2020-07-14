@@ -29,7 +29,7 @@ class _GlobalAppBarState extends State<GlobalAppBar> {
         elevation: 0.0,
         title: Text('Literature',
         style: TextStyle(
-          fontFamily: 'Montserrat',
+          fontFamily: 'B612',
           fontSize: 25.0,
           fontWeight: FontWeight.bold,
           color: Color(0xFF303f9f))
