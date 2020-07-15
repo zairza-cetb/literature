@@ -18,16 +18,18 @@ class _GlobalAppBarState extends State<GlobalAppBar> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.1,
       child: AppBar(
-        // leading: IconButton(
-        //   onPressed: () {
-        //     Navigator.of(context).pop();
-        //     // Close socket connection
-        //     // after user presses back.
-        //     game.disconnect();
-        //   },
-        //   icon: Icon(Icons.arrow_back_ios),
-        //   color: Color(0xFF303f9f),
-        // ),
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  // Close socket connection
+                  // after user presses back.
+                  game.disconnect();
+                },
+                icon: Icon(Icons.arrow_back_ios),
+                color: Color(0xFF303f9f),
+              )
+            : null,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         title: Text('Literature',
