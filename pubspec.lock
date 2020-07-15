@@ -22,16 +22,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.1"
-<<<<<<< HEAD
-=======
-  audioplayers:
-    dependency: "direct main"
-    description:
-      name: audioplayers
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.15.1"
->>>>>>> add constants.dart for private constant field
   badges:
     dependency: "direct main"
     description:
@@ -60,30 +50,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.14.12"
-<<<<<<< HEAD
-=======
-  connectivity:
-    dependency: "direct main"
-    description:
-      name: connectivity
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.8+6"
-  connectivity_macos:
-    dependency: transitive
-    description:
-      name: connectivity_macos
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.0+3"
-  connectivity_platform_interface:
-    dependency: transitive
-    description:
-      name: connectivity_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.6"
->>>>>>> add constants.dart for private constant field
   convert:
     dependency: transitive
     description:
@@ -232,7 +198,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.12"
-<<<<<<< HEAD
   js:
     dependency: transitive
     description:
@@ -240,8 +205,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.2"
-=======
->>>>>>> add constants.dart for private constant field
   logging:
     dependency: transitive
     description:
@@ -304,7 +267,6 @@ packages:
       name: path_provider_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
     version: "1.0.1"
   pedantic:
     dependency: transitive
@@ -313,9 +275,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.9.0"
-=======
-    version: "1.0.2"
->>>>>>> add constants.dart for private constant field
   petitparser:
     dependency: transitive
     description:

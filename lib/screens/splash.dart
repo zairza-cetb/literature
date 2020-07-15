@@ -22,7 +22,7 @@ class SplashScreenState extends State<AnimatedSplashScreen>
   }
 
   void navigationPage() {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => LiteratureHomePage()),
     );  

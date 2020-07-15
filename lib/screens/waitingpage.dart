@@ -475,7 +475,7 @@ class _WaitingPageState extends State<WaitingPage> {
             return Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
-              alignment: Alignment.center,
+              padding: EdgeInsets.only(bottom:60),
               child: AlertDialog(
                 title: Text(
                   'Reconnecting',
@@ -498,6 +498,7 @@ class _WaitingPageState extends State<WaitingPage> {
             return Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
+              padding: EdgeInsets.only(bottom:60),
               child: AlertDialog(
                 title: Text(
                   'Network Error',

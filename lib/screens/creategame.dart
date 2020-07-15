@@ -21,10 +21,10 @@ class _CreateGame extends State<CreateGame> {
   Widget build(BuildContext context) {
     var appBar = GlobalAppBar();
     return Scaffold(
-        backgroundColor: Color(0xFFb3e5fc),
-        appBar: appBar,
-        body: Center(
-            child: new ListView(children: <Widget>[
+      backgroundColor: Color(0xFFb3e5fc),
+      appBar: appBar,
+      body: Center(
+        child: new ListView(children: <Widget>[
           Stack(children: <Widget>[
             Container(
                 height: MediaQuery.of(context).size.height - 100,
@@ -43,26 +43,26 @@ class _CreateGame extends State<CreateGame> {
                         MediaQuery.of(context).size.height / 15,
                     width: MediaQuery.of(context).size.width)),
             Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Center(
-                    child: new Container(
-                      margin: EdgeInsets.only(top: 10.0),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage('assets/create_room_bg.png'),
-                            fit: BoxFit.cover),
-                      ),
-                      height: 339.0,
-                      width: 241.0,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Center(
+                  child: new Container(
+                    margin: EdgeInsets.only(top: 10.0),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage('assets/create_room_bg.png'),
+                          fit: BoxFit.cover),
                     ),
+                    height: 339.0,
+                    width: 241.0,
                   ),
-                  Container(
-                      padding:
-                          EdgeInsets.only(top: 30.0, left: 30.0, right: 30.0),
-                      child: Column(children: <Widget>[
-                        InkWell(
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 30.0, left: 30.0, right: 30.0),
+                  child: Column(
+                    children: <Widget>[
+                      InkWell(
                           onTap: () {
                             Navigator.push(
                               context,
@@ -87,75 +87,80 @@ class _CreateGame extends State<CreateGame> {
                                 ),
                               ),
                             ),
-                          ),
-                        )
-                      ])),
-                  SizedBox(height: 20.0),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => JoinRoom()),
-                      );
-                    },
-                    child: Container(
-                      height: 50.0,
-                      child: Material(
-                        borderRadius: BorderRadius.circular(20.0),
-                        shadowColor: Color(0xFF24315E),
-                        color: Color(0xffb0bec5),
-                        elevation: 7.0,
-                        child: Center(
-                          child: Text(
-                            'Join Room',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Montserrat'),
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                ]),
-            SizedBox(height: 50.0),
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => JoinRoom()),
-                );
-              },
-              child: Container(
-                height: 40.0,
-                color: Colors.transparent,
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          color: Colors.black,
-                          style: BorderStyle.solid,
-                          width: 1.0),
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(20.0)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Center(
-                        child: ImageIcon(AssetImage('assets/facebook.png')),
-                      ),
-                      SizedBox(width: 10.0),
-                      Center(
-                        child: Text('Invite Friends with Facebook',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Montserrat')),
-                      )
+                          )),
+                      SizedBox(height: 20.0),
+                      InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => JoinRoom()),
+                            );
+                          },
+                          child: Container(
+                            height: 50.0,
+                            child: Material(
+                              borderRadius: BorderRadius.circular(20.0),
+                              shadowColor: Color(0xFF24315E),
+                              color: Color(0xffb0bec5),
+                              elevation: 7.0,
+                              child: Center(
+                                child: Text(
+                                  'Join Room',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Montserrat'),
+                                ),
+                              ),
+                            ),
+                          )),
+                      SizedBox(height: 50.0),
+                      InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => JoinRoom()),
+                            );
+                          },
+                          child: Container(
+                            height: 40.0,
+                            color: Colors.transparent,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.black,
+                                      style: BorderStyle.solid,
+                                      width: 1.0),
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(20.0)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Center(
+                                    child: ImageIcon(
+                                        AssetImage('assets/facebook.png')),
+                                  ),
+                                  SizedBox(width: 10.0),
+                                  Center(
+                                    child: Text('Invite Friends with Facebook',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Montserrat')),
+                                  )
+                                ],
+                              ),
+                            ),
+                          )),
                     ],
                   ),
                 ),
-              ),
-            )
+              ],
+            ),
           ]),
-        ])));
+        ]),
+      ),
+    );
   }
 }
