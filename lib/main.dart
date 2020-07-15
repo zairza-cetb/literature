@@ -4,8 +4,13 @@ import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/screens/splash.dart';
 import 'package:provider/provider.dart';
 import 'provider/playerlistprovider.dart';
+import 'package:flutter_config/flutter_config.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlutterConfig.loadEnvVariables();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -13,10 +18,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<PlayerList>(
-          create: (context) => PlayerList()),
+        ChangeNotifierProvider<PlayerList>(create: (context) => PlayerList()),
         ChangeNotifierProvider<PlayerFirebase>(
-          create: (context) => PlayerFirebase()),
+            create: (context) => PlayerFirebase()),
       ],
       child: MaterialApp(
         title: 'Literature',
