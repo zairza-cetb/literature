@@ -27,11 +27,9 @@ class SplashScreenState extends State<AnimatedSplashScreen>
     var auth = FirebaseAuth.instance;
     FirebaseUser user = await auth.currentUser();
     if (user == null) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => LiteratureHomePage()));
+      Navigator.of(context).pushReplacementNamed('/homepage');
     } else {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => CreateGame()));
+      Navigator.of(context).pushReplacementNamed('/gamescreen');
     }
   }
 

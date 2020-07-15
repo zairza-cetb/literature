@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:literature/models/playerfirebase.dart';
 import 'package:literature/provider/playerlistprovider.dart';
+import 'package:literature/screens/creategame.dart';
+import 'package:literature/screens/homepage.dart';
 import 'package:literature/screens/splash.dart';
 import 'package:provider/provider.dart';
 import 'provider/playerlistprovider.dart';
@@ -25,6 +27,10 @@ class MyApp extends StatelessWidget {
         ),
         home: AnimatedSplashScreen(),
         debugShowCheckedModeBanner: false,
+        routes: <String, WidgetBuilder> {
+            '/homepage': (BuildContext context) => new LiteratureHomePage(),
+            '/gamescreen' : (BuildContext context) => new CreateGame(),
+          },
       ),
     );
   }
