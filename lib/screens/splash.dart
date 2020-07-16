@@ -2,9 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:literature/screens/creategame.dart';
-
-import 'homepage.dart';
+import 'package:literature/utils/auth.dart';
 
 class AnimatedSplashScreen extends StatefulWidget {
   @override
@@ -24,13 +22,7 @@ class SplashScreenState extends State<AnimatedSplashScreen>
   }
 
   void navigationPage() async {
-    var auth = FirebaseAuth.instance;
-    FirebaseUser user = await auth.currentUser();
-    if (user == null) {
-      Navigator.of(context).pushReplacementNamed('/homepage');
-    } else {
-      Navigator.of(context).pushReplacementNamed('/gamescreen');
-    }
+      Navigator.of(context).pushReplacementNamed('/landingpage');
   }
 
   @override
