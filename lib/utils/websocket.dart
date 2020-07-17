@@ -262,5 +262,15 @@ class WebSocket {
     socket.on('connect_timeout', (timeout) {
       print('In Connection timeout $timeout');
     });
+
+    socket.on('network_error', (data){
+      // Map messageRecieved = json.decode(data);
+      // Map message = new Map();
+      // message["action"] = messageRecieved["action"];
+      // _listeners.forEach((Function callback) {
+      //   callback(message);
+      //  });
+      playerConnectivity.changeStatus(PlayerConnectivityStatus.disconnected);
+    });
   }
 }

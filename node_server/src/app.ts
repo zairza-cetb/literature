@@ -14,7 +14,7 @@ import shortid from "shortid";
 const app = express();
 app.use(cors());
 
-mongoose.connect("mongodb://mongo:27017/literature", { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: true }).then(
+mongoose.connect("mongodb://localhost:27017/literature", { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: true }).then(
   () => { /** ready to use. The `mongoose.connect()` promise resolves to undefined. */ },
 ).catch(err => {
   console.log("MongoDB connection error. Please make sure MongoDB is running. " + err);
@@ -297,12 +297,36 @@ io.on("connection", (socket) => {
   socket.on("force_close", async (data) => {
     const parsedData = JSON.parse(data);
     const { name, roomId } = parsedData;
-    await Room.deleteOne({roomId});
+    await Room.deleteOne({ roomId });
     io.to(roomId).emit(
       "force_close_app",
       JSON.stringify({ data: { whoClosed: name }, action: "force_close_app" })
     );
     socket.leave(roomId);
+  });
+
+  socket.on('error', (error) => {
+    console.log(error + ' from ' + socket.id + socket.rooms + ' error');
+  });
+
+  socket.on('disconnecting', async (reason) => {
+    let rooms = Object.keys(socket.rooms);
+    // rooms => [socket_id,room_id]
+    if (reason == 'ping timeout' && rooms[1] != null) {
+      const roomId = rooms[1];
+      await Room.deleteOne({ roomId });
+      io.to(roomId)
+        .emit("network_error", JSON.stringify({ action: "network_error" }));
+    }
+    console.log(rooms);
+    console.log(reason);
+  });
+
+  socket.on('disconnect', (reason) => {
+    // let rooms1 = Object.keys(socket.rooms);
+    // var room2 = Object.keys(io.sockets.adapter.sids[socket.id])
+    // console.log(rooms1);
+    // console.log(room2);
   });
 });
 

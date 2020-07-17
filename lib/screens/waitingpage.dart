@@ -505,7 +505,7 @@ class _WaitingPageState extends State<WaitingPage> {
                   textAlign: TextAlign.center,
                 ),
                 content: Text(
-                    'Due to network error you have been removed from this lobby'),
+                    'Due to network error, room disbanded'),
                 actions: <Widget>[
                   FlatButton(
                       onPressed: () => Navigator.of(context).pop(),
