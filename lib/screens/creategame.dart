@@ -262,7 +262,7 @@ class _CreateGame extends State<CreateGame> {
           ),
           child: Container(
             width: 300,
-            height: 150,
+            height: 200,
             padding: EdgeInsets.all(15),
             child: new Column(
               crossAxisAlignment: CrossAxisAlignment.center,
