@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:literature/screens/landingpage.dart';
 import 'package:literature/utils/auth.dart';
 
 class AnimatedSplashScreen extends StatefulWidget {
@@ -22,7 +23,9 @@ class SplashScreenState extends State<AnimatedSplashScreen>
   }
 
   void navigationPage() async {
-      Navigator.of(context).pushReplacementNamed('/landingpage');
+      Navigator.pushReplacement(context,
+            new MaterialPageRoute(
+              builder: (BuildContext context) => LandingPage()));
   }
 
   @override

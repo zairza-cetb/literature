@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:literature/components/appbar.dart';
 import 'package:literature/models/player.dart';
 import 'package:literature/provider/playerlistprovider.dart';
 // Game communication helper import
@@ -236,13 +237,13 @@ class _WaitingPageState extends State<WaitingPage> {
   _removePlayerFromList(playerInfo, where) {
     print(playerInfo.lobbyLeader);
     if (playerInfo.lobbyLeader) {
-      final players  = Provider.of<PlayerList>(context,listen: false).players;
+      final players = Provider.of<PlayerList>(context, listen: false).players;
       players.forEach((element) {
         if (!element.lobbyLeader) {
           _removePlayerFromList(element, 'leader_leaving');
         }
       });
-      game.send('remove_room', json.encode({"roomId":widget.roomId}));
+      game.send('remove_room', json.encode({"roomId": widget.roomId}));
       return Navigator.of(context).pop(true);
     } else {
       print("initiate removal sequence ${playerInfo.name}");
@@ -253,7 +254,7 @@ class _WaitingPageState extends State<WaitingPage> {
       };
       game.send("player_remove_clicked", json.encode(playerDetails));
     }
-      if (where == 'leave_dialog') {
+    if (where == 'leave_dialog') {
       return Navigator.of(context).pop(false);
     }
   }
@@ -313,8 +314,7 @@ class _WaitingPageState extends State<WaitingPage> {
                 ),
                 title: new Text(
                   name,
-                  style:
-                      TextStyle(fontFamily: 'B612', color: Colors.white),
+                  style: TextStyle(fontFamily: 'B612', color: Colors.white),
                 ),
                 subtitle: new Text("[Lobby Leader]"),
                 trailing: (isLeader) ? _getPlayButton(playerInfo) : null,
@@ -347,8 +347,7 @@ class _WaitingPageState extends State<WaitingPage> {
                 ),
                 title: new Text(
                   name,
-                  style:
-                      TextStyle(fontFamily: 'B612', color: Colors.white),
+                  style: TextStyle(fontFamily: 'B612', color: Colors.white),
                 ),
                 subtitle: new Text(" "),
                 trailing: _getRemoveButton(currPlayer, playerInfo, context),
@@ -386,9 +385,7 @@ class _WaitingPageState extends State<WaitingPage> {
                 TextSpan(
                   text: '\'s room',
                   style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontFamily: 'B612'),
+                      color: Colors.black, fontSize: 16, fontFamily: 'B612'),
                 )
               ],
             ),
@@ -416,9 +413,7 @@ class _WaitingPageState extends State<WaitingPage> {
           bottom: false,
           top: false,
           child: Scaffold(
-            appBar: new AppBar(
-              title: new Text('Literature'),
-            ),
+            appBar: GlobalAppBar(),
             body: SingleChildScrollView(
               child: new Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -441,7 +436,10 @@ class _WaitingPageState extends State<WaitingPage> {
         title: Text('Do you want to leave this room'),
         actions: <Widget>[
           FlatButton(
-              onPressed: () => Navigator.pop(context, false),
+              onPressed: () {
+                game.disconnect();
+                Navigator.pop(context, false);
+              },
               child: Text('Close')),
           FlatButton(
               onPressed: () =>

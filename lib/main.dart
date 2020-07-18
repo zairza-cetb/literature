@@ -28,11 +28,6 @@ class MyApp extends StatelessWidget {
         ),
         home: AnimatedSplashScreen(),
         debugShowCheckedModeBanner: false,
-        routes: <String, WidgetBuilder> {
-            '/homepage': (BuildContext context) => new LiteratureHomePage(),
-            '/gamescreen' : (BuildContext context) => new CreateGame(),
-            '/landingpage' : (BuildContext context) => new LandingPage()
-          },
       ),
     );
   }
