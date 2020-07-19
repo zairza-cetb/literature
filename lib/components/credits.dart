@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-    
+  
 
 class Credits extends StatelessWidget {
   @override
@@ -10,10 +10,20 @@ Widget build(BuildContext context){
      color: Colors.white,
      child:Column( 
     children: <Widget>[
+        Row(
+        children: <Widget>[ 
+     GestureDetector(
+       onTap: () {  
+          Navigator.of(context).pop(); 
+        },  
+       child:Container(
+        child: Icon(Icons.arrow_back_ios),
+      ),
+      ),
       Container(
-        color: Colors.white,
+ 
         height: 100,
-    margin: const EdgeInsets.all(15.0),
+    margin: const EdgeInsets.only(left:69.0),
     alignment: Alignment.center, 
     child: Text(
       "Developers",
@@ -25,6 +35,8 @@ Widget build(BuildContext context){
         ),
       ),  
     ),
+        ]
+      ),
     Center( 
         child:Container(
           margin: const EdgeInsets.all(2.0),

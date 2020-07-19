@@ -9,15 +9,42 @@ class GlobalAppBar extends StatefulWidget implements PreferredSizeWidget  {
   @override
   Size get preferredSize => new Size.fromHeight(kToolbarHeight);
 }
-showAboutDialog(BuildContext context) {  
+class BackButton extends StatelessWidget {  
+  @override  
+  Widget build(BuildContext context) {  
+    return Container(
+      child: IconButton(
+        color: Color(0xFF6ad1ff),  
+        iconSize: 15,
+        icon: Icon(Icons.arrow_back_ios),  
+        onPressed: () {  
+          Navigator.of(context).pop(); 
+        },  
+      ),  
+    );  
+  }  
+}  
 
-  Widget title = Container( 
-    margin: const EdgeInsets.all(10.0),
+
+showAboutDialog(BuildContext context) { 
+  Widget title =Row( 
+    children: <Widget>[
+       Align(
+    alignment: Alignment.centerLeft,
+    child: BackButton()
+      ),
+       Align(
+         alignment: AlignmentDirectional.center,
+      child:Container(
+    margin: const EdgeInsets.only(left:40.0),
     alignment: Alignment.center, 
     child: Text(
       "About"
-      ),  
-  );  
+      ),
+      ),
+       ), 
+    ]
+  );   
   Widget devdet=Container(
         margin: const EdgeInsets.all(2.0),
     decoration:BoxDecoration(
@@ -84,13 +111,12 @@ showAboutDialog(BuildContext context) {
      }, 
     ), 
   );
-  // Create AlertDialog  
+
   AlertDialog alert = AlertDialog(  
     actions: [  
       title, devdet, lic,
     ],  
   );  
-  // show the dialog  
   showDialog(  
     context: context,  
     builder: (BuildContext context) {  
@@ -99,12 +125,23 @@ showAboutDialog(BuildContext context) {
   );  
 }  
 showSettingsDialog(BuildContext context) {  
-Widget title = Container( 
-    margin: const EdgeInsets.all(15.0),
+Widget title =Row( 
+    children: <Widget>[
+       Align(
+    alignment: Alignment.centerLeft,
+    child: BackButton()
+      ),
+       Align(
+         alignment: AlignmentDirectional.center,
+      child:Container(
+    margin: const EdgeInsets.only(left:40.0),
     alignment: Alignment.center, 
     child: Text(
       "Settings"
-      ),  
+      ),
+      ),
+       ), 
+    ]
   );  
   Widget music=Container(
       margin: const EdgeInsets.all(2.0),
@@ -192,13 +229,13 @@ Widget title = Container(
      }, 
     ), 
   );
-  // Create AlertDialog  
+
   AlertDialog alert = AlertDialog(  
     actions: [  
       title, music, theme,
     ],  
   );  
-  // show the dialog  
+  
   showDialog(  
     context: context,  
     builder: (BuildContext context) {  
@@ -206,14 +243,24 @@ Widget title = Container(
     },  
   );  
 }  
- showAlertDialog(BuildContext context) {  
-  // Create button  
-  Widget title = Container( 
-    margin: const EdgeInsets.all(15.0),
+ showAlertDialog(BuildContext context) {
+  Widget title =Row( 
+    children: <Widget>[
+       Align(
+    alignment: Alignment.centerLeft,
+    child: BackButton()
+      ),
+       Align(
+         alignment: AlignmentDirectional.center,
+      child:Container(
+    margin: const EdgeInsets.only(left:40.0),
     alignment: Alignment.center, 
     child: Text(
       "Options"
-      ),  
+      ),
+      ),
+       ), 
+    ]
   );  
   Widget settings=Container(
         margin: const EdgeInsets.all(2.0),
@@ -343,13 +390,12 @@ Widget title = Container(
      }, 
     ), 
   );
-  // Create AlertDialog  
   AlertDialog alert = AlertDialog(  
     actions: [  
-      title, howtoplay, settings, profile, about,
+      title, profile, settings, howtoplay, about,
     ],  
   );  
-  // show the dialog  
+
   showDialog(  
     context: context,  
     builder: (BuildContext context) {  
