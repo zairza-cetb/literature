@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:literature/models/playerfirebase.dart';
 import 'package:literature/provider/playerlistprovider.dart';
-import 'package:literature/screens/creategame.dart';
-import 'package:literature/screens/homepage.dart';
-import 'package:literature/screens/landingpage.dart';
 import 'package:literature/screens/splash.dart';
 import 'package:provider/provider.dart';
 import 'provider/playerlistprovider.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await FlutterConfig.loadEnvVariables();
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

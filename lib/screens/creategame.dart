@@ -179,7 +179,7 @@ class _CreateGame extends State<CreateGame> {
     ///
 
     game.connect();
-
+    game.addListener(_createGameListener);
     setState(() {
       isLoading = true;
     });
