@@ -141,7 +141,7 @@ class _CreateGame extends State<CreateGame> {
         players.addPlayers(lp);
         // force rebuild
         // game.removeListener(_joinRoomListener);
-        Navigator.pushReplacement(
+        Navigator.push(
             context,
             new MaterialPageRoute(
               builder: (BuildContext context) => WaitingPage(
@@ -305,7 +305,7 @@ class _CreateGame extends State<CreateGame> {
                         },
                         child: Text(
                           'Close',
-                          style: TextStyle(color: Colors.red),
+                          style: TextStyle(color: Colors.black),
                         )),
                     FlatButton(
                       onPressed: () {
@@ -315,7 +315,7 @@ class _CreateGame extends State<CreateGame> {
                       },
                       child: Text(
                         'Join',
-                        style: TextStyle(color: Colors.green),
+                        style: TextStyle(color: Colors.blue),
                       ),
                     ),
                   ],
