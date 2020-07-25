@@ -151,6 +151,7 @@ class _CreateGame extends State<CreateGame> {
         break;
       case "roomisfull":
         showCustomDialogWithImage(context, "full");
+        game.removeListener(_joinRoomListener);
         game.disconnect();
         setState(() {
           isLoading = false;
@@ -159,6 +160,7 @@ class _CreateGame extends State<CreateGame> {
       case "invalid room":
         showCustomDialogWithImage(context, "invalid");
         game.disconnect();
+        game.removeListener(_joinRoomListener);
         setState(() {
           isLoading = false;
         });
@@ -177,9 +179,9 @@ class _CreateGame extends State<CreateGame> {
     /// Ask to be notified when messages related to the game
     /// are sent by the server, also creates the connection.
     ///
-
-    game.connect();
     game.addListener(_createGameListener);
+    game.connect();
+
     setState(() {
       isLoading = true;
     });
@@ -301,7 +303,10 @@ class _CreateGame extends State<CreateGame> {
                           game.disconnect();
                           Navigator.pop(context, false);
                         },
-                        child: Text('Close',style: TextStyle(color: Colors.red),)),
+                        child: Text(
+                          'Close',
+                          style: TextStyle(color: Colors.red),
+                        )),
                     FlatButton(
                       onPressed: () {
                         joinRoomId = joinRoomIdTextController.text;
