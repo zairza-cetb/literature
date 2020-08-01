@@ -34,7 +34,7 @@ class _ArenaState extends State<Arena> {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-    var width= MediaQuery.of(context).size.width;
+    var width = MediaQuery.of(context).size.width;
     var scoreCard = widget.currTeamScore.toString() + "-" + widget.opponentTeamScore.toString();
     List<Widget> arenaMessages = widget.messages.map((m) {
       return Container(

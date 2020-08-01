@@ -198,6 +198,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.12"
+  intro_views_flutter:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "5d3e4a24be917f8399425faeb6c41a356c3ef901"
+      url: "git://github.com/aagarwal1012/IntroViews-Flutter"
+    source: git
+    version: "2.8.1"
   js:
     dependency: transitive
     description:

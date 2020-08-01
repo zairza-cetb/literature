@@ -21,6 +21,8 @@ dependencies:
     sdk: flutter
 
   #Custom Plugins
+  intro_views_flutter:
+    git: git://github.com/aagarwal1012/IntroViews-Flutter
   url_launcher: ^5.5.0
   shared_preferences: ^0.5.6+3
   flutter_local_notifications: ^0.6.0
@@ -107,6 +109,9 @@ flutter:
         - asset: assets/fonts/B612-Bold.ttf
         - asset: assets/fonts/B612-Italic.ttf
         - asset: assets/fonts/B612-BoldItalic.ttf
+    - family: Helvetica
+      fonts:
+        - asset: assets/fonts/helvetica-light.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:
