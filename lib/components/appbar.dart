@@ -27,83 +27,6 @@ class BackButton extends StatelessWidget {
   }
 }
 
-showAboutDialog(BuildContext context) {
-  double height = MediaQuery.of(context).size.height;
-  double width = MediaQuery.of(context).size.width;
-  Widget title = Row(children: <Widget>[
-    Align(alignment: Alignment.centerLeft, child: BackButton()),
-  ]);
-  Widget devdet = Container(
-    margin: const EdgeInsets.all(2.0),
-    decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.00),
-        border: Border.all(color: Color(0xFF6ad1ff))),
-    child: GestureDetector(
-      child: Container(
-        height: height * 0.078,
-        width: width * 0.8,
-        child: Material(
-          borderRadius: BorderRadius.circular(10.0),
-          shadowColor: Color(0xFF6ad1ff),
-          //color: Color(0xFF039be5),
-          elevation: 7.0,
-          child: Center(
-            child: Text(
-              "Developers' Details",
-              style: TextStyle(color: Colors.black, fontFamily: 'B612'),
-            ),
-          ),
-        ),
-      ),
-      onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Credits()));
-      },
-    ),
-  );
-  Widget lic = Container(
-    margin: const EdgeInsets.all(2.0),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10.00),
-      border: Border.all(color: Color(0xFF6ad1ff)),
-    ),
-    child: GestureDetector(
-      child: Container(
-        height: height * 0.078,
-        child: Material(
-          borderRadius: BorderRadius.circular(10.0),
-          shadowColor: Color(0xFF6ad1ff),
-          //color: Color(0xFF039be5),
-          elevation: 7.0,
-          child: Center(
-            child: Text(
-              'License',
-              style: TextStyle(color: Colors.black, fontFamily: 'B612'),
-            ),
-          ),
-        ),
-      ),
-      onTap: () {
-        Navigator.of(context).pop();
-      },
-    ),
-  );
-
-  AlertDialog alert = AlertDialog(
-    actions: [
-      title,
-      devdet,
-      lic,
-    ],
-  );
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}
-
 showSettingsDialog(BuildContext context) {
   double height = MediaQuery.of(context).size.height;
   double width = MediaQuery.of(context).size.width;
@@ -118,8 +41,7 @@ showSettingsDialog(BuildContext context) {
             color: Color(0xFF6ad1ff))), //             <--- BoxDecoration here
     child: GestureDetector(
       child: Container(
-        
-        width: width*0.8,
+        width: width * 0.8,
         height: height * 0.078,
         child: Material(
           borderRadius: BorderRadius.circular(10.0),
@@ -183,6 +105,7 @@ showSettingsDialog(BuildContext context) {
 
 showAlertDialog(BuildContext context) {
   double height = MediaQuery.of(context).size.height;
+  double width = MediaQuery.of(context).size.width;
   Widget title = Row(children: <Widget>[
     Align(alignment: Alignment.centerLeft, child: BackButton()),
   ]);
@@ -238,11 +161,40 @@ showAlertDialog(BuildContext context) {
       },
     ),
   );
-  Widget about = Container(
+  Widget devdet = Container(
     margin: const EdgeInsets.all(2.0),
     decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.00),
         border: Border.all(color: Color(0xFF6ad1ff))),
+    child: GestureDetector(
+      child: Container(
+        height: height * 0.078,
+        width: width * 0.8,
+        child: Material(
+          borderRadius: BorderRadius.circular(10.0),
+          shadowColor: Color(0xFF6ad1ff),
+          //color: Color(0xFF039be5),
+          elevation: 7.0,
+          child: Center(
+            child: Text(
+              "Developers' Details",
+              style: TextStyle(color: Colors.black, fontFamily: 'B612'),
+            ),
+          ),
+        ),
+      ),
+      onTap: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Credits()));
+      },
+    ),
+  );
+  Widget lic = Container(
+    margin: const EdgeInsets.all(2.0),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10.00),
+      border: Border.all(color: Color(0xFF6ad1ff)),
+    ),
     child: GestureDetector(
       child: Container(
         height: height * 0.078,
@@ -253,14 +205,14 @@ showAlertDialog(BuildContext context) {
           elevation: 7.0,
           child: Center(
             child: Text(
-              'About',
+              'License',
               style: TextStyle(color: Colors.black, fontFamily: 'B612'),
             ),
           ),
         ),
       ),
       onTap: () {
-        showAboutDialog(context);
+        Navigator.of(context).pop();
       },
     ),
   );
@@ -288,7 +240,7 @@ showAlertDialog(BuildContext context) {
       ),
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HowToPlay()));
+            context, MaterialPageRoute(builder: (context) => OnBoardingPage()));
       },
     ),
   );
@@ -298,7 +250,8 @@ showAlertDialog(BuildContext context) {
       profile,
       settings,
       howtoplay,
-      about,
+      devdet,
+      lic,
     ],
   );
 
