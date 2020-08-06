@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:literature/components/appbar.dart';
@@ -9,13 +10,14 @@ import 'package:literature/screens/waitingpage.dart';
 import 'package:literature/utils/game_communication.dart';
 import 'package:literature/utils/loader.dart';
 import 'package:provider/provider.dart';
+import 'package:after_layout/after_layout.dart';
 import 'dart:convert';
 
 class CreateGame extends StatefulWidget {
   _CreateGame createState() => _CreateGame();
 }
 
-class _CreateGame extends State<CreateGame> {
+class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
   Player currPlayer;
   String playerId;
   bool isLoading = false;
@@ -25,13 +27,14 @@ class _CreateGame extends State<CreateGame> {
   TextEditingController joinRoomIdTextController;
   String joinRoomId;
   var auth;
-
+  double height, width;
   // TODO: Room ID should be a hashed value
   String roomId;
   @override
   void initState() {
     super.initState();
     userDetails();
+
     joinRoomIdTextController = new TextEditingController();
     // game.addListener(_joinRoomListener);
   }
@@ -45,6 +48,7 @@ class _CreateGame extends State<CreateGame> {
   userDetails() async {
     auth = FirebaseAuth.instance;
     user = await auth.currentUser();
+    print(user.photoUrl);
   }
 
   _createGameListener(Map message) {
@@ -150,7 +154,7 @@ class _CreateGame extends State<CreateGame> {
             ));
         break;
       case "roomisfull":
-        showCustomDialogWithImage(context, "full");
+        showAnimateDialogBox(context, "full");
         game.removeListener(_joinRoomListener);
         game.disconnect();
         setState(() {
@@ -158,7 +162,7 @@ class _CreateGame extends State<CreateGame> {
         });
         break;
       case "invalid room":
-        showCustomDialogWithImage(context, "invalid");
+        showAnimateDialogBox(context, "invalid");
         game.disconnect();
         game.removeListener(_joinRoomListener);
         setState(() {
@@ -202,57 +206,43 @@ class _CreateGame extends State<CreateGame> {
   /// ------------------------
   /// Show Dialog for Users
   /// ------------------------
-  void showCustomDialogWithImage(BuildContext context, String arg) {
-    Dialog dialogWithImage = Dialog(
-      child: Container(
-        height: 300.0,
-        width: 300.0,
-        child: Column(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(10),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.blue[300],
-              ),
-              child: Text(
-                "SORRY !!!",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-            Container(
-              height: 200,
-              width: 300,
-              child: Image.asset(
-                (arg == "full") ? 'assets/roomisfull.png' : 'assets/noroom.png',
-                fit: BoxFit.scaleDown,
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                RaisedButton(
-                  color: Colors.red,
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    'Go To Main Screen',
-                    style: TextStyle(fontSize: 18.0, color: Colors.white),
-                  ),
-                )
-              ],
-            ),
-          ],
+  void showAnimateDialogBox(BuildContext context, String arg) {
+    AwesomeDialog(
+        context: context,
+        dialogType: DialogType.ERROR,
+        animType: AnimType.BOTTOMSLIDE,
+        btnOkColor: Colors.red,
+        title: (arg == "full") ? 'Room is Full' : 'Invalid Room',
+        desc: (arg == "full")
+            ? 'The Room you have requested to join is already full.'
+            : 'The Room you have requested to join doesn\'t exist.',
+        btnOkOnPress: () {},
+        dismissOnBackKeyPress: true,
+        dismissOnTouchOutside: true,
+        useRootNavigator: false)
+      ..show();
+  }
+
+  void showWelcomeMessage(BuildContext context) {
+    FirebaseUser u = currPlayerProvider.user;
+    AwesomeDialog(
+        context: context,
+        dialogType: DialogType.NO_HEADER,
+        customHeader: CircleAvatar(
+          radius: 200,
+          child: Image.network(
+            u.photoUrl,
+          ),
+          backgroundColor: Colors.white,
         ),
-      ),
-    );
-    showDialog(
-        context: context, builder: (BuildContext context) => dialogWithImage);
+        animType: AnimType.BOTTOMSLIDE,
+        title: 'Welcome ' + u.displayName.split(' ').first,
+        desc: ' ',
+        btnOkOnPress: () {},
+        dismissOnBackKeyPress: true,
+        dismissOnTouchOutside: true,
+        useRootNavigator: false)
+      ..show();
   }
 
   void showJoinDialog(BuildContext context) {
@@ -263,9 +253,13 @@ class _CreateGame extends State<CreateGame> {
             borderRadius: BorderRadius.all(Radius.circular(20.0)),
           ),
           child: Container(
-            width: 300,
-            height: 200,
-            padding: EdgeInsets.all(15),
+            width: MediaQuery.of(context).size.width * 0.3,
+            height: MediaQuery.of(context).size.height * 0.25,
+            padding: EdgeInsets.fromLTRB(
+                MediaQuery.of(context).size.width * 0.01,
+                MediaQuery.of(context).size.height * 0.01,
+                MediaQuery.of(context).size.width * 0.01,
+                MediaQuery.of(context).size.height * 0.01),
             child: new Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -286,8 +280,11 @@ class _CreateGame extends State<CreateGame> {
                   keyboardType: TextInputType.text,
                   decoration: new InputDecoration(
                     hintText: 'Enter Room ID...',
-                    contentPadding:
-                        const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                    contentPadding: EdgeInsets.fromLTRB(
+                        MediaQuery.of(context).size.width * 0.01,
+                        MediaQuery.of(context).size.height * 0.01,
+                        MediaQuery.of(context).size.width * 0.01,
+                        MediaQuery.of(context).size.height * 0.01),
                     border: new OutlineInputBorder(
                       borderRadius: new BorderRadius.circular(32.0),
                     ),
@@ -489,5 +486,11 @@ class _CreateGame extends State<CreateGame> {
               ]),
             ),
     );
+  }
+
+  @override
+  void afterFirstLayout(BuildContext context) {
+    // TODO: implement afterFirstLayout
+    showWelcomeMessage(context);
   }
 }
