@@ -27,7 +27,6 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
   TextEditingController joinRoomIdTextController;
   String joinRoomId;
   var auth;
-  double height, width;
   // TODO: Room ID should be a hashed value
   String roomId;
   @override
@@ -373,8 +372,8 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                         AssetImage('assets/create_room_bg.png'),
                                     fit: BoxFit.cover),
                               ),
-                              height: 339.0,
-                              width: 241.0,
+                              height: MediaQuery.of(context).size.height*0.5,
+                              width: MediaQuery.of(context).size.width * 0.7 ,
                             ),
                           ),
                           Container(
@@ -394,7 +393,7 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                                 builder: (context) =>
                                                     CreateRoom())),
                                     child: Container(
-                                      height: 50.0,
+                                      height: MediaQuery.of(context).size.height*0.07,
                                       child: Material(
                                         borderRadius:
                                             BorderRadius.circular(20.0),
@@ -424,7 +423,7 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                                 builder: (context) =>
                                                     JoinRoom())),
                                     child: Container(
-                                      height: 50.0,
+                                      height: MediaQuery.of(context).size.height*0.07,
                                       child: Material(
                                         borderRadius:
                                             BorderRadius.circular(20.0),
@@ -444,7 +443,7 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                     )),
                                 SizedBox(
                                     height: MediaQuery.of(context).size.height *
-                                        0.05),
+                                        0.07),
                                 InkWell(
                                     onTap: () {
                                       Navigator.push(
@@ -454,7 +453,7 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                       );
                                     },
                                     child: Container(
-                                      height: 40.0,
+                                      height: MediaQuery.of(context).size.height*0.05,
                                       color: Colors.transparent,
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -475,7 +474,7 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                                     'assets/facebook.png'),
                                               ),
                                             ),
-                                            SizedBox(width: 10.0),
+                                            SizedBox(width: MediaQuery.of(context).size.width*0.01),
                                             Center(
                                               child: InkWell(
                                                 onTap: () {
