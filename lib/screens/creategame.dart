@@ -511,6 +511,6 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
   @override
   void afterFirstLayout(BuildContext context) {
     // TODO: implement afterFirstLayout
-    showWelcomeMessage(context);
+    if(user != null) showWelcomeMessage(context);
   }
 }
