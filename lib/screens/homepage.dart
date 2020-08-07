@@ -66,6 +66,7 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -75,7 +76,7 @@ class _LiteratureHomePage extends State<LiteratureHomePage> with WidgetsBindingO
             InkWell(
                 child: Container(
                 width: 200,
-                height: 200,
+                height: height*0.5,
                 decoration: BoxDecoration(
                   color: Color(0xFFe1f5fe),
                   shape: BoxShape.circle,
