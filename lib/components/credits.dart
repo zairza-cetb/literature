@@ -14,25 +14,28 @@ class Credits extends StatelessWidget {
           children: <Widget>[
             Row(children: <Widget>[
               GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  child: Icon(Icons.arrow_back_ios),
-                )),
-              Flexible(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: width * 0.1),
+                    //alignment: Alignment.centerLeft,
+                    margin: EdgeInsetsDirectional.only(start: width * 0.02),
+                    child: Icon(Icons.arrow_back_ios),
+                  )),
+              Expanded(
                 child: Material(
                     color: Colors.white,
                     child: Container(
-                      height: height*0.1,
-                      //margin: const EdgeInsets.only(left: 69.0),
-                      alignment: Alignment.center,
+                      //color: Colors.green,
+                      height: height * 0.1,
+                      margin: EdgeInsetsDirectional.fromSTEB(
+                          width * 0.15, width * 0.055, width * 0.1, width * 0),
                       child: Text(
                         "DEVELOPERS",
                         style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w500,
+                            fontSize: height * 0.04,
+                            fontWeight: FontWeight.w600,
                             fontFamily: 'helvetica',
                             color: Colors.black),
                       ),
@@ -41,29 +44,30 @@ class Credits extends StatelessWidget {
             ]),
             Center(
               child: Container(
-                margin: const EdgeInsets.all(2.0),
-                /* decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.00),
-                    border: Border.all(color: Colors.blueAccent, width: 4)),*/
+                margin: EdgeInsets.all(width * .01),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(width * 0.2),
+                    border: Border.all(
+                        color: Colors.blueAccent, width: width * 0.01)),
                 child: Container(
-                  height: height*0.18,
-                  width: width*0.3,
+                  height: height * 0.18,
+                  width: width * 0.3,
                   child: Material(
-                    borderRadius: BorderRadius.circular(10.0),
+                    borderRadius: BorderRadius.circular(width * 0.2),
                     shadowColor: Color(0xFFb3e5fc),
                     //color: Color(0xFF039be5),
-                    elevation: 7.0,
+                    elevation: width * 0.01,
                     child: GestureDetector(
                         onTap: () {
                           launch('https://zairza.in/');
                         },
                         child: Container(
-                            //margin:EdgeInsets.fromLTRB(1.0,10.0,150.0,10.0) ,
                             decoration: BoxDecoration(
                           image: DecorationImage(
-                              image: AssetImage('assets/zairza_logo.jpg'),
-                              fit: BoxFit.fill),
-                          borderRadius: BorderRadius.circular(10),
+                            image: AssetImage('assets/zairza_logo.jpg'),
+                            //fit: BoxFit.fill
+                          ),
+                          borderRadius: BorderRadius.circular(width * 0.2),
                         ))),
                   ),
                 ),
@@ -72,53 +76,57 @@ class Credits extends StatelessWidget {
             Material(
                 color: Colors.white,
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 30),
+                  padding: EdgeInsets.all( width * 0.05),
                   color: Colors.white,
-                  margin: const EdgeInsets.all(15.0),
+                  margin: EdgeInsets.fromLTRB(
+                      width * .04, width * 0, width * .04, width * 0),
                   alignment: Alignment.center,
                   child: Text(
                     "ZAIRZA, a society, a cult for CETIANS who want to be ahead in the game. The club is managed by its students and alumni. The society was founded in the year 2005 and got officially recognised in the year 2007 as a technical society of CET.",
                     textAlign: TextAlign.justify,
                     style: TextStyle(
-                      
-                        fontSize: 14,
+                        fontSize: height * 0.022,
                         fontWeight: FontWeight.w300,
                         fontFamily: 'helvetica',
                         color: Colors.black),
                   ),
                 )),
             Container(
-              margin: const EdgeInsets.fromLTRB(10.0, 6, 10, 6),
+              margin: EdgeInsets.fromLTRB(
+                  width * 0.032, width * 0.02, width * 0.032, width * 0.02),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30.00),
+                  borderRadius: BorderRadius.circular(width * 0.068),
                   border: Border.all(color: Color(0xFF6ad1ff))),
-              height: height*0.15,
+              height: height * 0.15,
               child: Material(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: BorderRadius.circular(width * 0.068),
                 shadowColor: Color(0xFFb3e5fc),
                 //color: Color(0xFF039be5),
-                elevation: 7.0,
+                elevation: width * 0.02,
                 child: Center(
                   child: Row(children: <Widget>[
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        margin: EdgeInsets.symmetric(horizontal: width * 0.1),
                         child: CircleAvatar(
-                          radius: 30,
+                          radius: width * 0.08,
                           //backgroundColor: Colors.lime,
                         ),
                       ),
                     ),
                     Flexible(
                       child: Container(
-                        width: width*0.6,
+                        width: width * 0.6,
                         //color: Colors.amber,
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Aquib Baig',
                           style: TextStyle(
-                              color: Colors.black, fontFamily: 'helvetica', fontSize: 14),
+                            color: Colors.black,
+                            fontFamily: 'helvetica',
+                            fontSize: height * 0.022,
+                          ),
                         ),
                       ),
                     )
@@ -127,37 +135,41 @@ class Credits extends StatelessWidget {
               ),
             ),
             Container(
-              margin: const EdgeInsets.fromLTRB(10.0, 6, 10, 6),
+              margin: EdgeInsets.fromLTRB(
+                  width * 0.032, width * 0.02, width * 0.032, width * 0.02),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30.00),
+                  borderRadius: BorderRadius.circular(width * 0.068),
                   border: Border.all(color: Color(0xFF6ad1ff))),
-              height: height*0.15,
+              height: height * 0.15,
               child: Material(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: BorderRadius.circular(width * 0.068),
                 shadowColor: Color(0xFFb3e5fc),
                 //color: Color(0xFF039be5),
-                elevation: 7.0,
+                elevation: width * 0.02,
                 child: Center(
                   child: Row(children: <Widget>[
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        margin: EdgeInsets.symmetric(horizontal: width * 0.1),
                         child: CircleAvatar(
-                          radius: 30,
+                          radius: width * 0.08,
                           //backgroundColor: Colors.lime,
                         ),
                       ),
                     ),
                     Flexible(
                       child: Container(
-                        width: width*0.6,
+                        width: width * 0.6,
                         //color: Colors.amber,
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Harish Umaid',
                           style: TextStyle(
-                              color: Colors.black, fontFamily: 'helvetica', fontSize: 14),
+                            color: Colors.black,
+                            fontFamily: 'helvetica',
+                            fontSize: height * 0.022,
+                          ),
                         ),
                       ),
                     )
@@ -166,37 +178,41 @@ class Credits extends StatelessWidget {
               ),
             ),
             Container(
-              margin: const EdgeInsets.fromLTRB(10.0, 6, 10, 6),
+              margin: EdgeInsets.fromLTRB(
+                  width * 0.032, width * 0.02, width * 0.032, width * 0.02),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30.00),
+                  borderRadius: BorderRadius.circular(width * 0.068),
                   border: Border.all(color: Color(0xFF6ad1ff))),
-              height: height*0.15,
+              height: height * 0.15,
               child: Material(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: BorderRadius.circular(width * 0.068),
                 shadowColor: Color(0xFFb3e5fc),
                 //color: Color(0xFF039be5),
-                elevation: 7.0,
+                elevation: width * 0.02,
                 child: Center(
                   child: Row(children: <Widget>[
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        margin: EdgeInsets.symmetric(horizontal: width * 0.1),
                         child: CircleAvatar(
-                          radius: 30,
+                          radius: width * 0.08,
                           //backgroundColor: Colors.lime,
                         ),
                       ),
                     ),
                     Flexible(
                       child: Container(
-                        width: width*0.6,
+                        width: width * 0.6,
                         //color: Colors.amber,
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Animesh Kar',
                           style: TextStyle(
-                              color: Colors.black, fontFamily: 'helvetica', fontSize: 14),
+                            color: Colors.black,
+                            fontFamily: 'helvetica',
+                            fontSize: height * 0.022,
+                          ),
                         ),
                       ),
                     )
@@ -205,37 +221,41 @@ class Credits extends StatelessWidget {
               ),
             ),
             Container(
-              margin: const EdgeInsets.fromLTRB(10.0, 6, 10, 6),
+              margin: EdgeInsets.fromLTRB(
+                  width * 0.032, width * 0.02, width * 0.032, width * 0.04),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30.00),
+                  borderRadius: BorderRadius.circular(width * 0.068),
                   border: Border.all(color: Color(0xFF6ad1ff))),
-              height: height*0.15,
+              height: height * 0.15,
               child: Material(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: BorderRadius.circular(width * 0.068),
                 shadowColor: Color(0xFFb3e5fc),
                 //color: Color(0xFF039be5),
-                elevation: 7.0,
+                elevation: width * 0.02,
                 child: Center(
                   child: Row(children: <Widget>[
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        margin: EdgeInsets.symmetric(horizontal: width * 0.1),
                         child: CircleAvatar(
-                          radius: 30,
+                          radius: width * 0.08,
                           //backgroundColor: Colors.lime,
                         ),
                       ),
                     ),
                     Flexible(
                       child: Container(
-                        width: width*0.6,
+                        width: width * 0.6,
                         //color: Colors.amber,
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'Prateek Mohanty',
                           style: TextStyle(
-                              color: Colors.black, fontFamily: 'helvetica', fontSize: 14),
+                            color: Colors.black,
+                            fontFamily: 'helvetica',
+                            fontSize: height * 0.022,
+                          ),
                         ),
                       ),
                     )

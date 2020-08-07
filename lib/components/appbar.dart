@@ -14,10 +14,11 @@ class GlobalAppBar extends StatefulWidget implements PreferredSizeWidget {
 class BackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return Container(
       child: IconButton(
         color: Color(0xFF6ad1ff),
-        iconSize: 15,
+        iconSize: width * 0.06,
         icon: Icon(Icons.arrow_back_ios),
         onPressed: () {
           Navigator.of(context).pop();
@@ -34,9 +35,10 @@ showSettingsDialog(BuildContext context) {
     Align(alignment: Alignment.centerLeft, child: BackButton()),
   ]);
   Widget music = Container(
-    margin: const EdgeInsets.all(2.0),
+    margin: EdgeInsets.fromLTRB(
+        width * 0.011, width * 0.02, width * 0.011, width * 0.02),
     decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.00),
+        borderRadius: BorderRadius.circular(width * 0.025),
         border: Border.all(
             color: Color(0xFF6ad1ff))), //             <--- BoxDecoration here
     child: GestureDetector(
@@ -44,10 +46,10 @@ showSettingsDialog(BuildContext context) {
         width: width * 0.8,
         height: height * 0.078,
         child: Material(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(width * 0.025),
           shadowColor: Color(0xFF6ad1ff),
           //color: Color(0xFF039be5),
-          elevation: 7.0,
+          elevation: width * 0.015,
           child: Center(
             child: Text(
               'Music',
@@ -60,19 +62,20 @@ showSettingsDialog(BuildContext context) {
     ),
   );
   Widget theme = Container(
-    margin: const EdgeInsets.all(2.0),
+    margin: EdgeInsets.fromLTRB(
+        width * 0.011, width * 0.02, width * 0.011, width * 0.02),
     decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.00),
+        borderRadius: BorderRadius.circular(width * 0.025),
         border: Border.all(
             color: Color(0xFF6ad1ff))), //             <--- BoxDecoration here
     child: GestureDetector(
       child: Container(
         height: height * 0.078,
         child: Material(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(width * 0.025),
           shadowColor: Color(0xFF6ad1ff),
           //color: Color(0xFF039be5),
-          elevation: 7.0,
+          elevation: width * 0.015,
           child: Center(
             child: Text(
               'Change Theme',
@@ -110,18 +113,19 @@ showAlertDialog(BuildContext context) {
     Align(alignment: Alignment.centerLeft, child: BackButton()),
   ]);
   Widget settings = Container(
-    margin: const EdgeInsets.all(2.0),
+    margin: EdgeInsets.fromLTRB(
+        width * 0.011, width * 0.02, width * 0.011, width * 0.02),
     decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.00),
+        borderRadius: BorderRadius.circular(width * 0.025),
         border: Border.all(color: Color(0xFF6ad1ff))),
     child: GestureDetector(
       child: Container(
         height: height * 0.078,
         child: Material(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(width * 0.025),
           shadowColor: Color(0xFF6ad1ff),
           //color: Color(0xFF039be5),
-          elevation: 7.0,
+          elevation: width * 0.015,
           child: Center(
             child: Text(
               'Settings',
@@ -136,18 +140,19 @@ showAlertDialog(BuildContext context) {
     ),
   );
   Widget profile = Container(
-    margin: const EdgeInsets.all(2.0),
+    margin: EdgeInsets.fromLTRB(
+        width * 0.011, width * 0.02, width * 0.011, width * 0.02),
     decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.00),
+        borderRadius: BorderRadius.circular(width * 0.025),
         border: Border.all(color: Color(0xFF6ad1ff))),
     child: GestureDetector(
       child: Container(
         height: height * 0.078,
         child: Material(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(width * 0.025),
           shadowColor: Color(0xFF6ad1ff),
           //color: Color(0xFF039be5),
-          elevation: 7.0,
+          elevation: width * 0.015,
           child: Center(
             child: Text(
               'Profile',
@@ -162,19 +167,20 @@ showAlertDialog(BuildContext context) {
     ),
   );
   Widget devdet = Container(
-    margin: const EdgeInsets.all(2.0),
+    margin: EdgeInsets.fromLTRB(
+        width * 0.011, width * 0.02, width * 0.011, width * 0.02),
     decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.00),
+        borderRadius: BorderRadius.circular(width * 0.025),
         border: Border.all(color: Color(0xFF6ad1ff))),
     child: GestureDetector(
       child: Container(
         height: height * 0.078,
         width: width * 0.8,
         child: Material(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(width * 0.025),
           shadowColor: Color(0xFF6ad1ff),
           //color: Color(0xFF039be5),
-          elevation: 7.0,
+          elevation: width * 0.015,
           child: Center(
             child: Text(
               "Developers' Details",
@@ -190,19 +196,20 @@ showAlertDialog(BuildContext context) {
     ),
   );
   Widget lic = Container(
-    margin: const EdgeInsets.all(2.0),
+    margin: EdgeInsets.fromLTRB(
+        width * 0.011, width * 0.02, width * 0.011, width * 0.02),
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10.00),
+      borderRadius: BorderRadius.circular(width * 0.025),
       border: Border.all(color: Color(0xFF6ad1ff)),
     ),
     child: GestureDetector(
       child: Container(
         height: height * 0.078,
         child: Material(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(width * 0.025),
           shadowColor: Color(0xFF6ad1ff),
           //color: Color(0xFF039be5),
-          elevation: 7.0,
+          elevation: width * 0.015,
           child: Center(
             child: Text(
               'License',
@@ -217,19 +224,20 @@ showAlertDialog(BuildContext context) {
     ),
   );
   Widget howtoplay = Container(
-    margin: const EdgeInsets.all(2.0),
+    margin: EdgeInsets.fromLTRB(
+        width * 0.011, width * 0.02, width * 0.011, width * 0.02),
     decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.00),
+        borderRadius: BorderRadius.circular(width * 0.025),
         border: Border.all(
             color: Color(0xFF6ad1ff))), //             <--- BoxDecoration here
     child: GestureDetector(
       child: Container(
         height: height * 0.078,
         child: Material(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(width * 0.025),
           shadowColor: Color(0xFF6ad1ff),
           //color: Color(0xFF039be5),
-          elevation: 7.0,
+          elevation: width * 0.015,
           child: Center(
             child: Text(
               'How To Play',
@@ -266,6 +274,7 @@ showAlertDialog(BuildContext context) {
 class _GlobalAppBarState extends State<GlobalAppBar> {
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return Container(
       height: MediaQuery.of(context).size.height * 0.1,
       child: AppBar(
@@ -280,11 +289,11 @@ class _GlobalAppBarState extends State<GlobalAppBar> {
           color: Color(0xFF303f9f),
         ),
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: width * 0.0,
         title: Text('Literature',
             style: TextStyle(
                 fontFamily: 'B612',
-                fontSize: 25.0,
+                fontSize: MediaQuery.of(context).size.height * 0.04,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF303f9f))),
         centerTitle: true,
@@ -301,7 +310,7 @@ class _GlobalAppBarState extends State<GlobalAppBar> {
         actions: <Widget>[
           GestureDetector(
             child: CircleAvatar(
-              radius: 20,
+              radius: width * 0.05,
               backgroundColor: Color(0xFF6ad1ff),
 /*              child: Text(
                 'OK'
