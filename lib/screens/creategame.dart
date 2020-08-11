@@ -47,7 +47,6 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
   userDetails() async {
     auth = FirebaseAuth.instance;
     user = await auth.currentUser();
-    print(user.photoUrl);
   }
 
   _createGameListener(Map message) {
@@ -237,7 +236,9 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
         animType: AnimType.BOTTOMSLIDE,
         title: 'Welcome ' + u.displayName.split(' ').first,
         desc: ' ',
-        btnOkOnPress: () {},
+        btnOkOnPress: () {
+          // dispose();
+        },
         dismissOnBackKeyPress: true,
         dismissOnTouchOutside: true,
         useRootNavigator: false)
@@ -372,8 +373,8 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                         AssetImage('assets/create_room_bg.png'),
                                     fit: BoxFit.cover),
                               ),
-                              height: MediaQuery.of(context).size.height*0.5,
-                              width: MediaQuery.of(context).size.width * 0.7 ,
+                              height: MediaQuery.of(context).size.height * 0.5,
+                              width: MediaQuery.of(context).size.width * 0.7,
                             ),
                           ),
                           Container(
@@ -393,7 +394,9 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                                 builder: (context) =>
                                                     CreateRoom())),
                                     child: Container(
-                                      height: MediaQuery.of(context).size.height*0.07,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.07,
                                       child: Material(
                                         borderRadius:
                                             BorderRadius.circular(20.0),
@@ -423,7 +426,9 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                                 builder: (context) =>
                                                     JoinRoom())),
                                     child: Container(
-                                      height: MediaQuery.of(context).size.height*0.07,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.07,
                                       child: Material(
                                         borderRadius:
                                             BorderRadius.circular(20.0),
@@ -453,7 +458,9 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                       );
                                     },
                                     child: Container(
-                                      height: MediaQuery.of(context).size.height*0.05,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.05,
                                       color: Colors.transparent,
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -474,7 +481,11 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                                     'assets/facebook.png'),
                                               ),
                                             ),
-                                            SizedBox(width: MediaQuery.of(context).size.width*0.01),
+                                            SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.01),
                                             Center(
                                               child: InkWell(
                                                 onTap: () {
@@ -511,6 +522,6 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
   @override
   void afterFirstLayout(BuildContext context) {
     // TODO: implement afterFirstLayout
-    if(user != null) showWelcomeMessage(context);
+    // if (currPlayerProvider.user != null) showWelcomeMessage(context);
   }
 }

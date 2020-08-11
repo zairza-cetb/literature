@@ -21,6 +21,10 @@ dependencies:
     sdk: flutter
 
   #Custom Plugins
+  intro_views_flutter:
+    git: git://github.com/aagarwal1012/IntroViews-Flutter
+  introduction_screen: ^1.0.7
+  url_launcher: ^5.5.0
   shared_preferences: ^0.5.6+3
   flutter_local_notifications: ^0.6.0
   path_provider: ^1.5.1
@@ -79,7 +83,7 @@ flutter:
     - assets/frame_blue.png
     - assets/frame_purple.png
     - assets/game_mat_basic.png
-    
+    - assets/zairza_logo.jpg
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -108,6 +112,12 @@ flutter:
         - asset: assets/fonts/B612-Bold.ttf
         - asset: assets/fonts/B612-Italic.ttf
         - asset: assets/fonts/B612-BoldItalic.ttf
+    - family: Helvetica
+      fonts:
+        - asset: assets/fonts/helvetica-light.ttf
+    - family: FiraFlott
+      fonts:
+        - asset:  assets/fonts/FiraFlott.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:
