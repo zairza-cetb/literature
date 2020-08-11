@@ -329,13 +329,16 @@ class _GlobalAppBarState extends State<GlobalAppBar> {
         // ],
         actions: <Widget>[
           GestureDetector(
-            child: CircleAvatar(
-              radius: width * 0.05,
-              backgroundColor: (user == null) ? Color(0xFF6ad1ff) : null,
-              backgroundImage: (user != null)
-                  ? NetworkImage(user.photoUrl, scale: 1.0)
-                  : null,
-              child: (user != null) ? null : Text('A'),
+            child: Padding(
+              padding: EdgeInsets.all(10.0),
+              child: CircleAvatar(
+                radius: width * 0.05,
+                backgroundColor: (user == null) ? Color(0xFF6ad1ff) : null,
+                backgroundImage: (user != null)
+                    ? NetworkImage(user.photoUrl, scale: 1.0)
+                    : null,
+                child: (user != null) ? null : Text('A'),
+              ),
             ),
             onTap: () {
               showAlertDialog(context);
