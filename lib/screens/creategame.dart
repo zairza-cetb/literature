@@ -221,13 +221,14 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
       ..show();
   }
 
-  void showWelcomeMessage(BuildContext context) {
+  void showWelcomeMessage() {
     FirebaseUser u = currPlayerProvider.user;
+    var dialogContext = context;
     AwesomeDialog(
-        context: context,
+        context: dialogContext,
         dialogType: DialogType.NO_HEADER,
         customHeader: CircleAvatar(
-          radius: 200,
+          radius: MediaQuery.of(context).size.height * 0.2,
           child: Image.network(
             u.photoUrl,
           ),
@@ -237,11 +238,10 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
         title: 'Welcome ' + u.displayName.split(' ').first,
         desc: ' ',
         btnOkOnPress: () {
-          // dispose();
+          dispose();
         },
-        dismissOnBackKeyPress: true,
         dismissOnTouchOutside: true,
-        useRootNavigator: false)
+        useRootNavigator: true)
       ..show();
   }
 
@@ -266,12 +266,12 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
               children: <Widget>[
                 Center(
                   child: new Text(
-                    " Join Room",
+                    "Join Room",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.blueAccent,
                       fontFamily: 'B612',
-                      fontSize: 25,
+                      fontSize: MediaQuery.of(context).size.width * 0.075,
                     ),
                   ),
                 ),
@@ -286,7 +286,8 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                         MediaQuery.of(context).size.width * 0.01,
                         MediaQuery.of(context).size.height * 0.01),
                     border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(32.0),
+                      borderRadius: new BorderRadius.circular(
+                          MediaQuery.of(context).size.height * 0.03),
                     ),
                     icon: const Icon(Icons.person),
                   ),
@@ -343,20 +344,24 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                   Stack(
                     children: <Widget>[
                       Container(
-                          height: MediaQuery.of(context).size.height - 100,
+                          height: MediaQuery.of(context).size.height * 0.85,
                           width: MediaQuery.of(context).size.width,
                           color: Colors.transparent),
                       Positioned(
-                          top: MediaQuery.of(context).size.height / 15,
+                          top: MediaQuery.of(context).size.height * 0.035,
                           child: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(45.0),
-                                    topRight: Radius.circular(45.0),
+                                    topLeft: Radius.circular(
+                                        MediaQuery.of(context).size.height *
+                                            0.035),
+                                    topRight: Radius.circular(
+                                        MediaQuery.of(context).size.height *
+                                            0.035),
                                   ),
                                   color: Colors.white),
                               height: MediaQuery.of(context).size.height -
-                                  MediaQuery.of(context).size.height / 15,
+                                  MediaQuery.of(context).size.height * 0.025,
                               width: MediaQuery.of(context).size.width)),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -398,8 +403,9 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                           MediaQuery.of(context).size.height *
                                               0.07,
                                       child: Material(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
+                                        borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.height *
+                                                0.05),
                                         shadowColor: Color(0xFFb3e5fc),
                                         color: Color(0xFF039be5),
                                         elevation: 7.0,
@@ -430,8 +436,9 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                           MediaQuery.of(context).size.height *
                                               0.07,
                                       child: Material(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0),
+                                        borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.height *
+                                                0.05),
                                         shadowColor: Color(0xFF24315E),
                                         color: Color(0xffb0bec5),
                                         elevation: 7.0,
@@ -450,62 +457,59 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                                     height: MediaQuery.of(context).size.height *
                                         0.07),
                                 InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => JoinRoom()),
-                                      );
-                                    },
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => JoinRoom()),
+                                    );
+                                  },
+                                  child: Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.05,
+                                    color: Colors.transparent,
                                     child: Container(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.05,
-                                      color: Colors.transparent,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.black,
-                                                style: BorderStyle.solid,
-                                                width: 1.0),
-                                            color: Colors.transparent,
-                                            borderRadius:
-                                                BorderRadius.circular(20.0)),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            Center(
-                                              child: ImageIcon(
-                                                AssetImage(
-                                                    'assets/facebook.png'),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.black,
+                                              style: BorderStyle.solid,
+                                              width: 1.0),
+                                          color: Colors.transparent,
+                                          borderRadius: BorderRadius.circular(
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.025)),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Center(
+                                            child: ImageIcon(
+                                              AssetImage('assets/facebook.png'),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.01),
+                                          Center(
+                                            child: InkWell(
+                                              onTap: () {},
+                                              child: Text(
+                                                'Invite Friends with Facebook',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily: 'B612'),
                                               ),
                                             ),
-                                            SizedBox(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.01),
-                                            Center(
-                                              child: InkWell(
-                                                onTap: () {
-                                                  var auth =
-                                                      FirebaseAuth.instance;
-                                                  auth.signOut();
-                                                },
-                                                child: Text(
-                                                  'Invite Friends with Facebook',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontFamily: 'B612'),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
+                                          )
+                                        ],
                                       ),
-                                    )),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -521,7 +525,6 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
 
   @override
   void afterFirstLayout(BuildContext context) {
-    // TODO: implement afterFirstLayout
-    // if (currPlayerProvider.user != null) showWelcomeMessage(context);
+    if (currPlayerProvider.user != null) showWelcomeMessage();
   }
 }
