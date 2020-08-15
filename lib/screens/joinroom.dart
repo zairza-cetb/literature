@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:literature/components/appbar.dart';
 import 'package:literature/models/player.dart';
@@ -100,14 +101,14 @@ class _JoinRoomState extends State<JoinRoom> {
             ));
         break;
       case "roomisfull":
-        showCustomDialogWithImage(context, "full");
+        showAnimateDialogBox(context, "full");
         game.disconnect();
         setState(() {
           isLoading = false;
         });
         break;
       case "invalid room":
-        showCustomDialogWithImage(context, "invalid");
+        showAnimateDialogBox(context, "invalid");
         game.disconnect();
         setState(() {
           isLoading = false;
@@ -201,55 +202,19 @@ class _JoinRoomState extends State<JoinRoom> {
 /// ------------------------
 /// Show Dialog for Users
 /// ------------------------
-void showCustomDialogWithImage(BuildContext context, String arg) {
-  Dialog dialogWithImage = Dialog(
-    child: Container(
-      height: 300.0,
-      width: 300.0,
-      child: Column(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(10),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Colors.blue[300],
-            ),
-            child: Text(
-              "SORRY !!!",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-          Container(
-            height: 200,
-            width: 300,
-            child: Image.asset(
-              (arg == "full") ? 'assets/roomisfull.png' : 'assets/noroom.png',
-              fit: BoxFit.scaleDown,
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              RaisedButton(
-                color: Colors.red,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  'Go To Main Screen',
-                  style: TextStyle(fontSize: 18.0, color: Colors.white),
-                ),
-              )
-            ],
-          ),
-        ],
-      ),
-    ),
-  );
-  showDialog(
-      context: context, builder: (BuildContext context) => dialogWithImage);
+void showAnimateDialogBox(BuildContext context, String arg) {
+  AwesomeDialog(
+        context: context,
+        dialogType: DialogType.ERROR,
+        animType: AnimType.BOTTOMSLIDE,
+        btnOkColor: Colors.red,
+        title: (arg == "full") ? 'Room is Full' : 'Invalid Room',
+        desc: (arg == "full")
+            ? 'The Room you have requested to join is already full.'
+            : 'The Room you have requested to join doesn\'t exist.',
+        btnOkOnPress: () {},
+        dismissOnBackKeyPress: true,
+        dismissOnTouchOutside: true,
+        useRootNavigator: false)
+      ..show();
 }
