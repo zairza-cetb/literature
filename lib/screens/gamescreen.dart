@@ -293,7 +293,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.height);
     return new SafeArea(
       bottom: false,
       top: false,

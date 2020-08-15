@@ -245,8 +245,8 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
       ..show();
   }
 
-  void showJoinDialog(BuildContext context) {
-    showDialog(
+  Future showJoinDialog(BuildContext context) {
+    return showDialog(
         child: new Dialog(
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
@@ -264,32 +264,33 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Center(
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
                   child: new Text(
                     "Join Room",
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.left,
                     style: TextStyle(
-                      color: Colors.blueAccent,
+                      color: Colors.black,
                       fontFamily: 'B612',
-                      fontSize: MediaQuery.of(context).size.width * 0.075,
+                      fontSize: MediaQuery.of(context).size.width * 0.045,
                     ),
                   ),
                 ),
-                new TextField(
-                  controller: joinRoomIdTextController,
-                  keyboardType: TextInputType.text,
-                  decoration: new InputDecoration(
-                    hintText: 'Enter Room ID...',
-                    contentPadding: EdgeInsets.fromLTRB(
-                        MediaQuery.of(context).size.width * 0.01,
-                        MediaQuery.of(context).size.height * 0.01,
-                        MediaQuery.of(context).size.width * 0.01,
-                        MediaQuery.of(context).size.height * 0.01),
-                    border: new OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(
-                          MediaQuery.of(context).size.height * 0.03),
+                Container(
+                  width: 200,
+                  child: new TextField(
+                    controller: joinRoomIdTextController,
+                    keyboardType: TextInputType.text,
+                    decoration: new InputDecoration(
+                      hintText: '   Enter Room ID',
+                      contentPadding: EdgeInsets.fromLTRB(
+                          MediaQuery.of(context).size.width * 0.01,
+                          MediaQuery.of(context).size.height * 0.01,
+                          MediaQuery.of(context).size.width * 0.01,
+                          MediaQuery.of(context).size.height * 0.01),
+                      border: new OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.person),
                     ),
-                    icon: const Icon(Icons.person),
                   ),
                 ),
                 Row(
@@ -303,7 +304,7 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
                         },
                         child: Text(
                           'Close',
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: Colors.blue),
                         )),
                     FlatButton(
                       onPressed: () {

@@ -12,10 +12,16 @@ class Player extends ChangeNotifier {
   bool teamLeader;
   // Team identifier
   String teamIdentifier;
-  //name from firebase
+  // name from firebase
   String loginName;
-  //photo url
+  // photo url
   String photoUrl;
+  // selected card design
+  String selectedCardDesign;
+  // selected theme.
+  String selectedTheme;
+  // purchased store content.
+  List<String> purchasedStoreContent;
 
   // Constructor
   Player({
@@ -25,7 +31,8 @@ class Player extends ChangeNotifier {
     this.teamIdentifier,
     this.teamLeader = false,
     this.loginName,
-    this.photoUrl
+    this.photoUrl,
+    this.selectedCardDesign = "default",
+    this.selectedTheme = "default"
   });
-
 }
