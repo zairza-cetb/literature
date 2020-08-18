@@ -4,6 +4,7 @@ import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/screens/howtoplay.dart';
 import 'package:literature/screens/landingpage.dart';
 import 'package:literature/screens/profile.dart';
+import 'package:literature/store/store.dart';
 import 'package:literature/utils/game_communication.dart';
 import 'package:literature/components/credits.dart';
 import 'package:provider/provider.dart';
@@ -328,11 +329,21 @@ class _GlobalAppBarState extends State<GlobalAppBar> {
         //   ),
         // ],
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Store())
+              );
+            },
+            color: Color(0xFF303f9f),
+          ),
           GestureDetector(
             child: Padding(
               padding: EdgeInsets.all(10.0),
               child: CircleAvatar(
-                radius: width * 0.05,
+                radius: 15.0,
                 backgroundColor: (user == null) ? Color(0xFF6ad1ff) : null,
                 backgroundImage: (user != null)
                     ? NetworkImage(user.photoUrl, scale: 1.0)
