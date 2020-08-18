@@ -40,14 +40,105 @@ class _StoreState extends State<Store> {
     var appBar = GlobalAppBar();
     return Scaffold(
       appBar: appBar,
-      body: Row(
-        children: <Widget>[
-          SizedBox(height: 20.0,),
-          Expanded(
-            child: _buildInfoExpansionPanel()
-          )
-        ],
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            // SizedBox(height: 20.0,),
+            _buildInfoExpansionPanel(),
+            Padding(
+              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "MEGA ARTIFACTS PACK",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ),
+                  Card(
+                    child: Container(
+                      height: 300,
+                      child: Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 2, color: Colors.lightBlue),
+                          ),
+                          child: Padding(padding: EdgeInsets.all(2), child: Text("Rs 99.00"))
+                        )
+                      ),
+                    ),
+                  ),
+                ]
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Text(
+                  "OBTAINABLE ITEMS",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
+            ),
+            _getObtainableItems()
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _getObtainableItems() {
+    return ListView(
+      shrinkWrap: true,
+      children: <Widget>[
+        Card(
+          child: Container(
+            height: 100,
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2, color: Colors.lightBlue),
+                ),
+                child: Padding(padding: EdgeInsets.all(2), child: Text("CARDS"))
+              )
+            ),
+          ),
+        ),
+        Card(
+          child: Container(
+            height: 100,
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2, color: Colors.lightBlue),
+                ),
+                child: Padding(padding: EdgeInsets.all(2), child: Text("GAME MATS"))
+              )
+            ),
+          ),
+        ),
+        Card(
+          child: Container(
+            height: 100,
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(width: 2, color: Colors.lightBlue),
+                ),
+                child: Padding(padding: EdgeInsets.all(2), child: Text("ROPES"))
+              )
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -67,11 +158,11 @@ class _StoreState extends State<Store> {
         ),
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
+            padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '''Items in literature are categorised in different categories as follows. Rarer the category, the hardest it is to obtain that particular item.''',
+                '''Items in literature are categorised in different categories as follows. Rarer the category, the harder it is to obtain that particular item.''',
                 maxLines: 3,
               )
             ),
@@ -103,7 +194,7 @@ class _StoreState extends State<Store> {
 
   Widget getArtifactsList() {
     var children = artifacts.map((item) => Padding(
-      padding: EdgeInsets.all(5),
+      padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
