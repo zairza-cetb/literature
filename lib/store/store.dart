@@ -1,14 +1,44 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:literature/components/appbar.dart';
+import 'package:http/http.dart' as http;
+import 'package:literature/store/artifacts.dart';
+import 'package:literature/store/rarity.dart';
 
 class Store extends StatefulWidget {
   @override
   _StoreState createState() => _StoreState();
 }
 
+class Item {
+  String tier;
+  String value;
+}
+
 class _StoreState extends State<Store> {
+  // This widget will update when someone searches for the item.
+  Widget generatedItems = Text("Please wait...");
+  // This needs to be updated once we make
+  // network requests.
+  double walletCurrency = 0.00;
+  // Async network request to fetch account information.
+  Future fetchAccountInformation() async {
+    final response = await http.get('http://localhost:3000/wallet');
+    if (response.statusCode == 200) {
+      setState(() {
+        walletCurrency = double.parse(response.body);
+      });
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to load the store. Check your network.');
+    }
+  }
   @override
   void initState() {
+    fetchAccountInformation();
     super.initState();
   }
 
@@ -34,6 +64,89 @@ class _StoreState extends State<Store> {
       "chance": '60%'
     }
   ];
+
+  // Searches for a value within the
+  // random number generator.
+  int binarySearch(int rng, List arr) {
+    int lo = 0;
+    int hi = arr.length;
+    while (lo < hi) {
+      int mid = lo + (hi-lo)~/2;
+      if (arr[mid] < rng) {
+        lo = mid+1;
+      } else hi = mid;
+    }
+    return lo;
+  }
+
+  String findItem(int index) {
+    var selectedTier = store[index];
+    final random = new Random();
+    var i = random.nextInt(selectedTier[selectedTier.keys.first].length);
+    return selectedTier[selectedTier.keys.first][i];
+  }
+
+  Map getItem() {
+    List arr = [];
+    int accum = 0;
+    rarity.forEach((artifact) {
+      accum = accum + artifact["rarity"];
+      arr.add(accum);
+    });
+    Random rng = new Random();
+    int randomNumeral = rng.nextInt(accum);
+    int index = binarySearch(randomNumeral, arr);
+    Map item = { "tier": rarity[index]["tier"], "index": index };
+    return item;
+  }
+
+  void getGeneratedItems() {
+    List items = new List();
+    // assign to generatedItems
+    for(var i=0; i<5; i++) {
+      // break it down as findRarity
+      // findItem into a composite class
+      // such as Item.
+      Map itemObj = getItem();
+      var actualItem = findItem(itemObj["index"]);
+      Item item = new Item();
+      item.tier = itemObj["tier"];
+      item.value = actualItem;
+      items.add(item);
+    }
+    List<Widget> children = new List();
+    for (var i=0; i < items.length; i++) {
+      children.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              items[i].value,
+              style: TextStyle(
+                // color: getColor(item["color"]),
+                fontWeight: FontWeight.bold
+              ),
+            ),
+            Expanded(
+              child: Text(
+                items[i].tier,
+                style: TextStyle(
+                  // color: getColor(item["color"]),
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            )
+          ]
+        )
+      );
+    }
+    setState(() {
+      generatedItems = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: children
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext ctx) {
@@ -68,7 +181,37 @@ class _StoreState extends State<Store> {
                           decoration: BoxDecoration(
                             border: Border.all(width: 2, color: Colors.lightBlue),
                           ),
-                          child: Padding(padding: EdgeInsets.all(2), child: Text("Rs 99.00"))
+                          child: GestureDetector(
+                            onTap: () {
+                              // Subtract the money.
+                              if (walletCurrency >= 99.0) {
+                                setState(() {
+                                  walletCurrency -= 99.00;
+                                });
+                                getGeneratedItems();
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("You got..."),
+                                      content: generatedItems
+                                    );
+                                  }
+                                );
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Icon(Icons.info),
+                                      content: Text("You do not have enough currency")
+                                    );
+                                  }
+                                );
+                              }
+                            },
+                            child: Padding(padding: EdgeInsets.all(2), child: Text("Rs 99.00"))
+                          )
                         )
                       ),
                     ),
@@ -133,7 +276,7 @@ class _StoreState extends State<Store> {
                 decoration: BoxDecoration(
                   border: Border.all(width: 2, color: Colors.lightBlue),
                 ),
-                child: Padding(padding: EdgeInsets.all(2), child: Text("ROPES"))
+                child: Padding(padding: EdgeInsets.all(2), child: Text("ARENA"))
               )
             ),
           ),
@@ -150,9 +293,16 @@ class _StoreState extends State<Store> {
       child: ExpansionTile(
         title: Container(
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Icon(Icons.apps),
-              Text(" Artifacts in Literature")
+              Row(children: <Widget>[
+                Icon(Icons.apps),
+                Text(" Artifacts in Literature")
+              ]),
+              Row(children: <Widget>[
+                Icon(Icons.card_giftcard),
+                Text(" " + walletCurrency.toString())
+              ])
             ],
           ),
         ),

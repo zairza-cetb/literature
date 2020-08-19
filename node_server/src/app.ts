@@ -28,6 +28,10 @@ const io = socketio(http);
 app.get("/", function (_req, res) {
   res.send("Hello World");
 });
+// Testing wallet endpoints.
+app.get("/wallet", (_req, res) => {
+  return res.send("200");
+})
 app.set("port", PORT);
 
 // ================
