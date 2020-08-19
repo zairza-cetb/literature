@@ -14,7 +14,7 @@ import shortid from "shortid";
 const app = express();
 app.use(cors());
 
-mongoose.connect("mongodb://mongo:27017/literature", { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: true }).then(
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: true }).then(
   () => { /** ready to use. The `mongoose.connect()` promise resolves to undefined. */ },
 ).catch(err => {
   console.log("MongoDB connection error. Please make sure MongoDB is running. " + err);
@@ -28,6 +28,10 @@ const io = socketio(http);
 app.get("/", function (_req, res) {
   res.send("Hello World");
 });
+// Testing wallet endpoints.
+app.get("/wallet", (_req, res) => {
+  return res.send("200");
+})
 app.set("port", PORT);
 
 // ================

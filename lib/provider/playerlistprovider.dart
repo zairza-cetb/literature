@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:literature/models/player.dart';
@@ -37,5 +38,16 @@ class PlayerList extends ChangeNotifier {
 
   void addFirebaseUser(FirebaseUser u) {
     user = u;
+  }
+
+  String getCardDesignDetails (Player pl) {
+    Player p = _list.firstWhere((element) => pl.name == element.name);
+    return p.selectedCardDesign;
+  }
+
+  void setCardDesignDetails (Player pl, String name) {
+    Player p = _list.firstWhere((element) => pl.name == element.name);
+    p.selectedCardDesign = name;
+    return;
   }
 }

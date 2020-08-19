@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:literature/models/playing_cards.dart';
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:literature/provider/playerlistprovider.dart';
+import 'package:provider/provider.dart';
+import 'package:literature/store/card-designs/prime.dart';
 
+// ignore: must_be_immutable
 class CardDeck extends StatefulWidget {
   CardDeck({
     Key key,
@@ -31,16 +35,21 @@ class _CardDeckState extends State<CardDeck> {
   void dispose() {
     super.dispose();
   }
-
-  // Widget _rowCardsView() {
-  //   return _largeCardsDeck();
-  // }
   
   @override
   Widget build(BuildContext context) {
-    return new Center(child: _buildCardDeck());
+    final playerProvider = Provider.of<PlayerList>(context, listen: false);
+    var selectedCardDesign = playerProvider.getCardDesignDetails(playerProvider.currPlayer);
+    switch(selectedCardDesign) {
+      case "prime":
+        return new PrimeCardDesign(cards: widget.cards);
+      default:
+        return new Center(child: _buildCardDeck());
+        break;
+    }
   }
 
+  // Default card design that we have.
   // Returns a string representing
   // the shorthand of a card suit.
   String _cardTypeToString(String type) {
