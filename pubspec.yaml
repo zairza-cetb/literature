@@ -85,6 +85,7 @@ flutter:
     - assets/frame_purple.png
     - assets/game_mat_basic.png
     - assets/zairza_logo.jpg
+    - assets/animations/knew_that.gif
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

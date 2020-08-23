@@ -11,6 +11,7 @@ import 'package:literature/models/playing_cards.dart';
 import 'package:literature/provider/playerlistprovider.dart';
 import 'package:literature/utils/functions.dart';
 import 'package:literature/utils/game_communication.dart';
+import 'package:literature/components/arena_animator.dart';
 import 'package:provider/provider.dart';
 
 class PlayerView extends StatefulWidget {
@@ -54,6 +55,14 @@ class PlayerView extends StatefulWidget {
 }
 
 class _PlayerViewState extends State<PlayerView> {
+  // Wrong guesses
+  // During a fold, for whom did you
+  // guess wrong.
+  List<dynamic> wrongGuesses = new List();
+  // Show arena animation?
+  bool _showArenaAnimation = false;
+  String imageCaption = '';
+  String imageSrc = '';
   // This callback function
   // changes the turn.
   Function cb;
@@ -89,6 +98,16 @@ class _PlayerViewState extends State<PlayerView> {
   void dispose() {
     super.dispose();
     game.removeListener(_playerViewListener);
+  }
+
+  void startAnimationController() {
+    // Turn on the animation controller with the respective
+    // items.
+    Future.delayed(new Duration(milliseconds: 3000), () {
+      setState(() {
+        _showArenaAnimation = false;
+      });
+    });
   }
 
   _playerViewListener(message) {
@@ -149,6 +168,7 @@ class _PlayerViewState extends State<PlayerView> {
               if (value == "hasAllCards") {
                 correctValues = correctValues + 1;
               }
+              wrongGuesses.add(key);
               count = count + 1;
             }
           });
@@ -162,7 +182,20 @@ class _PlayerViewState extends State<PlayerView> {
               foldState.clear();
               foldGuesses.clear();
             } else {
+              // Here: Notify who did not have the
+              // card you asked for.
               // Change the turn.
+              String str = "";
+              wrongGuesses?.forEach((element) {
+                str += element + ", ";
+              });
+              str += "do not have the cards";
+              setState(() {
+                _showArenaAnimation = true;
+                imageSrc = 'assets/animations/knew_that.gif';
+                imageCaption = str;
+              });
+              startAnimationController();
               opponentTeamScore += 1;
               widget.callback();
               foldState.clear();
@@ -173,6 +206,9 @@ class _PlayerViewState extends State<PlayerView> {
             print("");
           }
         }
+        // revoke the variables to the
+        // initial state.
+        wrongGuesses?.clear();
         break;
       default:
         break;
@@ -271,6 +307,15 @@ class _PlayerViewState extends State<PlayerView> {
               ),
             ],
           ),
+          // Animation screen should last for a few seconds.
+          _showArenaAnimation ? Positioned(
+            top: 180,
+            left: 100,
+            child: ArenaAnimator(
+              imageSrc: imageSrc,
+              imageCaption: imageCaption,
+            )
+          ): new Container(),
           // Card asking dialog of click.
           askingForCard ? CustomDialog(
               askingTo: playerBeingAskedObj.name,
