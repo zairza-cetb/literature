@@ -215,6 +215,17 @@ class WebSocket {
         callback(message);
       });
     });
+    // When you want to force remove some cards
+    // from players.
+    socket.on("force_remove_cards", (data) {
+      Map messageRecieved = json.decode(data);
+      Map message = new Map();
+      message["data"] = messageRecieved["data"];
+      message["action"] = messageRecieved["action"];
+      _listeners.forEach((Function callback) {
+        callback(message);
+      });
+    });
     // When a user force closes the application
     socket.on("force_close_app", (data) {
       Map messageRecieved = json.decode(data);

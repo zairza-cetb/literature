@@ -26,6 +26,7 @@ class PlayerView extends StatefulWidget {
     this.roomId,
     this.cards,
     this.arenaMessages,
+    this.updateCards,
     this.callback,
   });
 
@@ -52,6 +53,8 @@ class PlayerView extends StatefulWidget {
   _PlayerViewState createState() => _PlayerViewState();
 
   Function callback;
+
+  Function updateCards;
 }
 
 class _PlayerViewState extends State<PlayerView> {
@@ -147,6 +150,7 @@ class _PlayerViewState extends State<PlayerView> {
             "forWhichCards": toCheckSpecificCards,
             "roomId": widget.roomId,
             "whoAsked": message["data"][0]["whoAsked"],
+            "suit": suit
           };
           game.send("folding_confirmation", json.encode(foldingConfirmation));
         }
@@ -163,6 +167,7 @@ class _PlayerViewState extends State<PlayerView> {
           // Check if all the states have completed occuring.
           var count = 0;
           var correctValues = 0;
+          print(message["data"]["suit"]);
           foldState.forEach((key, value) {
             if (value != "awaitingConfirmation") {
               if (value == "hasAllCards") {
@@ -175,12 +180,21 @@ class _PlayerViewState extends State<PlayerView> {
           // All states have completed.
           if (count == foldState.length) {
             if (count == correctValues) {
+              String str = 'LIKE A BOSS';
+              setState(() {
+                imageCaption = str;
+                imageSrc = "assets/animations/knew_that.gif";
+              });
+              startAnimationController();
               // Add one point to the team.
               print("Must add one point to the team");
               currTeamScore += 1;
               // revoke foldState for newer values.
               foldState.clear();
               foldGuesses.clear();
+              String cardSet = lowerSet(message["data"]["forWhichCards"][0]) ? "lower" : "upper";
+              Map toRemove = {"suit": message["data"]["suit"], "cardSet": cardSet, "roomId": message["data"]["roomId"]};
+              game.send("remove_cards", json.encode(toRemove));
             } else {
               // Here: Notify who did not have the
               // card you asked for.
@@ -192,7 +206,7 @@ class _PlayerViewState extends State<PlayerView> {
               str += "do not have the cards";
               setState(() {
                 _showArenaAnimation = true;
-                imageSrc = 'assets/animations/knew_that.gif';
+                imageSrc = 'assets/animations/seriously.gif';
                 imageCaption = str;
               });
               startAnimationController();
@@ -209,6 +223,10 @@ class _PlayerViewState extends State<PlayerView> {
         // revoke the variables to the
         // initial state.
         wrongGuesses?.clear();
+        break;
+      case "force_remove_cards":
+        // remove cards from the cards list.
+        widget.updateCards("remove", null, message["data"]["suit"]);
         break;
       default:
         break;

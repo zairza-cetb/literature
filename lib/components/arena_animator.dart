@@ -20,7 +20,7 @@ class _ArenaAnimatorState extends State<ArenaAnimator> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Image.asset("assets/animations/knew_that.gif"),
+          Image.asset(widget.imageSrc),
           Text(
             widget.imageCaption,
             style: TextStyle(
