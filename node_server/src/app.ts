@@ -274,6 +274,19 @@ io.on("connection", (socket) => {
     );
   });
 
+  // Add points to a certain team.
+  socket.on("update_score", async (data) => {
+    const parsedData = JSON.parse(data);
+    const { roomId, whichTeam, action } = parsedData;
+    io.to(roomId).emit(
+      "update_score",
+      JSON.stringify({
+        data: { whichTeam, action, roomId },
+        action: "update_score",
+      }),
+    );
+  });
+
   socket.on("player_remove_clicked", async (data) => {
     // Map playerDetails =  {"roomId": widget.roomId, "name": playerInfo.name, "playerId": playerInfo.id};
     const parsedData = JSON.parse(data);

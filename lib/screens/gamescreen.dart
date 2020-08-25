@@ -369,7 +369,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           panel: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: new Container(
-              width:  MediaQuery.of(context).size.width*0.2536 + MediaQuery.of(context).size.width*0.0773*_cards.length.toDouble(),
+              width:  MediaQuery.of(context).size.width,
               child: CardDeck(cards: _cards, containerHeight: MediaQuery.of(context).size.height-MediaQuery.of(context).size.height*0.5212)
             ),
           ),

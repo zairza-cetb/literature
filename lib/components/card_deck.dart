@@ -117,48 +117,56 @@ class _CardDeckState extends State<CardDeck> {
   }
 
   Widget _buildCardDeck() {
-    var padding = ((MediaQuery.of(context).size.width - (MediaQuery.of(context).size.width*0.07246*(widget.cards.length-1)
-      + MediaQuery.of(context).size.width*0.2536))/2 > 0) ?
-      (MediaQuery.of(context).size.width - (MediaQuery.of(context).size.width*0.07246*(widget.cards.length-1)
-      + MediaQuery.of(context).size.width*0.2536))/2 : MediaQuery.of(context).size.width*0.0121;
+    var factor = (MediaQuery.of(context).size.width*0.2536
+      - ((widget.cards.length*MediaQuery.of(context).size.width*0.2536
+        -MediaQuery.of(context).size.width)/widget.cards.length))
+      < 0 ? MediaQuery.of(context).size.width*0.2536 - (MediaQuery.of(context).size.width*0.2536
+      - ((widget.cards.length*MediaQuery.of(context).size.width*0.2536
+        -MediaQuery.of(context).size.width)/widget.cards.length))
+      : (MediaQuery.of(context).size.width*0.2536
+      - ((widget.cards.length*MediaQuery.of(context).size.width*0.2536
+        -MediaQuery.of(context).size.width)/widget.cards.length));
     return Container(
       height: MediaQuery.of(context).size.height*0.2232,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(padding, 0, 0, 0),
-        child: Stack(
-          children: widget.cards.asMap().entries.map((card) {
-            var isSelected = selectedCard["name"] == EnumToString.parse(card.value.cardType)
-                && selectedCard["suit"] == EnumToString.parse(card.value.cardSuit) ? true : false;
-            return Positioned(
-              bottom: isSelected ? MediaQuery.of(context).size.height*0.03116 : MediaQuery.of(context).size.height*0.02232,
-              top: isSelected ? MediaQuery.of(context).size.height*0.01116 : MediaQuery.of(context).size.height*0.02232,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(card.key.toDouble()*MediaQuery.of(context).size.width*0.0723, 0, 0, 0),
-                child: GestureDetector(
-                  onTap: () {
-                    if (isSelected) {
-                      selectedCard["name"] = "";
-                      selectedCard["suit"] = "";
-                    } else {
-                      selectedCard["name"] = EnumToString.parse(card.value.cardType);
-                      selectedCard["suit"] = EnumToString.parse(card.value.cardSuit);
-                    }
-                    // setState
-                    setState(() {});
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      // Here
-                      border: isSelected ? Border.all(width: 2.5, color: Color(0xffCCB100)) : Border.all(width: 1.0),
-                      borderRadius: BorderRadius.circular(5.0),
-                      color: Colors.white
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Container(
+          width: widget.cards.length*factor + (MediaQuery.of(context).size.width*0.2536),
+          child: Stack(
+            children: widget.cards.asMap().entries.map((card) {
+              var isSelected = selectedCard["name"] == EnumToString.parse(card.value.cardType)
+                  && selectedCard["suit"] == EnumToString.parse(card.value.cardSuit) ? true : false;
+              return Positioned(
+                bottom: isSelected ? MediaQuery.of(context).size.height*0.03116 : MediaQuery.of(context).size.height*0.02232,
+                top: isSelected ? MediaQuery.of(context).size.height*0.01116 : MediaQuery.of(context).size.height*0.02232,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(card.key.toDouble()*(factor), 0, 0, 0),
+                  child: GestureDetector(
+                    onTap: () {
+                      if (isSelected) {
+                        selectedCard["name"] = "";
+                        selectedCard["suit"] = "";
+                      } else {
+                        selectedCard["name"] = EnumToString.parse(card.value.cardType);
+                        selectedCard["suit"] = EnumToString.parse(card.value.cardSuit);
+                      }
+                      // setState
+                      setState(() {});
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        // Here
+                        border: isSelected ? Border.all(width: 2.5, color: Color(0xffCCB100)) : Border.all(width: 1.0),
+                        borderRadius: BorderRadius.circular(5.0),
+                        color: Colors.white
+                      ),
+                      child: _buildCard(EnumToString.parse(card.value.cardType), EnumToString.parse(card.value.cardSuit)),
                     ),
-                    child: _buildCard(EnumToString.parse(card.value.cardType), EnumToString.parse(card.value.cardSuit)),
                   ),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
       ),
     );

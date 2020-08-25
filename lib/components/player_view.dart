@@ -89,6 +89,41 @@ class _PlayerViewState extends State<PlayerView> {
   int currTeamScore = 0;
   // Opponent team score.
   int opponentTeamScore = 0;
+  // Which sets are completed.
+  List completeSets = new List();
+
+  void addPoint(String whichTeam, String action) {
+    print("Executing");
+    // First find which team does the player in the
+    // parameter belong to.
+    switch (action) {
+      case "same":
+        if (widget.teamMates.contains(whichTeam)) {
+          setState(() {
+            currTeamScore += 1;
+          });
+        } else {
+          setState(() {
+            opponentTeamScore += 1;
+          });
+        }
+        break;
+      case "opp":
+        if (widget.teamMates.contains(whichTeam)) {
+          setState(() {
+            opponentTeamScore += 1;
+          });
+        } else {
+          setState(() {
+            currTeamScore += 1;
+          });
+        }
+        break;
+      default:
+        print("T");
+        break;
+    }
+  }
 
   void initState() {
     super.initState();
@@ -167,7 +202,6 @@ class _PlayerViewState extends State<PlayerView> {
           // Check if all the states have completed occuring.
           var count = 0;
           var correctValues = 0;
-          print(message["data"]["suit"]);
           foldState.forEach((key, value) {
             if (value != "awaitingConfirmation") {
               if (value == "hasAllCards") {
@@ -188,11 +222,13 @@ class _PlayerViewState extends State<PlayerView> {
               startAnimationController();
               // Add one point to the team.
               print("Must add one point to the team");
-              currTeamScore += 1;
+              Map msg = { "roomId": message["data"]["roomId"], "whichTeam": widget.currPlayer.name, "action": "same" };
+              game.send("update_score", json.encode(msg));
               // revoke foldState for newer values.
               foldState.clear();
               foldGuesses.clear();
               String cardSet = lowerSet(message["data"]["forWhichCards"][0]) ? "lower" : "upper";
+              completeSets.add({"suit": message["data"]["suit"], "cardSet": cardSet});
               Map toRemove = {"suit": message["data"]["suit"], "cardSet": cardSet, "roomId": message["data"]["roomId"]};
               game.send("remove_cards", json.encode(toRemove));
             } else {
@@ -210,7 +246,8 @@ class _PlayerViewState extends State<PlayerView> {
                 imageCaption = str;
               });
               startAnimationController();
-              opponentTeamScore += 1;
+              Map msg = { "roomId": message["data"]["roomId"], "whichTeam": widget.currPlayer.name, "action": "opp" };
+              game.send("update_score", json.encode(msg));
               widget.callback();
               foldState.clear();
               foldGuesses.clear();
@@ -223,6 +260,28 @@ class _PlayerViewState extends State<PlayerView> {
         // revoke the variables to the
         // initial state.
         wrongGuesses?.clear();
+        break;
+      case "update_score":
+        var whichTeam = message["data"]["whichTeam"];
+        var action = message["data"]["action"];
+        addPoint(whichTeam, action);
+        // check if game has ended.
+        if (currTeamScore + opponentTeamScore == 8) {
+          // game has ended.
+          String result;
+          if (currTeamScore == opponentTeamScore) {
+            result = "TIE";
+          } else {
+            if (currTeamScore > opponentTeamScore) {
+              result = "YOU WIN";
+            } else result = "YOU LOSE";
+          }
+          imageCaption = result;
+          startAnimationController();
+          // Close game and do the cleanups.
+          game.send("remove_room", json.encode({"roomId": widget.roomId}));
+          game.send("force_close", json.encode({"roomId": widget.roomId, "name": widget.currPlayer.name }));
+        }
         break;
       case "force_remove_cards":
         // remove cards from the cards list.
@@ -309,7 +368,14 @@ class _PlayerViewState extends State<PlayerView> {
                     fit: BoxFit.contain,
                   ),
                 ),
-                child: Arena(widget.turnsMapper, arenaContainerHeight, widget.arenaMessages, currTeamScore, opponentTeamScore)
+                child: Arena(
+                  widget.turnsMapper,
+                  arenaContainerHeight,
+                  widget.arenaMessages,
+                  currTeamScore,
+                  completeSets,
+                  opponentTeamScore
+                )
               ),
               // Your team.
               _getFriendlyTeam(
@@ -505,7 +571,9 @@ Widget _getPlayer(player, h, w, turnsMapper, side, setCardAskingProps, context, 
           width: w*1.2,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(h*0.2),
-            color: Color(0xffd6d2de)
+            color: turnsMapper[player["name"]] == "hasTurn" ?
+              Color(0xffA9D3FF):
+              Color(0xffd6d2de),
           ),
           child: Column(
             children: <Widget>[

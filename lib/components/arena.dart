@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:literature/components/card_deck.dart';
 
 class Arena extends StatefulWidget {
-  Arena(this.turnsMapper, this.height, this.messages, this.currTeamScore, this.opponentTeamScore);
+  Arena(this.turnsMapper, this.height, this.messages, this.currTeamScore, this.completeSets, this.opponentTeamScore);
   final turnsMapper;
   double height;
   final List messages;
   int currTeamScore;
   int opponentTeamScore;
+  List completeSets;
   _ArenaState createState() => _ArenaState();
 }
 
@@ -18,7 +20,7 @@ class _ArenaState extends State<Arena> {
   @override
   void initState() {
     super.initState();
-    setsComplete = new List();
+    setsComplete = widget.completeSets;
   }
 
   _getCurrentTurn(Map turnsMapper) {
@@ -31,20 +33,45 @@ class _ArenaState extends State<Arena> {
     return name;
   }
 
+  Image _cardSuitToImage(String suit) {
+    switch(suit) {
+      case "hearts":
+        return Image.asset("assets/hearts.png");
+        break;
+      case "diamonds":
+        return Image.asset("assets/diamonds.png");
+        break;
+      case "clubs":
+        return Image.asset("assets/clubs.png");
+        break;
+      case "spades":
+        return Image.asset("assets/spades.png");
+        break;
+      default:
+        return Image.asset("assets/spades.png");
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    var scoreCard = widget.currTeamScore.toString() + "-" + widget.opponentTeamScore.toString();
     List<Widget> arenaMessages = widget.messages.map((m) {
       return Container(
         child: Text(m, style: TextStyle(color: Colors.white, fontFamily: 'VT323', fontSize: height*0.0223)),
       );
     }).toList();
     whoseTurn = _getCurrentTurn(widget.turnsMapper);
-    List<Widget> completeSets = setsComplete.map((e) {
-      return Container(
-
+    List<Widget> completeSets = setsComplete.map((el) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
+        child: Container(
+          height: 25,
+          width: 25,
+          color: Colors.white,
+          child: _cardSuitToImage(el["suit"]),
+        ),
       );
     }).toList();
     return Container(
@@ -61,7 +88,7 @@ class _ArenaState extends State<Arena> {
                 Text("HOME ", style: TextStyle(color: Colors.white, fontSize: height*0.0135, fontFamily: 'Montserrat')),
                 Text(widget.currTeamScore.toString(), style: TextStyle(color: Colors.white, fontSize: height*0.0335, fontFamily: 'Montserrat')),
                 Text(" / ", style: TextStyle(color: Colors.white, fontSize: height*0.0335, fontFamily: 'Montserrat')),
-                Text(widget.currTeamScore.toString(), style: TextStyle(color: Colors.white, fontSize: height*0.0335, fontFamily: 'Montserrat')),
+                Text(widget.opponentTeamScore.toString(), style: TextStyle(color: Colors.white, fontSize: height*0.0335, fontFamily: 'Montserrat')),
                 Text(" AWAY", style: TextStyle(color: Colors.white, fontSize: height*0.0135, fontFamily: 'Montserrat')),
               ]
             ),
@@ -75,18 +102,7 @@ class _ArenaState extends State<Arena> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               // Complete sets.
-              Column(children: completeSets),
-              Container(
-                padding: EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: Colors.green,
-                    width: 3,
-                  )
-                ),
-                child: Text(whoseTurn, style: TextStyle(color: Colors.white)),
-              )
+              Row(children: completeSets),
             ],
           )
         ],

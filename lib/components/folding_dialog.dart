@@ -42,8 +42,6 @@ class _FoldingDialogState extends State<FoldingDialog> {
   var playerOneFoldSelections;
   var playerTwoFoldSelections;
   var playerThreeFoldSelections;
-  // String cardType = 'ace';
-  // String cardSuit = 'hearts';
   @override
   void initState() {
     super.initState();
