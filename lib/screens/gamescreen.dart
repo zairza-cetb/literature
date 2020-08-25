@@ -280,6 +280,25 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     return l;
   }
 
+  void updateCards(String message, List cards, String suit) {
+    print("Trace");
+    switch (message) {
+      case "remove":
+        for (var i=0; i < _cards.length; i++) {
+          if (EnumToString.parse(_cards[i].cardSuit) == suit) {
+            _cards.remove(_cards[i]);
+          }
+        }
+        // Forces rebuild.
+        setState(() {});
+        break;
+      case "add":
+        break;
+      default:
+        break;
+    }
+  }
+
 
   void callback() {
     print("Cancelling the timer");
@@ -336,6 +355,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                       roomId: widget.roomId,
                       cards: _cards,
                       arenaMessages: arenaMessages,
+                      updateCards: updateCards,
                       callback: this.callback
                     ),
                   ),
@@ -349,7 +369,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           panel: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: new Container(
-              width:  MediaQuery.of(context).size.width*0.2536 + MediaQuery.of(context).size.width*0.0773*_cards.length.toDouble(),
+              width:  MediaQuery.of(context).size.width,
               child: CardDeck(cards: _cards, containerHeight: MediaQuery.of(context).size.height-MediaQuery.of(context).size.height*0.5212)
             ),
           ),

@@ -251,12 +251,38 @@ io.on("connection", (socket) => {
   // the foldState for a user emitting this message.
   socket.on("folding_confirmation", async (data) => {
     const parsedData = JSON.parse(data);
-    const { roomId, name, confirmation, forWhichCards, whoAsked } = parsedData;
+    const { roomId, name, confirmation, forWhichCards, whoAsked, suit } = parsedData;
     io.to(roomId).emit(
       "folding_confirmation_recieved",
       JSON.stringify({
-        data: { whoAsked, name, confirmation, forWhichCards },
+        data: { whoAsked, name, confirmation, forWhichCards, suit, roomId },
         action: "update_foldState",
+      }),
+    );
+  });
+
+  // Remove cards from all the players after a successful fold.
+  socket.on("remove_cards", async (data) => {
+    const parsedData = JSON.parse(data);
+    const { suit, cardSet, roomId } = parsedData;
+    io.to(roomId).emit(
+      "force_remove_cards",
+      JSON.stringify({
+        data: { suit, cardSet, roomId },
+        action: "force_remove_cards",
+      }),
+    );
+  });
+
+  // Add points to a certain team.
+  socket.on("update_score", async (data) => {
+    const parsedData = JSON.parse(data);
+    const { roomId, whichTeam, action } = parsedData;
+    io.to(roomId).emit(
+      "update_score",
+      JSON.stringify({
+        data: { whichTeam, action, roomId },
+        action: "update_score",
       }),
     );
   });

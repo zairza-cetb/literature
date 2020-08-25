@@ -10,6 +10,7 @@ import 'package:literature/utils/functions.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:provider/provider.dart';
 
+// ignore: must_be_immutable
 class FoldingDialog extends StatefulWidget {
   final Function cb;
   List<PlayingCard> cards;
@@ -41,8 +42,6 @@ class _FoldingDialogState extends State<FoldingDialog> {
   var playerOneFoldSelections;
   var playerTwoFoldSelections;
   var playerThreeFoldSelections;
-  // String cardType = 'ace';
-  // String cardSuit = 'hearts';
   @override
   void initState() {
     super.initState();
@@ -64,7 +63,10 @@ class _FoldingDialogState extends State<FoldingDialog> {
       ),
       elevation: 0.0,
       backgroundColor: Colors.transparent,
-      child: dialogContent(context)
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: dialogContent(context)
+      )
     );
   }
 
@@ -94,203 +96,211 @@ class _FoldingDialogState extends State<FoldingDialog> {
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min, // To make the card compact
-        children: <Widget>[
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                ),
-                height: 40.0,
-                child: _cardSuitToImage(selectedSuit),
-              ),
-            ],
-          ),
-          SizedBox(height: containerHeight*0.0188),
-          new Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Text(
-                "CHOOSE A SET",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.white
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(2),
-                height: 30,
-                decoration: BoxDecoration(
-                  color: Color(0xfff0673c),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Center(
-                  child: DropdownButton<String>(
-                    iconSize: 0,
-                    dropdownColor: Color(0xfff0673c),
-                    underline: Container(),
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                    value: selectedSuit,
-                    onChanged: (String newValue) {
-                      setState(() {
-                        selectedSuit = newValue;
-                      });
-                    },
-                    items: <String>[
-                      "spades",
-                      "hearts",
-                      "diamonds",
-                      "clubs",
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(2),
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                  color: Color(0xfff0673c),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Center(
-                  child: DropdownButton<String>(
-                    iconSize: 0,
-                    dropdownColor: Color(0xfff0673c),
-                    underline: Container(),
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                    value: selectedSet,
-                    onChanged: (String newValue) {
-                      setState(() {
-                        selectedSet = newValue;
-                        selectedSetList = buildSetWithSelectedValues(selectedSuit, selectedSet);
-                      });
-                    },
-                    items: <String>[
-                      "L",
-                      "H",
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-            ]
-          ),
-          SizedBox(height: 24.0),
-          // Select which of your team mates has what
-          // card?
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: getTeamMatesForm(
-              teamMates
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(40, 30, 40, 0),
-            child: Row(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // To make the card compact
+          children: <Widget>[
+            new Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Container(
-                  height: 30,
-                  color: Colors.transparent,
-                  child: RaisedButton(
-                    color: Color(0xff0AA4EB),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5)
-                    ),
-                    onPressed: () {
-                      // send details to the
-                      // server about folding.
-                      // validate the form here.
-                      // General format of messages.
-                      // { "name" ,"selections", "suit" }
-                      List message = new List();
-                      final currPlayer = Provider.of<PlayerList>(context, listen: false).currPlayer;
-                      if (playerOneFoldSelections != null && teamMates.length > 0) {
-                        message.add(
-                          {
-                            // teamMates[0]["name"] : [{ "selections": playerOneFoldSelections }, { "suit" : selectedSuit }],
-                            "name": teamMates[0]["name"],
-                            "selections": playerOneFoldSelections,
-                            "suit": selectedSuit,
-                            "whoAsked": currPlayer.name
-                          }
-                        );
-                        // Update the parent component.
-                        widget.updateFoldStats(teamMates[0]["name"], playerOneFoldSelections);
-                      }
-                      if (playerTwoFoldSelections != null && teamMates.length > 1) {
-                        message.add(
-                          {
-                            // teamMates[1]["name"] : [{ "selections": playerTwoFoldSelections }, { "suit" : selectedSuit }],
-                            "name": teamMates[1]["name"],
-                            "selections": playerTwoFoldSelections,
-                            "suit": selectedSuit,
-                            "whoAsked": currPlayer.name
-                          }
-                        );
-                        widget.updateFoldStats(teamMates[1]["name"], playerTwoFoldSelections);
-                      }
-                      if (playerThreeFoldSelections != null && teamMates.length > 2) {
-                        message.add(
-                          {
-                            // teamMates[2]["name"] : [{ "selections": playerThreeFoldSelections }, { "suit" : selectedSuit }],
-                            "name": teamMates[2]["name"],
-                            "selections": playerThreeFoldSelections,
-                            "suit": selectedSuit,
-                            "whoAsked": currPlayer.name
-                          }
-                        );
-                        widget.updateFoldStats(teamMates[2]["name"], playerThreeFoldSelections);
-                      }
-                      Map foldingResult = {"roomId": widget.roomId, "foldedResults": message};
-                      // Sends a message of the form [ name -> foldSelections, name -> foldSelections, name -> foldSelections ].
-                      game.send("folding_result_initial", json.encode(foldingResult));
-                      widget.cb();
-                      // Also clear out variables for next group of requests.
-                      playerOneFoldSelections = null;
-                      playerTwoFoldSelections = null;
-                      playerThreeFoldSelections = null;
-                    },
-                    child: Text("FOLD", style: TextStyle(color: Colors.white)),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
                   ),
-                ),
-                Container(
-                  height: 30,
-                  width: 100,
-                  child: RaisedButton(
-                    color: Color(0xff0AA4EB),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5)
-                    ),
-                    onPressed: () {
-                      widget.cb();
-                    },
-                    child: Text("CANCEL", style: TextStyle(color: Colors.white)),
-                  ),
+                  height: 40.0,
+                  child: _cardSuitToImage(selectedSuit),
                 ),
               ],
             ),
-          ),
-        ],
+            SizedBox(height: containerHeight*0.0188),
+            new Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Text(
+                  "CHOOSE A SET",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(2),
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: Color(0xfff0673c),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Center(
+                    child: DropdownButton<String>(
+                      iconSize: 0,
+                      dropdownColor: Color(0xfff0673c),
+                      underline: Container(),
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                      value: selectedSuit,
+                      onChanged: (String newValue) {
+                        setState(() {
+                          selectedSuit = newValue;
+                        });
+                      },
+                      items: <String>[
+                        "spades",
+                        "hearts",
+                        "diamonds",
+                        "clubs",
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(2),
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    color: Color(0xfff0673c),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Center(
+                    child: DropdownButton<String>(
+                      iconSize: 0,
+                      dropdownColor: Color(0xfff0673c),
+                      underline: Container(),
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                      value: selectedSet,
+                      onChanged: (String newValue) {
+                        setState(() {
+                          selectedSet = newValue;
+                          selectedSetList = buildSetWithSelectedValues(selectedSuit, selectedSet);
+                        });
+                      },
+                      items: <String>[
+                        "L",
+                        "H",
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ]
+            ),
+            SizedBox(height: 24.0),
+            // Select which of your team mates has what
+            // card?
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: getTeamMatesForm(
+                teamMates
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(40, 30, 40, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    height: 30,
+                    color: Colors.transparent,
+                    child: RaisedButton(
+                      color: Color(0xff0AA4EB),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)
+                      ),
+                      onPressed: () {
+                        // send details to the
+                        // server about folding.
+                        // validate the form here.
+                        // General format of messages.
+                        // { "name" ,"selections", "suit" }
+                        List message = new List();
+                        final currPlayer = Provider.of<PlayerList>(context, listen: false).currPlayer;
+                        if (!checkIfAllSelected(playerOneFoldSelections, playerTwoFoldSelections, playerThreeFoldSelections)) {
+                          // not all values are selected.
+                          print("Please select all cards in the suit.");
+                        } else {
+                          if (playerOneFoldSelections != null && teamMates.length > 0) {
+                            message.add(
+                              {
+                                // teamMates[0]["name"] : [{ "selections": playerOneFoldSelections }, { "suit" : selectedSuit }],
+                                "name": teamMates[0]["name"],
+                                "selections": playerOneFoldSelections,
+                                "suit": selectedSuit,
+                                "whoAsked": currPlayer.name
+                              }
+                            );
+                            // Update the parent component.
+                            widget.updateFoldStats(teamMates[0]["name"], playerOneFoldSelections);
+                          }
+                          if (playerTwoFoldSelections != null && teamMates.length > 1) {
+                            message.add(
+                              {
+                                // teamMates[1]["name"] : [{ "selections": playerTwoFoldSelections }, { "suit" : selectedSuit }],
+                                "name": teamMates[1]["name"],
+                                "selections": playerTwoFoldSelections,
+                                "suit": selectedSuit,
+                                "whoAsked": currPlayer.name
+                              }
+                            );
+                            widget.updateFoldStats(teamMates[1]["name"], playerTwoFoldSelections);
+                          }
+                          if (playerThreeFoldSelections != null && teamMates.length > 2) {
+                            message.add(
+                              {
+                                // teamMates[2]["name"] : [{ "selections": playerThreeFoldSelections }, { "suit" : selectedSuit }],
+                                "name": teamMates[2]["name"],
+                                "selections": playerThreeFoldSelections,
+                                "suit": selectedSuit,
+                                "whoAsked": currPlayer.name
+                              }
+                            );
+                            widget.updateFoldStats(teamMates[2]["name"], playerThreeFoldSelections);
+                          }
+                          Map foldingResult = {"roomId": widget.roomId, "foldedResults": message};
+                          // Sends a message of the form [ name -> foldSelections, name -> foldSelections, name -> foldSelections ].
+                          game.send("folding_result_initial", json.encode(foldingResult));
+                          widget.cb();
+                        }
+                        // Also clear out variables for next group of requests.
+                        playerOneFoldSelections = null;
+                        playerTwoFoldSelections = null;
+                        playerThreeFoldSelections = null;
+                      },
+                      child: Text("FOLD", style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                  Container(
+                    height: 30,
+                    width: 100,
+                    child: RaisedButton(
+                      color: Color(0xff0AA4EB),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)
+                      ),
+                      onPressed: () {
+                        widget.cb();
+                      },
+                      child: Text("CANCEL", style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

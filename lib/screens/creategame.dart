@@ -17,7 +17,7 @@ class CreateGame extends StatefulWidget {
   _CreateGame createState() => _CreateGame();
 }
 
-class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
+class _CreateGame extends State<CreateGame> {
   Player currPlayer;
   String playerId;
   bool isLoading = false;
@@ -524,8 +524,8 @@ class _CreateGame extends State<CreateGame> with AfterLayoutMixin<CreateGame> {
     );
   }
 
-  @override
-  void afterFirstLayout(BuildContext context) {
-    if (currPlayerProvider.user != null) showWelcomeMessage();
-  }
+  // @override
+  // void afterFirstLayout(BuildContext context) {
+  //   if (currPlayerProvider.user != null) showWelcomeMessage();
+  // }
 }

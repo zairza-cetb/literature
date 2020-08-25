@@ -107,6 +107,18 @@ hasSameCard(suit, type, cardsList) {
     return tempList;
   }
   
+  // While folding, check if all the cards in the suit have been selected
+  bool checkIfAllSelected(p1, p2, p3) {
+    if (p1 == null || p2 == null || p3 == null) {
+      return false;
+    } else {
+      if (p1.length + p2.length + p3.length == 6) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // Whether a player has been asked to validate against
   // a folding transaction.
   takesPartInTransaction(Player player, List list) {
