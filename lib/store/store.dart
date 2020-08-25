@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -100,6 +99,109 @@ class _StoreState extends State<Store> {
     return item;
   }
 
+  // Returns an image given the rarity
+  // string of an artifact.
+  Widget getRarityDescriptor(String tier) {
+    switch (tier) {
+      case "diamond":
+        return Container(
+          width: MediaQuery.of(context).size.width*0.048,
+          height: MediaQuery.of(context).size.height*0.0223,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(width: 1.0, color: Colors.black),
+            color: Colors.teal[500],
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.blueGrey.withAlpha(100),
+            //     blurRadius: 6.0,
+            //     spreadRadius: 6.0,
+            //     offset: Offset(
+            //       0.0,
+            //       3.0,
+            //     ),
+            //   ),
+            // ],
+          ),
+          child: Text(
+            tier[0].toUpperCase(),
+            style: TextStyle(
+              color: Colors.white
+            ),
+          ),
+        );
+        break;
+      case "gold":
+        return Container(
+          width: MediaQuery.of(context).size.width*0.048,
+          height: MediaQuery.of(context).size.height*0.0223,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(width: 1.0, color: Colors.black),
+            color: Colors.yellow[700]
+          ),
+          child: Text(
+            tier[0].toUpperCase(),
+            style: TextStyle(
+              color: Colors.white
+            ),
+          ),
+        );
+        break;
+      case "silver":
+        return Container(
+          width: MediaQuery.of(context).size.width*0.048,
+          height: MediaQuery.of(context).size.height*0.0223,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(width: 1.0, color: Colors.black),
+            color: Colors.grey
+          ),
+          child: Text(
+            tier[0].toUpperCase(),
+            style: TextStyle(
+              color: Colors.white
+            ),
+          ),
+        );
+        break;
+      case "bronze":
+        return Container(
+          width: MediaQuery.of(context).size.width*0.048,
+          height: MediaQuery.of(context).size.height*0.0223,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(width: 1.0, color: Colors.black),
+            color: Colors.brown
+          ),
+          child: Text(
+            tier[0].toUpperCase(),
+            style: TextStyle(
+              color: Colors.white
+            ),
+          ),
+        );
+        break;
+      default:
+        return Container(
+          width: MediaQuery.of(context).size.width*0.048,
+          height: MediaQuery.of(context).size.height*0.0223,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(width: 1.0, color: Colors.black),
+            color: Colors.black54
+          ),
+          child: Text(
+            "N/A",
+            style: TextStyle(
+              color: Colors.white
+            ),
+          ),
+        );
+        break;
+    }
+  }
+
   void getGeneratedItems() {
     List items = new List();
     // assign to generatedItems
@@ -117,26 +219,23 @@ class _StoreState extends State<Store> {
     List<Widget> children = new List();
     for (var i=0; i < items.length; i++) {
       children.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              items[i].value,
-              style: TextStyle(
-                // color: getColor(item["color"]),
-                fontWeight: FontWeight.bold
-              ),
-            ),
-            Expanded(
-              child: Text(
-                items[i].tier,
-                style: TextStyle(
-                  // color: getColor(item["color"]),
-                  fontWeight: FontWeight.bold
+        Padding(
+          padding: EdgeInsets.fromLTRB(0, MediaQuery.of(context).size.height*0.011, 0, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  items[i].value.toUpperCase(),
+                  style: TextStyle(
+                    // color: getColor(item["color"]),
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
               ),
-            )
-          ]
+              getRarityDescriptor(items[i].tier)
+            ]
+          ),
         )
       );
     }
@@ -158,10 +257,14 @@ class _StoreState extends State<Store> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            // SizedBox(height: 20.0,),
             _buildInfoExpansionPanel(),
             Padding(
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              padding: EdgeInsets.fromLTRB(
+                MediaQuery.of(context).size.height*0.011,
+                0,
+                MediaQuery.of(context).size.height*0.011,
+                0
+              ),
               child: Column(
                 children: [
                   Align(
@@ -173,46 +276,50 @@ class _StoreState extends State<Store> {
                       ),
                     ),
                   ),
-                  Card(
-                    child: Container(
-                      height: 300,
-                      child: Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 2, color: Colors.lightBlue),
-                          ),
-                          child: GestureDetector(
-                            onTap: () {
-                              // Subtract the money.
-                              if (walletCurrency >= 99.0) {
-                                setState(() {
-                                  walletCurrency -= 99.00;
-                                });
-                                getGeneratedItems();
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text("You got..."),
-                                      content: generatedItems
-                                    );
-                                  }
-                                );
-                              } else {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Icon(Icons.info),
-                                      content: Text("You do not have enough currency")
-                                    );
-                                  }
-                                );
-                              }
-                            },
+                  GestureDetector(
+                    onTap: () {
+                      // Subtract the money.
+                      if (walletCurrency >= 99.0) {
+                        // setState(() {
+                        //   walletCurrency -= 99.00;
+                        // });
+                        getGeneratedItems();
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Center(child: Container(
+                                height: MediaQuery.of(context).size.height*0.0558,
+                                child: Image.asset('assets/rewards.png')
+                              )),
+                              content: generatedItems,
+                            );
+                          }
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Icon(Icons.info),
+                              content: Text("You do not have enough currency")
+                            );
+                          }
+                        );
+                      }
+                    },
+                    child: Card(
+                      child: Container(
+                        //  300 units
+                        height: MediaQuery.of(context).size.height*0.3348,
+                        child: Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(width: 2, color: Colors.lightBlue),
+                            ),
                             child: Padding(padding: EdgeInsets.all(2), child: Text("Rs 99.00"))
                           )
-                        )
+                        ),
                       ),
                     ),
                   ),
@@ -222,7 +329,7 @@ class _StoreState extends State<Store> {
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.all(10),
+                padding: EdgeInsets.all(MediaQuery.of(context).size.height*0.011),
                 child: Text(
                   "OBTAINABLE ITEMS",
                   style: TextStyle(
@@ -244,7 +351,7 @@ class _StoreState extends State<Store> {
       children: <Widget>[
         Card(
           child: Container(
-            height: 100,
+            height: MediaQuery.of(context).size.height*0.11,
             child: Center(
               child: Container(
                 decoration: BoxDecoration(
@@ -257,7 +364,7 @@ class _StoreState extends State<Store> {
         ),
         Card(
           child: Container(
-            height: 100,
+            height: MediaQuery.of(context).size.height*0.11,
             child: Center(
               child: Container(
                 decoration: BoxDecoration(
@@ -270,7 +377,7 @@ class _StoreState extends State<Store> {
         ),
         Card(
           child: Container(
-            height: 100,
+            height: MediaQuery.of(context).size.height*0.11,
             child: Center(
               child: Container(
                 decoration: BoxDecoration(
@@ -308,7 +415,7 @@ class _StoreState extends State<Store> {
         ),
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+            padding: EdgeInsets.all(MediaQuery.of(context).size.height*0.011),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -344,7 +451,12 @@ class _StoreState extends State<Store> {
 
   Widget getArtifactsList() {
     var children = artifacts.map((item) => Padding(
-      padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+      padding: EdgeInsets.fromLTRB(
+        MediaQuery.of(context).size.height*0.11,
+        MediaQuery.of(context).size.height*0.11/2,
+        MediaQuery.of(context).size.height*0.11,
+        MediaQuery.of(context).size.height*0.11/2
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
