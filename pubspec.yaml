@@ -89,6 +89,14 @@ flutter:
     - assets/animations/seriously.gif
     - assets/rewards.png
   #  - images/a_dot_ham.jpeg
+    # Artifacts
+    - assets/artifacts/literature_artifacts_diamond.png
+    - assets/artifacts/literature_artifacts_gold.png
+    - assets/artifacts/literature_artifacts_silver.png
+    - assets/artifacts/literature_artifacts_bronze.png
+    - assets/artifacts/mega_chest.png
+    - assets/artifacts/cards_store.png
+    - assets/artifacts/obtainable_cards.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
