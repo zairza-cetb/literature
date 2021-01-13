@@ -24,16 +24,19 @@ class _StoreState extends State<Store> {
   double walletCurrency = 0.00;
   // Async network request to fetch account information.
   Future fetchAccountInformation() async {
-    final response = await http.get('http://localhost:3000/wallet');
-    if (response.statusCode == 200) {
-      setState(() {
-        walletCurrency = double.parse(response.body);
+    // final response = await http.get('http://localhost:3000/wallet');
+    // if (response.statusCode == 200) {
+    //   setState(() {
+    //     walletCurrency = double.parse(response.body);
+    //   });
+    // } else {
+    //   // If the server did not return a 200 OK response,
+    //   // then throw an exception.
+    //   throw Exception('Failed to load the store. Check your network.');
+    // }
+    setState(() {
+        walletCurrency = 2000.0;
       });
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load the store. Check your network.');
-    }
   }
   @override
   void initState() {
@@ -105,81 +108,34 @@ class _StoreState extends State<Store> {
     switch (tier) {
       case "diamond":
         return Container(
-          width: MediaQuery.of(context).size.width*0.048,
-          height: MediaQuery.of(context).size.height*0.0223,
+          width: 80,
+          height: 80,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            border: Border.all(width: 1.0, color: Colors.black),
-            color: Colors.teal[500],
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: Colors.blueGrey.withAlpha(100),
-            //     blurRadius: 6.0,
-            //     spreadRadius: 6.0,
-            //     offset: Offset(
-            //       0.0,
-            //       3.0,
-            //     ),
-            //   ),
-            // ],
-          ),
-          child: Text(
-            tier[0].toUpperCase(),
-            style: TextStyle(
-              color: Colors.white
-            ),
-          ),
+          child: Image.asset("assets/artifacts/literature_artifacts_diamond.png")
         );
         break;
       case "gold":
         return Container(
-          width: MediaQuery.of(context).size.width*0.048,
-          height: MediaQuery.of(context).size.height*0.0223,
+          width: 80,
+          height: 80,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            border: Border.all(width: 1.0, color: Colors.black),
-            color: Colors.yellow[700]
-          ),
-          child: Text(
-            tier[0].toUpperCase(),
-            style: TextStyle(
-              color: Colors.white
-            ),
-          ),
+          child: Image.asset("assets/artifacts/literature_artifacts_gold.png")
         );
         break;
       case "silver":
         return Container(
-          width: MediaQuery.of(context).size.width*0.048,
-          height: MediaQuery.of(context).size.height*0.0223,
+          width: 80,
+          height: 80,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            border: Border.all(width: 1.0, color: Colors.black),
-            color: Colors.grey
-          ),
-          child: Text(
-            tier[0].toUpperCase(),
-            style: TextStyle(
-              color: Colors.white
-            ),
-          ),
+          child: Image.asset("assets/artifacts/literature_artifacts_silver.png")
         );
         break;
       case "bronze":
         return Container(
-          width: MediaQuery.of(context).size.width*0.048,
-          height: MediaQuery.of(context).size.height*0.0223,
+          width: 80,
+          height: 80,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
-            border: Border.all(width: 1.0, color: Colors.black),
-            color: Colors.brown
-          ),
-          child: Text(
-            tier[0].toUpperCase(),
-            style: TextStyle(
-              color: Colors.white
-            ),
-          ),
+          child: Image.asset("assets/artifacts/literature_artifacts_bronze.png")
         );
         break;
       default:
@@ -220,21 +176,27 @@ class _StoreState extends State<Store> {
     for (var i=0; i < items.length; i++) {
       children.add(
         Padding(
-          padding: EdgeInsets.fromLTRB(0, MediaQuery.of(context).size.height*0.011, 0, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  items[i].value.toUpperCase(),
-                  style: TextStyle(
-                    // color: getColor(item["color"]),
-                    fontWeight: FontWeight.bold
+          padding: EdgeInsets.fromLTRB(0, MediaQuery.of(context).size.height*0.011, 0, 10),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5.0)
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    ' ' + items[i].value.toUpperCase(),
+                    style: TextStyle(
+                      // color: getColor(item["color"]),
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
                 ),
-              ),
-              getRarityDescriptor(items[i].tier)
-            ]
+                getRarityDescriptor(items[i].tier)
+              ]
+            ),
           ),
         )
       );
@@ -280,9 +242,9 @@ class _StoreState extends State<Store> {
                     onTap: () {
                       // Subtract the money.
                       if (walletCurrency >= 99.0) {
-                        // setState(() {
-                        //   walletCurrency -= 99.00;
-                        // });
+                        setState(() {
+                          walletCurrency -= 99.00;
+                        });
                         getGeneratedItems();
                         showDialog(
                           context: context,
@@ -309,17 +271,24 @@ class _StoreState extends State<Store> {
                       }
                     },
                     child: Card(
-                      child: Container(
-                        //  300 units
-                        height: MediaQuery.of(context).size.height*0.3348,
-                        child: Center(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(width: 2, color: Colors.lightBlue),
+                      child: Stack(
+                        children: <Widget>[
+                          Image.asset(
+                            "assets/artifacts/mega_chest.png",
+                            fit: BoxFit.fill,
+                          ),
+                          Positioned(
+                            top: MediaQuery.of(context).size.height*0.100,
+                            left: MediaQuery.of(context).size.width*0.3864,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(width: 4, color: Colors.red),
+                                color: Colors.white
+                              ),
+                              child: Padding(padding: EdgeInsets.all(2), child: Text("Rs 99.00"))
                             ),
-                            child: Padding(padding: EdgeInsets.all(2), child: Text("Rs 99.00"))
                           )
-                        ),
+                        ],
                       ),
                     ),
                   ),
@@ -352,13 +321,24 @@ class _StoreState extends State<Store> {
         Card(
           child: Container(
             height: MediaQuery.of(context).size.height*0.11,
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(width: 2, color: Colors.lightBlue),
+            child: Stack(
+              children: <Widget>[
+                Image.asset(
+                  "assets/artifacts/cards_store.png",
+                  fit: BoxFit.contain,
                 ),
-                child: Padding(padding: EdgeInsets.all(2), child: Text("CARDS"))
-              )
+                Positioned(
+                  top: MediaQuery.of(context).size.height*0.0390,
+                  left: MediaQuery.of(context).size.width*0.386,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 4, color: Colors.red),
+                        color: Colors.white
+                    ),
+                    child: Padding(padding: EdgeInsets.all(2), child: Text("CARDS"))
+                  ),
+                )
+              ],
             ),
           ),
         ),
@@ -452,10 +432,10 @@ class _StoreState extends State<Store> {
   Widget getArtifactsList() {
     var children = artifacts.map((item) => Padding(
       padding: EdgeInsets.fromLTRB(
-        MediaQuery.of(context).size.height*0.11,
-        MediaQuery.of(context).size.height*0.11/2,
-        MediaQuery.of(context).size.height*0.11,
-        MediaQuery.of(context).size.height*0.11/2
+        MediaQuery.of(context).size.height*0.011,
+        MediaQuery.of(context).size.height*0.011/2,
+        MediaQuery.of(context).size.height*0.011,
+        MediaQuery.of(context).size.height*0.011/2
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
